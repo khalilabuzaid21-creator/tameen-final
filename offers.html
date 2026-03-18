@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عروض التأمين</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <style>
+        body { background-color: #e8f5e9; }
+        .form-wrapper {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background: #d1e7dd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        /* شريط الخطوات */
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; color: #6c757d; font-size: 0.9rem; }
+        .step { text-align: center; flex: 1; position: relative; }
+        .step.active { color: #198754; font-weight: bold; }
+        .step-icon { width: 35px; height: 35px; background-color: #fff; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        .step.active .step-icon { border-color: #198754; background-color: #198754; color: #fff; }
+        
+        /* كرت العرض */
+        .offer-card {
+            background: white;
+            border: 1px solid #198754;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .offer-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .company-name { font-weight: bold; font-size: 1.2rem; color: #333; margin-bottom: 5px; }
+        .price-tag { font-size: 1.5rem; color: #198754; font-weight: bold; }
+        .price-currency { font-size: 0.9rem; color: #666; font-weight: normal; }
+        .btn-select { background-color: #198754; color: white; border: none; padding: 8px 25px; border-radius: 5px; }
+        .btn-select:hover { background-color: #146c43; color: white; }
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-left: 15px;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-wrapper">
+        
+        <!-- شريط الخطوات -->
+        <div class="step-indicator">
+            <div class="step active">
+                <div class="step-icon">✔</div>
+                <div>بيانات التأمين</div>
+            </div>
+            <div class="step active">
+                <div class="step-icon">2</div>
+                <div>قائمة الأسعار</div>
+            </div>
+            <div class="step">
+                <div class="step-icon">3</div>
+                <div>الملخص والدفع</div>
+            </div>
+        </div>
+
+        <h3 class="text-center mb-4 text-success">اختر العرض المناسب</h3>
+
+        <!-- فلتر نوع التأمين -->
+        <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="typeFilter" id="tplFilter" autocomplete="off" checked onchange="filterOffers('tpl')">
+                <label class="btn btn-outline-success px-4" for="tplFilter">ضد الغير</label>
+
+                <input type="radio" class="btn-check" name="typeFilter" id="compFilter" autocomplete="off" onchange="filterOffers('comp')">
+                <label class="btn btn-outline-success px-4" for="compFilter">شامل</label>
+            </div>
+        </div>
+
+        <div id="offersList">
+            <!-- سيتم تعبئة العروض هنا عبر الجافاسكربت -->
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // بيانات العروض (وهمية للمحاكاة)
+    const offersData = [
+        { company: "ولاء للتأمين", logo: "https://placehold.co/60x60/orange/white?text=Walaa", tplPrice: 502, compPrice: 1850 },
+        { company: "ميدغلف", logo: "https://placehold.co/60x60/blue/white?text=MED", tplPrice: 679, compPrice: 2100 },
+        { company: "سلامة للتأمين", logo: "https://placehold.co/60x60/green/white?text=Salama", tplPrice: 495, compPrice: 1750 },
+        { company: "أسيج", logo: "https://placehold.co/60x60/red/white?text=ACIG", tplPrice: 550, compPrice: 1900 },
+        { company: "التعاونية", logo: "https://placehold.co/60x60/yellow/black?text=Tawuniya", tplPrice: 850, compPrice: 2400 },
+        { company: "ملاذ للتأمين", logo: "https://placehold.co/60x60/purple/white?text=Malath", tplPrice: 620, compPrice: 2050 },
+        { company: "تكافل الراجحي", logo: "https://placehold.co/60x60/darkblue/white?text=Rajhi", tplPrice: 590, compPrice: 1950 },
+        { company: "الدرع العربي", logo: "https://placehold.co/60x60/gold/white?text=Arabian", tplPrice: 480, compPrice: 1700 },
+        { company: "أليانز", logo: "https://placehold.co/60x60/blue/white?text=Allianz", tplPrice: 710, compPrice: 2200 },
+        { company: "الاتحاد للتأمين", logo: "https://placehold.co/60x60/grey/white?text=Union", tplPrice: 530, compPrice: 1880 }
+    ];
+
+    const offersList = document.getElementById('offersList');
+
+    function renderOffers(type) {
+        offersList.innerHTML = ""; // مسح القائمة الحالية
+        
+        // ترتيب العروض حسب السعر (من الأقل للأعلى)
+        const sortedOffers = [...offersData].sort((a, b) => {
+            return type === 'tpl' ? a.tplPrice - b.tplPrice : a.compPrice - b.compPrice;
+        });
+
+        sortedOffers.forEach(offer => {
+            const price = type === 'tpl' ? offer.tplPrice : offer.compPrice;
+            const typeText = type === 'tpl' ? "ضد الغير" : "شامل";
+
+            const card = document.createElement('div');
+            card.className = 'offer-card';
+            card.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <img src="${offer.logo}" alt="${offer.company}" class="company-logo">
+                    <div>
+                        <div class="company-name">${offer.company}</div>
+                        <span class="badge bg-light text-dark border">${typeText}</span>
+                        <div class="mt-2 text-muted small">تغطية إصلاح ورش • مساعدة على الطريق</div>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="price-tag">${price} <span class="price-currency">ريال</span></div>
+                    <a href="summary.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}" class="btn btn-select mt-2">اشتري الآن</a>
+                </div>
+            `;
+            offersList.appendChild(card);
+        });
+    }
+
+    function filterOffers(type) {
+        renderOffers(type);
+    }
+
+    // التشغيل الأولي (عرض ضد الغير افتراضياً)
+    renderOffers('tpl');
+    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+
+</body>
+</html>

