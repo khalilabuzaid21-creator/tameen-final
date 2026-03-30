@@ -3,71 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-toggle.js"></script>
     <title>بوابة الدفع الآمنة - تري</title>
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
     <style>
-        :root { --p-green: #122d2b; --s-gold: #c5a059; --t-green: #00ff9d; --border-light: #e2e8f0; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px;
-            background-image: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-        .secure-container { background: white; width: 100%; max-width: 440px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee; overflow: hidden; }
-        .p-header { background: #fafafa; padding: 25px; text-align: center; border-bottom: 1px solid #eee; }
-        .p-header img { width: 110px; }
-        .p-header h3 { color: #333; margin: 10px 0 0 0; font-size: 1rem; font-weight: bold; }
-        
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .secure-container { width: 100%; max-width: 440px; border-radius: var(--tree-radius-lg); overflow: hidden; }
+        .p-header { padding: 25px; text-align: center; }
+        .p-header img { width: 110px; object-fit: contain; }
+        .p-header h3 { margin: 10px 0 0 0; font-size: 1rem; font-weight: bold; color: var(--tree-text); }
         .p-body { padding: 25px 30px 30px 30px; }
-
-        /* Payment Method Selection */
-        .payment-method { border: 2px solid var(--border-light); border-radius: 12px; padding: 15px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
-        .payment-method:hover { border-color: #ccc; }
-        .payment-method.selected { border-color: var(--s-gold); background: #fffaf0; box-shadow: 0 0 0 2px var(--s-gold); }
+        .payment-method { border-width: 2px; border-radius: 12px; padding: 15px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
         .method-logos { display: flex; gap: 8px; }
         .method-logos img { height: 25px; }
-        .method-title { font-weight: 600; color: #333; margin-right: auto; }
-
-        /* Card Details Form (Initially hidden) */
+        .method-title { font-weight: 600; margin-inline-end: auto; }
         #card-form { max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-20px); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 0; }
         #card-form.visible { max-height: 700px; margin-top: 25px; opacity: 1; transform: translateY(0); }
-
         .f-group { margin-bottom: 18px; position: relative; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 13.5px; }
-        input, select { width: 100%; padding: 12px 15px; border: 1.5px solid var(--border-light); border-radius: 10px; font-size: 0.95rem; box-sizing: border-box; transition: 0.3s; color: #333; outline: none; background: #f9fafb; }
-        input:focus { border-color: var(--s-gold); box-shadow: 0 0 8px rgba(197, 160, 89, 0.2); }
-        
-        /* شعار البطاقة الذكي */
-        #c-logo-box { position: absolute; left: 12px; top: 38px; width: 45px; height: 30px; border-radius: 5px; background: #fff; border: 1px solid #f0f0f0; display: none; object-fit: contain; padding: 2px; }
-        
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13.5px; color: var(--tree-text-muted); }
+        #c-logo-box { position: absolute; left: 12px; top: 38px; width: 45px; height: 30px; border-radius: 5px; border: 1px solid var(--tree-border); display: none; object-fit: contain; padding: 2px; background: var(--tree-card); }
         .c-exp-row { display: flex; gap: 10px; }
         .c-exp-row > div { flex: 1; }
-        
-        .btn-pay { width: 100%; padding: 14px; background: var(--p-green); color: var(--t-green); border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
-        .btn-pay:hover { opacity: 0.92; }
-        .btn-pay:disabled { background: #ccc; cursor: not-allowed; color: #888; }
-
-        .trust-icons { display: flex; justify-content: center; gap: 15px; margin-top: 25px; opacity: 0.6; }
+        .btn-pay { width: 100%; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; border: none; }
+        .trust-icons { display: flex; justify-content: center; gap: 15px; margin-top: 25px; opacity: 0.65; }
         .trust-icons img { height: 20px; }
-        
-        /* Loading Spinner */
         .spinner-border {
-            display: inline-block; width: 1.2rem; height: 1.2rem; vertical-align: text-bottom; 
-            border: 0.2em solid currentColor; border-right-color: transparent; 
-            border-radius: 50%; animation: spinner-border .75s linear infinite; margin-left: 8px;
+            display: inline-block; width: 1.2rem; height: 1.2rem; vertical-align: text-bottom;
+            border: 0.2em solid currentColor; border-right-color: transparent;
+            border-radius: 50%; animation: spinner-border .75s linear infinite; margin-inline-start: 8px;
         }
         @keyframes spinner-border { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body>
+<body class="tree-site">
+
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <div class="secure-container">
     <div class="p-header">
-        <img src="https://tree.com.sa/assets/images/logo.png" alt="Tree"> 
+        <img src="images/logo.png" alt="Tree"> 
         <h3>إتمام عملية الدفع</h3>
     </div>
 

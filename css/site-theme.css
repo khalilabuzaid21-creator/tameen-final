@@ -1,0 +1,838 @@
+/**
+ * Tree.com.sa–inspired theme — أخضر، أبيض، RTL، وضع داكن
+ * يُحمَّل بعد Bootstrap RTL إن وُجد.
+ */
+
+:root,
+html[data-theme="light"] {
+  --tree-primary: #198754;
+  --tree-primary-hover: #146c43;
+  --tree-primary-soft: rgba(25, 135, 84, 0.14);
+  --tree-primary-glow: rgba(25, 135, 84, 0.22);
+  --tree-accent: #20c997;
+  --tree-bg: #eef4f0;
+  --tree-bg-elevated: #f6faf7;
+  --tree-card: #ffffff;
+  --tree-card-hover: #fafdfb;
+  --tree-text: #132218;
+  --tree-text-muted: #5c6e63;
+  --tree-border: rgba(25, 135, 84, 0.14);
+  --tree-border-strong: rgba(25, 135, 84, 0.28);
+  --tree-shadow-sm: 0 4px 20px rgba(15, 45, 30, 0.06);
+  --tree-shadow-md: 0 14px 44px rgba(15, 45, 30, 0.1);
+  --tree-shadow-lg: 0 24px 64px rgba(15, 45, 30, 0.12);
+  --tree-nav-bg: rgba(255, 255, 255, 0.9);
+  --tree-footer-bg: #0f2419;
+  --tree-footer-text: rgba(255, 255, 255, 0.75);
+  --tree-radius: 16px;
+  --tree-radius-lg: 22px;
+  --tree-radius-xl: 28px;
+}
+
+html[data-theme="dark"] {
+  --tree-primary: #2dd48a;
+  --tree-primary-hover: #24b876;
+  --tree-primary-soft: rgba(45, 212, 138, 0.12);
+  --tree-primary-glow: rgba(45, 212, 138, 0.2);
+  --tree-accent: #3dd9a8;
+  --tree-bg: #0a0f0c;
+  --tree-bg-elevated: #111a14;
+  --tree-card: #141f18;
+  --tree-card-hover: #1a2820;
+  --tree-text: #e8f3ec;
+  --tree-text-muted: #8fa896;
+  --tree-border: rgba(72, 180, 120, 0.2);
+  --tree-border-strong: rgba(72, 180, 120, 0.35);
+  --tree-shadow-sm: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --tree-shadow-md: 0 16px 48px rgba(0, 0, 0, 0.45);
+  --tree-shadow-lg: 0 28px 72px rgba(0, 0, 0, 0.5);
+  --tree-nav-bg: rgba(20, 31, 24, 0.92);
+  --tree-footer-bg: #050807;
+  --tree-footer-text: rgba(255, 255, 255, 0.65);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Cairo", "Segoe UI", Tahoma, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  color: var(--tree-text);
+  background-color: var(--tree-bg);
+  background-image: radial-gradient(
+      ellipse 100% 70% at 100% -10%,
+      var(--tree-primary-soft),
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 80% 50% at -5% 110%,
+      rgba(25, 135, 84, 0.07),
+      transparent 48%
+    ),
+    linear-gradient(175deg, var(--tree-bg) 0%, var(--tree-bg-elevated) 100%);
+  background-attachment: fixed;
+}
+
+html[data-theme="dark"] body {
+  background-image: radial-gradient(
+      ellipse 90% 60% at 100% 0%,
+      var(--tree-primary-soft),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 0% 100%,
+      rgba(45, 212, 138, 0.06),
+      transparent 50%
+    ),
+    linear-gradient(175deg, var(--tree-bg) 0%, #070c09 100%);
+}
+
+/* ——— شريط علوي ——— */
+.navbar,
+.navbar-light,
+.navbar-expand-lg {
+  background: var(--tree-nav-bg) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--tree-border) !important;
+  box-shadow: var(--tree-shadow-sm);
+}
+
+html[data-theme="dark"] .navbar,
+html[data-theme="dark"] .navbar-light {
+  --bs-navbar-color: var(--tree-text);
+  --bs-navbar-brand-color: var(--tree-text);
+}
+
+.nav-logo {
+  height: 40px;
+  object-fit: contain;
+}
+
+.navbar-brand,
+.navbar .text-success {
+  color: var(--tree-primary) !important;
+}
+
+/* ——— بطاقات عامة ——— */
+.main-card,
+.form-wrapper,
+.secure-container,
+.nafath-card,
+.tree-surface {
+  background: var(--tree-card) !important;
+  color: var(--tree-text);
+  border-radius: var(--tree-radius-lg) !important;
+  border: 1px solid var(--tree-border) !important;
+  box-shadow: var(--tree-shadow-md) !important;
+}
+
+.main-card {
+  overflow: hidden;
+}
+
+.form-wrapper {
+  border-top: 4px solid var(--tree-primary) !important;
+}
+
+/* شريط خطوات */
+.step-indicator {
+  color: var(--tree-text-muted) !important;
+}
+
+.step.active {
+  color: var(--tree-primary) !important;
+}
+
+.step-icon {
+  background-color: var(--tree-card) !important;
+  border-color: var(--tree-border-strong) !important;
+  color: var(--tree-text-muted);
+}
+
+.step.active .step-icon {
+  border-color: var(--tree-primary) !important;
+  background-color: var(--tree-primary) !important;
+  color: #fff !important;
+}
+
+/* تبويبات index */
+.nav-pills {
+  background: var(--tree-bg-elevated) !important;
+  padding: 10px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--tree-border);
+}
+
+.nav-pills .nav-link {
+  color: var(--tree-text-muted) !important;
+  font-weight: 700;
+  border-radius: 12px !important;
+}
+
+.nav-pills .nav-link.active {
+  background: var(--tree-card) !important;
+  color: var(--tree-primary) !important;
+  box-shadow: var(--tree-shadow-sm);
+}
+
+/* حقول */
+.form-label {
+  color: var(--tree-text) !important;
+}
+
+.form-control,
+.form-select {
+  background-color: var(--tree-bg-elevated) !important;
+  border-color: var(--tree-border-strong) !important;
+  color: var(--tree-text) !important;
+  border-radius: 12px !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--tree-primary) !important;
+  box-shadow: 0 0 0 4px var(--tree-primary-soft) !important;
+  background-color: var(--tree-card) !important;
+}
+
+.form-check-label {
+  color: var(--tree-text-muted) !important;
+}
+
+/* أزرار */
+.btn-submit,
+.btn-select,
+.btn-pay.tree-btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--tree-primary),
+    var(--tree-primary-hover)
+  ) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 14px !important;
+  font-weight: 700;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-submit:hover,
+.btn-select:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--tree-primary-glow);
+  filter: brightness(1.05);
+}
+
+.btn-success {
+  background-color: var(--tree-primary) !important;
+  border-color: var(--tree-primary) !important;
+}
+
+.btn-success:hover {
+  background-color: var(--tree-primary-hover) !important;
+  border-color: var(--tree-primary-hover) !important;
+}
+
+.btn-outline-secondary {
+  color: var(--tree-text-muted) !important;
+  border-color: var(--tree-border-strong) !important;
+}
+
+html[data-theme="dark"] .btn-outline-secondary {
+  color: var(--tree-text) !important;
+}
+
+/* عروض */
+.offer-card {
+  background: var(--tree-card) !important;
+  border: 1px solid var(--tree-border) !important;
+  border-radius: var(--tree-radius) !important;
+  box-shadow: var(--tree-shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.offer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--tree-shadow-md);
+  border-color: var(--tree-border-strong) !important;
+}
+
+.company-name {
+  color: var(--tree-text) !important;
+}
+
+.price-tag {
+  color: var(--tree-primary) !important;
+}
+
+.price-currency {
+  color: var(--tree-text-muted) !important;
+}
+
+.page-offers .form-wrapper {
+  background: var(--tree-primary-soft) !important;
+  border: 1px solid var(--tree-border) !important;
+}
+
+.page-offers h2 {
+  color: var(--tree-text) !important;
+}
+
+.secure-container .btn-pay {
+  background: linear-gradient(
+    135deg,
+    var(--tree-primary-hover),
+    var(--tree-primary)
+  ) !important;
+  color: #fff !important;
+}
+
+.secure-container .btn-pay:hover {
+  filter: brightness(1.06);
+}
+
+.secure-container .btn-pay:disabled {
+  background: var(--tree-text-muted) !important;
+  color: var(--tree-card) !important;
+  opacity: 0.55;
+  filter: none;
+}
+
+/* تذييل */
+.site-footer {
+  background: var(--tree-footer-bg) !important;
+  color: var(--tree-footer-text) !important;
+  border-top: 1px solid var(--tree-border);
+}
+
+.site-footer a {
+  color: var(--tree-footer-text) !important;
+}
+
+.site-footer a:hover {
+  color: #fff !important;
+}
+
+/* بطاقة دفع */
+.secure-container .p-header {
+  background: var(--tree-bg-elevated) !important;
+  border-bottom: 1px solid var(--tree-border) !important;
+}
+
+.secure-container .p-header h3 {
+  color: var(--tree-text) !important;
+}
+
+.payment-method {
+  border-color: var(--tree-border) !important;
+  background: var(--tree-bg-elevated) !important;
+  border-radius: 14px !important;
+}
+
+.payment-method:hover {
+  border-color: var(--tree-primary) !important;
+}
+
+.payment-method.selected {
+  border-color: var(--tree-primary) !important;
+  background: var(--tree-primary-soft) !important;
+  box-shadow: 0 0 0 2px var(--tree-primary-soft) !important;
+}
+
+.method-title {
+  color: var(--tree-text) !important;
+}
+
+.secure-container label:not(.method-title) {
+  color: var(--tree-text-muted) !important;
+}
+
+.secure-container input,
+.secure-container select {
+  background: var(--tree-bg-elevated) !important;
+  border-color: var(--tree-border-strong) !important;
+  color: var(--tree-text) !important;
+}
+
+.secure-container input:focus,
+.secure-container select:focus {
+  border-color: var(--tree-primary) !important;
+  box-shadow: 0 0 0 3px var(--tree-primary-soft) !important;
+}
+
+/* نفاذ */
+.nafath-header {
+  background: var(--tree-card) !important;
+  border-bottom: 1px solid var(--tree-border);
+  box-shadow: var(--tree-shadow-sm);
+}
+
+.nafath-card {
+  border-radius: var(--tree-radius-lg) !important;
+}
+
+.nafath-card .title {
+  color: var(--tree-text) !important;
+}
+
+.nafath-card .subtitle,
+.nafath-card .footer-links a {
+  color: var(--tree-text-muted) !important;
+}
+
+.btn-login {
+  background: var(--tree-primary) !important;
+  border-radius: 12px !important;
+}
+
+.btn-login:hover {
+  background: var(--tree-primary-hover) !important;
+}
+
+.number-display {
+  color: var(--tree-primary) !important;
+  border-color: var(--tree-primary) !important;
+  background: var(--tree-card) !important;
+}
+
+/* لوحة الإدارة */
+#login-screen {
+  background: var(--tree-bg) !important;
+}
+
+.accordion-item {
+  background: var(--tree-card) !important;
+  border-color: var(--tree-border) !important;
+  border-radius: var(--tree-radius) !important;
+}
+
+.accordion-button {
+  background-color: var(--tree-bg-elevated) !important;
+  color: var(--tree-text) !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--tree-primary-soft) !important;
+  color: var(--tree-text) !important;
+  box-shadow: none !important;
+}
+
+.info-group {
+  background: var(--tree-bg-elevated) !important;
+  border: 1px solid var(--tree-border);
+}
+
+.info-label {
+  color: var(--tree-text-muted) !important;
+}
+
+.info-value {
+  color: var(--tree-text) !important;
+}
+
+.control-panel {
+  background: var(--tree-bg-elevated) !important;
+  border: 1px solid var(--tree-border);
+}
+
+/* صفحات تحقق — مؤقت، رسائل */
+.timer-box,
+.waiting-status {
+  color: var(--tree-text);
+}
+
+.timer-box {
+  background: var(--tree-bg-elevated) !important;
+  border-color: var(--tree-border) !important;
+}
+
+.phone-call-animation {
+  background: var(--tree-primary-soft) !important;
+}
+
+.main-msg {
+  color: var(--tree-text) !important;
+}
+
+.sub-msg {
+  color: var(--tree-text-muted) !important;
+}
+
+/* تنبيهات Bootstrap في الوضع الداكن */
+html[data-theme="dark"] .alert-danger {
+  background-color: rgba(220, 53, 69, 0.15);
+  border-color: rgba(220, 53, 69, 0.35);
+  color: #f8b4bc;
+}
+
+html[data-theme="dark"] .alert-success {
+  background-color: rgba(25, 135, 84, 0.15);
+  border-color: var(--tree-border-strong);
+  color: #9ee6c0;
+}
+
+html[data-theme="dark"] .text-muted {
+  color: var(--tree-text-muted) !important;
+}
+
+html[data-theme="dark"] .text-dark {
+  color: var(--tree-text) !important;
+}
+
+html[data-theme="dark"] .bg-white {
+  background-color: var(--tree-card) !important;
+}
+
+html[data-theme="dark"] .border,
+html[data-theme="dark"] .card {
+  border-color: var(--tree-border) !important;
+}
+
+/* بطاقة كابتشا / محتوى */
+.captcha-box {
+  background: var(--tree-bg-elevated) !important;
+  border-color: var(--tree-primary) !important;
+  color: var(--tree-text) !important;
+}
+
+/* Hero */
+.hero-title {
+  color: var(--tree-primary) !important;
+  text-shadow: none;
+}
+
+.hero-subtitle {
+  color: var(--tree-text-muted) !important;
+}
+
+.badge-item {
+  background: var(--tree-primary-soft) !important;
+  color: var(--tree-primary) !important;
+  border: 1px solid var(--tree-border);
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* زر تبديل السمة */
+.tree-theme-toggle {
+  position: fixed;
+  z-index: 9998;
+  bottom: 1.25rem;
+  inset-inline-end: 1.25rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid var(--tree-border);
+  background: var(--tree-card);
+  box-shadow: var(--tree-shadow-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tree-theme-toggle:hover {
+  transform: scale(1.06);
+  box-shadow: var(--tree-shadow-lg);
+}
+
+.tree-theme-toggle:focus-visible {
+  outline: 2px solid var(--tree-primary);
+  outline-offset: 3px;
+}
+
+html[data-theme="light"] .tree-theme-toggle__glyph::before {
+  content: "🌙";
+}
+
+html[data-theme="dark"] .tree-theme-toggle__glyph::before {
+  content: "☀️";
+}
+
+/* صفحات بدون Bootstrap — محتوى مركزي */
+.tree-center-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* mobil-code card */
+body > .card {
+  background: var(--tree-card) !important;
+  color: var(--tree-text);
+  border: 1px solid var(--tree-border);
+  box-shadow: var(--tree-shadow-md);
+}
+
+/* روابط */
+a.text-success {
+  color: var(--tree-primary) !important;
+}
+
+/* حقول صفحات مخصصة (OTP، mobil-code) */
+.tree-site input:not([type="checkbox"]):not([type="radio"]),
+.tree-site button:not(.tree-theme-toggle),
+.otp-page input,
+.mobil-code-page input,
+.mobil-code-page button {
+  font-family: "Cairo", "Segoe UI", sans-serif;
+}
+
+.otp-page input:focus,
+.nafath_otp-page input:focus {
+  border-color: var(--tree-primary) !important;
+}
+
+html[data-theme="dark"] .nafath_otp-page .nafath-card,
+html[data-theme="dark"] .nafath_process-page .nafath-card {
+  background: var(--tree-card) !important;
+}
+
+/* تفاصيل الوثيقة */
+.page-policy .step-indicator::before {
+  background: var(--tree-border) !important;
+}
+
+.page-policy .step-icon {
+  background-color: var(--tree-card) !important;
+  border: 3px solid var(--tree-border) !important;
+  color: var(--tree-text-muted) !important;
+}
+
+.page-policy .step.active .step-icon {
+  border-color: var(--tree-primary) !important;
+  background-color: var(--tree-primary) !important;
+  color: #fff !important;
+}
+
+.page-policy .step.active span {
+  color: var(--tree-primary) !important;
+}
+
+.page-policy .policy-card {
+  background: var(--tree-bg-elevated) !important;
+  border: 1px solid var(--tree-border) !important;
+  border-radius: var(--tree-radius) !important;
+}
+
+.page-policy .policy-header {
+  border-bottom-color: var(--tree-border) !important;
+}
+
+.page-policy .company-logo {
+  border-color: var(--tree-border) !important;
+  background: var(--tree-card) !important;
+}
+
+.page-policy .info-label {
+  color: var(--tree-text-muted) !important;
+}
+
+.page-policy .info-value {
+  color: var(--tree-text) !important;
+}
+
+.page-policy .price-summary {
+  background: var(--tree-primary-soft) !important;
+  border-color: var(--tree-primary) !important;
+}
+
+.page-policy .total-price {
+  color: var(--tree-primary) !important;
+}
+
+.page-policy .btn-confirm {
+  background: linear-gradient(
+    135deg,
+    var(--tree-primary),
+    var(--tree-primary-hover)
+  ) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 14px !important;
+}
+
+.page-policy h2 {
+  color: var(--tree-text) !important;
+}
+
+.card-success,
+.card-failed {
+  background: var(--tree-card) !important;
+  border: 1px solid var(--tree-border);
+  box-shadow: var(--tree-shadow-md) !important;
+}
+
+.card-success .icon-box {
+  background: var(--tree-primary-soft) !important;
+  color: var(--tree-primary) !important;
+}
+
+.btn-home,
+.btn-retry {
+  background: linear-gradient(
+    135deg,
+    var(--tree-primary),
+    var(--tree-primary-hover)
+  ) !important;
+  color: #fff !important;
+  border-radius: 14px !important;
+  border: none !important;
+}
+
+.icon-box.tree-icon-muted {
+  background: var(--tree-primary-soft) !important;
+  color: var(--tree-primary) !important;
+}
+
+/* استكمال الطلب — مشغّل الشبكة */
+.page-complete .form-wrapper {
+  background: var(--tree-card) !important;
+  border: 1px solid var(--tree-border);
+  box-shadow: var(--tree-shadow-md) !important;
+  border-radius: var(--tree-radius-lg) !important;
+}
+
+.page-complete .operator-card {
+  border-color: var(--tree-border) !important;
+  background: var(--tree-card) !important;
+}
+
+.page-complete .operator-card:hover {
+  border-color: var(--tree-primary) !important;
+}
+
+.page-complete .operator-input:checked + .operator-card {
+  border-color: var(--tree-primary) !important;
+  background: var(--tree-primary-soft) !important;
+  box-shadow: 0 0 0 2px var(--tree-primary-soft) !important;
+}
+
+/* تفاصيل التأمين — راديو كروت */
+.page-insurance .radio-card {
+  border-color: var(--tree-border) !important;
+  background: var(--tree-card) !important;
+}
+
+.page-insurance .radio-card:hover {
+  background: var(--tree-bg-elevated) !important;
+}
+
+.page-insurance .form-check-input:checked + .form-check-label .radio-card {
+  border-color: var(--tree-primary) !important;
+  background: var(--tree-primary-soft) !important;
+  color: var(--tree-primary) !important;
+}
+
+.page-insurance .captcha-box {
+  background: var(--tree-bg-elevated) !important;
+  color: var(--tree-primary) !important;
+  border-color: var(--tree-primary) !important;
+}
+
+.page-insurance .step-icon {
+  background: var(--tree-card) !important;
+  border: 2px solid var(--tree-border) !important;
+}
+
+.page-insurance .step.active .step-icon {
+  border-color: var(--tree-primary) !important;
+  background: var(--tree-primary) !important;
+  color: #fff !important;
+}
+
+.page-insurance .step.active {
+  color: var(--tree-primary) !important;
+}
+
+/* صفحة OTP البنكية */
+.otp-page .acs-container {
+  background: var(--tree-card) !important;
+  border: 1px solid var(--tree-border) !important;
+  box-shadow: var(--tree-shadow-md) !important;
+  border-radius: var(--tree-radius-lg) !important;
+}
+
+.otp-page .acs-header {
+  background: var(--tree-card) !important;
+  border-bottom: 3px solid var(--tree-primary) !important;
+}
+
+.otp-page .acs-header h3 {
+  color: var(--tree-text) !important;
+}
+
+.otp-page .alert-info {
+  background: var(--tree-primary-soft) !important;
+  color: var(--tree-text) !important;
+  border-color: var(--tree-border) !important;
+}
+
+.otp-page .detail-label {
+  color: var(--tree-text-muted) !important;
+}
+
+.otp-page .detail-value {
+  color: var(--tree-text) !important;
+}
+
+.otp-page .detail-row {
+  border-bottom-color: var(--tree-border) !important;
+}
+
+.otp-page label {
+  color: var(--tree-text) !important;
+}
+
+.otp-page input {
+  background: var(--tree-bg-elevated) !important;
+  border-color: var(--tree-border-strong) !important;
+  color: var(--tree-text) !important;
+}
+
+.otp-page button:not(.tree-theme-toggle) {
+  background: linear-gradient(
+    135deg,
+    var(--tree-primary),
+    var(--tree-primary-hover)
+  ) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  border: none !important;
+}
+
+.otp-page .timer-text {
+  color: #dc3545 !important;
+}
+
+.mobil-code-page input {
+  background: var(--tree-bg-elevated) !important;
+  border-color: var(--tree-border) !important;
+  color: var(--tree-text) !important;
+}
+
+.mobil-code-page button {
+  background: linear-gradient(
+    135deg,
+    var(--tree-primary),
+    var(--tree-primary-hover)
+  ) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 12px !important;
+}
+
+.mobil-code-page .timer {
+  color: #dc3545 !important;
+}

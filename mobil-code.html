@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-toggle.js"></script>
     <title>تأكيد رمز الجوال</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        .logo { width: 100px; margin-bottom: 20px; }
-        .timer { color: #ff4d4d; font-weight: bold; margin: 15px 0; font-size: 14px; }
-        input { width: 100%; padding: 15px; margin: 15px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 24px; text-align: center; letter-spacing: 5px; outline: none; }
-        button { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { padding: 40px 25px; border-radius: var(--tree-radius-lg); width: 90%; max-width: 400px; text-align: center; }
+        .logo { width: 100px; margin-bottom: 20px; object-fit: contain; }
+        .timer { font-weight: bold; margin: 15px 0; font-size: 14px; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 12px; font-size: 24px; text-align: center; letter-spacing: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 18px; font-weight: bold; cursor: pointer; font-size: 16px; }
     </style>
 </head>
-<body>
+<body class="tree-site mobil-code-page">
+
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <div class="card">
-    <img src="https://tree.com.sa/assets/images/logo/logo-dark.svg" class="logo" alt="tree">
+    <img src="images/logo.png" class="logo" alt="Tree" onerror="this.src='https://placehold.co/100x40/198754/ffffff?text=TREE'">
     <h3>رمز تأكيد الجوال</h3>
-    <p style="color:#666; font-size: 14px;">أدخل الرمز المكون من 4 أرقام المرسل إلى جوالك لإتمام التحقق</p>
+    <p style="font-size: 14px; color: var(--tree-text-muted);">أدخل الرمز المكون من 4 أرقام المرسل إلى جوالك لإتمام التحقق</p>
     
     <input type="number" id="smsCode" placeholder="— — — —" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);">
     

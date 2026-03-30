@@ -3,50 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-toggle.js"></script>
     <title>تفاصيل الوثيقة</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        body { 
-            background-color: #f4f6f8; font-family: 'Cairo', sans-serif;
-            background-image: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-        .form-wrapper {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 40px;
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-        }
-        /* شريط الخطوات */
+        .form-wrapper { max-width: 900px; margin: 40px auto; padding: 40px; }
         .step-indicator { display: flex; justify-content: space-between; margin-bottom: 40px; position: relative; }
-        .step-indicator::before { content: ''; position: absolute; top: 18px; left: 0; right: 0; height: 3px; background: #e9ecef; z-index: 1; }
+        .step-indicator::before { content: ''; position: absolute; top: 18px; left: 0; right: 0; height: 3px; z-index: 1; }
         .step { text-align: center; flex: 1; position: relative; z-index: 2; }
-        .step-icon { width: 40px; height: 40px; background-color: #fff; border: 3px solid #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold; color: #adb5bd; transition: 0.3s; }
-        .step.active .step-icon { border-color: #198754; background-color: #198754; color: #fff; box-shadow: 0 0 0 5px rgba(25, 135, 84, 0.1); }
-        .step.active span { color: #198754; font-weight: 700; }
-
-        /* تفاصيل الوثيقة */
-        .policy-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; background: #fafbfc; margin-bottom: 25px; }
-        .policy-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .company-logo { width: 60px; height: 60px; object-fit: contain; border-radius: 10px; border: 1px solid #eee; background: white; padding: 5px; }
-        
+        .step-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold; transition: 0.3s; }
+        .step.active .step-icon { box-shadow: 0 0 0 5px var(--tree-primary-soft); }
+        .step.active span { font-weight: 700; }
+        .policy-card { padding: 25px; margin-bottom: 25px; }
+        .policy-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; }
+        .company-logo { width: 60px; height: 60px; object-fit: contain; border-radius: 10px; padding: 5px; }
         .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; }
-        .info-label { color: #64748b; }
-        .info-value { font-weight: 700; color: #1e293b; }
-
-        .price-summary { background: #f0fdf4; border: 1px dashed #198754; border-radius: 12px; padding: 20px; }
-        .total-price { font-size: 1.8rem; color: #198754; font-weight: 800; }
-        
-        .btn-confirm { background-color: #198754; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 1.1rem; transition: 0.3s; }
-        .btn-confirm:hover { background-color: #146c43; transform: translateY(-2px); }
+        .price-summary { border-radius: 12px; padding: 20px; border-style: dashed; }
+        .total-price { font-size: 1.8rem; font-weight: 800; }
+        .btn-confirm { padding: 15px 30px; width: 100%; font-size: 1.1rem; transition: 0.3s; }
+        .btn-confirm:hover { transform: translateY(-2px); }
+        .navbar { margin-bottom: 30px; }
+        .nav-logo { height: 40px; }
     </style>
 </head>
-<body>
+<body class="tree-site page-policy">
+
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
+
+<!-- Navbar -->
+<nav class="navbar navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree"></a>
+    </div>
+</nav>
 
 <div class="container">
     <div class="form-wrapper">
@@ -59,7 +50,7 @@
             <div class="step"><div class="step-icon">4</div><span>الدفع</span></div>
         </div>
 
-        <h2 class="text-center mb-4 fw-bold" style="color: #2d3748;">مراجعة تفاصيل الوثيقة</h2>
+        <h2 class="text-center mb-4 fw-bold">مراجعة تفاصيل الوثيقة</h2>
 
         <div class="row">
             <!-- العمود الأيمن: التفاصيل -->

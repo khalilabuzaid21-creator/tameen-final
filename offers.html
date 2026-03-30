@@ -3,74 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-toggle.js"></script>
     <title>عروض التأمين</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        body { 
-            background-color: #f8f9fa;
-            background-image: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-        .wrapper { display: flex; flex-direction: column; min-height: 100vh; }
-        .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .navbar { margin-bottom: 30px; }
         .nav-logo { height: 40px; }
-        
-        .form-wrapper {
-            max-width: 800px;
-            margin: 0 auto 40px;
-            padding: 30px;
-            background: #d1e7dd;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        /* شريط الخطوات */
-        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; color: #6c757d; font-size: 0.9rem; }
+        .form-wrapper { max-width: 800px; margin: 0 auto 40px; padding: 30px; border-radius: var(--tree-radius-lg); }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 0.9rem; }
         .step { text-align: center; flex: 1; position: relative; }
-        .step.active { color: #198754; font-weight: bold; }
-        .step-icon { width: 35px; height: 35px; background-color: #fff; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
-        .step.active .step-icon { border-color: #198754; background-color: #198754; color: #fff; }
-        
-        /* كرت العرض */
+        .step.active { font-weight: bold; }
+        .step-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
         .offer-card {
-            background: white;
-            border: 1px solid #198754;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s; border-radius: var(--tree-radius);
         }
-        .offer-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .company-name { font-weight: bold; font-size: 1.2rem; color: #333; margin-bottom: 5px; }
-        .price-tag { font-size: 1.5rem; color: #198754; font-weight: bold; }
-        .price-currency { font-size: 0.9rem; color: #666; font-weight: normal; }
-        .btn-select { background-color: #198754; color: white; border: none; padding: 8px 25px; border-radius: 5px; }
-        .btn-select:hover { background-color: #146c43; color: white; }
+        .company-name { font-weight: bold; font-size: 1.2rem; margin-bottom: 5px; }
+        .price-tag { font-size: 1.5rem; font-weight: bold; }
+        .price-currency { font-size: 0.9rem; font-weight: normal; }
+        .btn-select { padding: 8px 25px; border-radius: 10px; border: none; }
         .company-logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            margin-left: 15px;
-            border-radius: 8px;
-            border: 1px solid #f0f0f0;
+            width: 60px; height: 60px; object-fit: contain;
+            margin-inline-start: 15px; border-radius: 8px;
+            border: 1px solid var(--tree-border);
         }
-        .site-footer { background: #343a40; color: #adb5bd; padding: 20px 0; margin-top: auto; text-align: center; font-size: 0.8rem; }
+        .site-footer { padding: 20px 0; margin-top: auto; text-align: center; font-size: 0.8rem; }
     </style>
 </head>
-<body>
+<body class="tree-site page-offers">
+
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <div class="wrapper">
     <!-- Navbar -->
     <nav class="navbar navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#"><img src="https://tree.com.sa/assets/images/logo.png" class="nav-logo" alt="Tree"></a>
+            <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree"></a>
         </div>
     </nav>
 
@@ -93,7 +63,7 @@
             </div>
         </div>
 
-        <h2 class="text-center mb-4 fw-bold" style="color: #2d3748;">اختر العرض الأنسب لك</h2>
+        <h2 class="text-center mb-4 fw-bold">اختر العرض الأنسب لك</h2>
 
         <!-- فلتر نوع التأمين -->
         <div class="d-flex justify-content-center mb-4">
@@ -127,16 +97,23 @@
 <script>
     // بيانات العروض (وهمية للمحاكاة)
     const offersData = [
-        { company: "ولاء للتأمين", logo: "https://logo.clearbit.com/walaa.com", tplPrice: 502, compPrice: 1850, rating: 4.5 },
-        { company: "ميدغلف", logo: "https://logo.clearbit.com/medgulf.com.sa", tplPrice: 679, compPrice: 2100, rating: 4.0 },
-        { company: "سلامة للتأمين", logo: "https://logo.clearbit.com/salama.com.sa", tplPrice: 495, compPrice: 1750, rating: 3.8 },
-        { company: "أسيج", logo: "https://logo.clearbit.com/acig.com.sa", tplPrice: 550, compPrice: 1900, rating: 4.2 },
-        { company: "التعاونية", logo: "https://logo.clearbit.com/tawuniya.com.sa", tplPrice: 850, compPrice: 2400, rating: 4.9 },
-        { company: "ملاذ للتأمين", logo: "https://logo.clearbit.com/malath.com.sa", tplPrice: 620, compPrice: 2050, rating: 4.1 },
-        { company: "تكافل الراجحي", logo: "https://logo.clearbit.com/alrajhitakaful.com", tplPrice: 590, compPrice: 1950, rating: 4.7 },
-        { company: "الدرع العربي", logo: "https://logo.clearbit.com/der3.com", tplPrice: 480, compPrice: 1700, rating: 3.9 },
-        { company: "أليانز", logo: "https://logo.clearbit.com/allianzsf.com", tplPrice: 710, compPrice: 2200, rating: 4.3 },
-        { company: "الاتحاد للتأمين", logo: "https://logo.clearbit.com/tui-sa.com", tplPrice: 530, compPrice: 1880, rating: 4.0 }
+        { company: "ولاء للتأمين", logo: "images/companies/WALAA.png", tplPrice: 502, compPrice: 1850, rating: 4.5 },
+        { company: "ميدغلف", logo: "images/companies/MEDGULF.png", tplPrice: 679, compPrice: 2100, rating: 4.0 },
+        { company: "سلامة للتأمين", logo: "images/companies/SALAMA.png", tplPrice: 495, compPrice: 1750, rating: 3.8 },
+        { company: "أسيج", logo: "images/companies/ACIG.png", tplPrice: 550, compPrice: 1900, rating: 4.2 },
+        { company: "التعاونية", logo: "images/companies/TAWUNIYA.png", tplPrice: 850, compPrice: 2400, rating: 4.9 },
+        { company: "ملاذ للتأمين", logo: "images/companies/MALATH.png", tplPrice: 620, compPrice: 2050, rating: 4.1 },
+        { company: "تكافل الراجحي", logo: "images/companies/RAJHI.png", tplPrice: 590, compPrice: 1950, rating: 4.7 },
+        { company: "الدرع العربي", logo: "images/companies/ARABIAN.png", tplPrice: 480, compPrice: 1700, rating: 3.9 },
+        { company: "أليانز", logo: "images/companies/ALLIANZ.png", tplPrice: 710, compPrice: 2200, rating: 4.3 },
+        { company: "الاتحاد للتأمين", logo: "images/companies/UNION.png", tplPrice: 530, compPrice: 1880, rating: 4.0 },
+        { company: "جي آي جي (GIG)", logo: "images/companies/GIG.png", tplPrice: 750, compPrice: 2300, rating: 4.6 },
+        { company: "أمانة للتأمين", logo: "images/companies/AMANA.png", tplPrice: 490, compPrice: 1720, rating: 3.7 },
+        { company: "بروج للتأمين", logo: "images/companies/BURUJ.png", tplPrice: 510, compPrice: 1800, rating: 3.9 },
+        { company: "الصقر للتأمين", logo: "images/companies/WALAA.png", tplPrice: 540, compPrice: 1860, rating: 3.8 },
+        { company: "المتحدة للتأمين", logo: "images/companies/TAWUNIYA.png", tplPrice: 560, compPrice: 1920, rating: 4.1 },
+        { company: "الخليجية العامة", logo: "images/companies/MEDGULF.png", tplPrice: 525, compPrice: 1840, rating: 3.8 },
+        { company: "العالمية", logo: "images/companies/SALAMA.png", tplPrice: 580, compPrice: 1980, rating: 4.0 }
     ];
 
     const offersList = document.getElementById('offersList');
@@ -172,7 +149,7 @@
             card.className = 'offer-card';
             card.innerHTML = `
                 <div class="d-flex align-items-center flex-grow-1">
-                    <img src="${offer.logo}" alt="${offer.company}" class="company-logo" onerror="this.onerror=null; this.src='https://placehold.co/60x60/198754/ffffff?text='+this.alt.charAt(0)">
+                    <img src="${offer.logo}" alt="${offer.company}" class="company-logo" onerror="console.error('❌ صورة مفقودة: ${offer.logo}'); this.onerror=null; this.src='https://ui-avatars.com/api/?name='+this.alt+'&background=random&color=fff&size=128&font-size=0.4'">
                     <div>
                         <div class="company-name">${offer.company}</div>
                         <div class="text-warning small mb-1">${stars} (${offer.rating})</div>

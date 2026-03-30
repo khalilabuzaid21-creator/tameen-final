@@ -3,43 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/theme-toggle.js"></script>
     <title>استكمال بيانات الطلب</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <!-- خط عربي احترافي -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        body { background-color: #e8f5e9; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Cairo', sans-serif; }
-        .form-wrapper {
-            max-width: 500px;
-            width: 100%;
-            padding: 30px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        }
-        .form-label { font-weight: bold; color: #198754; }
-        
-        /* تنسيق كروت شركات الاتصالات */
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .form-wrapper { max-width: 500px; width: 100%; padding: 30px; }
+        .form-label { font-weight: bold; color: var(--tree-primary); }
         .operator-card {
-            border: 2px solid #f0f0f0;
-            border-radius: 12px;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 110px;
-            background: #fff;
+            border: 2px solid var(--tree-border); border-radius: 12px; padding: 10px; cursor: pointer;
+            transition: all 0.2s ease-in-out; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; height: 110px;
         }
-        .operator-card:hover { border-color: #198754; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .operator-input:checked + .operator-card { border-color: #198754; background-color: #f1f8f5; box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.1); }
+        .operator-card:hover { transform: translateY(-3px); box-shadow: var(--tree-shadow-sm); }
         .operator-input { display: none; }
         .operator-logo { max-height: 45px; max-width: 90%; object-fit: contain; margin-bottom: 8px; }
     </style>
 </head>
-<body>
+<body class="tree-site page-complete">
+
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <div class="container">
     <div class="form-wrapper mx-auto">
