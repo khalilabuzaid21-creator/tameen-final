@@ -72,31 +72,25 @@
         <div class="card-body">
             <form id="insuranceForm" onsubmit="handleOrder(event)">
                 
-                <!-- 1. الرقم التسلسلي -->
-                <div class="mb-3">
-                    <label class="form-label">الرقم التسلسلي / البطاقة الجمركية</label>
-                    <input type="tel" id="sequence_number" class="form-control" placeholder="أدخل الرقم التسلسلي للمركبة" maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
-
-                <!-- 2. الهوية -->
+                <!-- 1. الهوية -->
                 <div class="mb-3">
                     <label class="form-label">رقم الهوية / الإقامة</label>
-                    <input type="tel" id="id_number" class="form-control" placeholder="1xxxxxxxxx" maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="tel" id="id_number" class="form-control" placeholder="1xxxxxxxxx" maxlength="10" required inputmode="numeric" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
 
-                <!-- 3. تاريخ الميلاد -->
+                <!-- 2. تاريخ الميلاد -->
                 <div class="mb-3">
                     <label class="form-label">تاريخ الميلاد (هجري / ميلادي)</label>
                     <input type="date" id="dob" class="form-control" required>
                 </div>
 
-                <!-- 4. رقم الجوال -->
+                <!-- 3. رقم الجوال -->
                 <div class="mb-3">
                     <label class="form-label">رقم الجوال</label>
-                    <input type="tel" id="phone_number" class="form-control" placeholder="05xxxxxxxx" maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="tel" id="phone_number" class="form-control" placeholder="05xxxxxxxx" maxlength="10" required inputmode="tel" autocomplete="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
 
-                <!-- 5. تاريخ بدء الوثيقة -->
+                <!-- 4. تاريخ بدء الوثيقة -->
                 <div class="mb-4">
                     <label class="form-label">تاريخ بدء الوثيقة</label>
                     <input type="date" id="start_date" class="form-control" required>
@@ -157,7 +151,6 @@
         err.style.display = "none";
 
         // جمع البيانات
-        let sequence = toEng(document.getElementById('sequence_number').value.trim());
         let id = toEng(document.getElementById('id_number').value.trim());
         let dob = document.getElementById('dob').value;
         let ph = toEng(document.getElementById('phone_number').value.trim());
@@ -172,7 +165,6 @@
         try {
             const docRef = await db.collection("orders").add({
                 request_type: activeTab,
-                sequence_number: sequence,
                 id_number: id,
                 dob: dob,
                 phone: ph,

