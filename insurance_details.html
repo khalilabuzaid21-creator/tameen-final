@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>تفاصيل التأمين والمركبة</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>تفاصيل التأمين | Insurance Details</title>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <style>
         .form-wrapper { max-width: 800px; margin: 30px auto; padding: 30px; border-radius: var(--tree-radius-lg); }
@@ -31,76 +32,75 @@
 
 <div class="container">
     <div class="form-wrapper">
-        
-        <!-- شريط الخطوات -->
-        <div class="step-indicator">
-            <div class="step active"><div class="step-icon">1</div><div>البيانات</div></div>
-            <div class="step"><div class="step-icon">2</div><div>العروض</div></div>
-            <div class="step"><div class="step-icon">3</div><div>الدفع</div></div>
+        <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
 
-        <h3 class="text-center mb-4 text-success fw-bold">بيانات الوثيقة والمركبة</h3>
+        <!-- شريط الخطوات -->
+        <div class="step-indicator">
+            <div class="step active"><div class="step-icon">1</div><div data-i18n="steps.data">البيانات</div></div>
+            <div class="step"><div class="step-icon">2</div><div data-i18n="steps.offers">العروض</div></div>
+            <div class="step"><div class="step-icon">3</div><div data-i18n="steps.payment">الدفع</div></div>
+        </div>
+
+        <h3 class="text-center mb-4 text-success fw-bold" data-i18n="ins.policy_data">بيانات الوثيقة والمركبة</h3>
 
         <form id="insuranceForm">
-            
+
             <!-- نوع التأمين -->
             <div class="row mb-4">
-                <label class="form-label">نوع التأمين المطلوب</label>
+                <label class="form-label" data-i18n="ins.type_label">نوع التأمين المطلوب</label>
                 <div class="col-6">
                     <input type="radio" class="form-check-input" name="insType" id="typeTPL" value="tpl" checked>
-                    <label class="form-check-label w-100" for="typeTPL"><div class="radio-card text-center fw-bold">🛡️ ضد الغير</div></label>
+                    <label class="form-check-label w-100" for="typeTPL"><div class="radio-card text-center fw-bold">🛡️ <span data-i18n="ins.tpl">ضد الغير</span></div></label>
                 </div>
                 <div class="col-6">
                     <input type="radio" class="form-check-input" name="insType" id="typeComp" value="comp">
-                    <label class="form-check-label w-100" for="typeComp"><div class="radio-card text-center fw-bold">💎 شامل</div></label>
+                    <label class="form-check-label w-100" for="typeComp"><div class="radio-card text-center fw-bold">💎 <span data-i18n="ins.comp">شامل</span></div></label>
                 </div>
             </div>
 
             <div class="row g-3 mb-3">
-                <!-- الغرض من الاستخدام -->
                 <div class="col-md-6">
-                    <label for="usage" class="form-label">الغرض من استخدام المركبة</label>
+                    <label for="usage" class="form-label" data-i18n="ins.purpose">الغرض من استخدام المركبة</label>
                     <select class="form-select" id="usage" required>
-                        <option value="" selected disabled>-- اختر الغرض --</option>
-                        <option value="personal">استخدام شخصي</option>
-                        <option value="commercial">تجاري</option>
-                        <option value="rent">تأجير</option>
-                        <option value="passenger">نقل ركاب</option>
-                        <option value="ride_hailing">كريم أو أوبر</option>
-                        <option value="goods">نقل بضائع</option>
-                        <option value="oil">نقل مشتقات نفطية</option>
+                        <option value="" selected disabled data-i18n="ins.purpose_select">-- اختر الغرض --</option>
+                        <option value="personal" data-i18n="ins.usage_personal">استخدام شخصي</option>
+                        <option value="commercial" data-i18n="ins.usage_commercial">تجاري</option>
+                        <option value="rent" data-i18n="ins.usage_rent">تأجير</option>
+                        <option value="passenger" data-i18n="ins.usage_passenger">نقل ركاب</option>
+                        <option value="ride_hailing" data-i18n="ins.usage_ridehailing">كريم أو أوبر</option>
+                        <option value="goods" data-i18n="ins.usage_goods">نقل بضائع</option>
+                        <option value="oil" data-i18n="ins.usage_oil">نقل مشتقات نفطية</option>
                     </select>
                 </div>
 
-                <!-- تاريخ بدء الوثيقة -->
                 <div class="col-md-6">
-                    <label for="startDate" class="form-label">تاريخ بدء الوثيقة</label>
+                    <label for="startDate" class="form-label" data-i18n="ins.start_date">تاريخ بدء الوثيقة</label>
                     <input type="date" class="form-control" id="startDate" required>
                 </div>
 
-                <!-- القيمة التقديرية -->
                 <div class="col-md-6">
-                    <label for="carValue" class="form-label">القيمة التقديرية (ريال)</label>
-                    <input type="number" class="form-control" id="carValue" placeholder="مثال: 45000" required>
+                    <label for="carValue" class="form-label" data-i18n="ins.value_label">القيمة التقديرية (ريال)</label>
+                    <input type="number" class="form-control" id="carValue" placeholder="45000" required>
                 </div>
 
-                <!-- سنة الصنع -->
                 <div class="col-md-6">
-                    <label for="carYear" class="form-label">سنة الصنع</label>
-                    <input type="number" class="form-control" id="carYear" placeholder="مثال: 2023" min="1980" max="2026" required>
+                    <label for="carYear" class="form-label" data-i18n="ins.year_label">سنة الصنع</label>
+                    <input type="number" class="form-control" id="carYear" placeholder="2023" min="1980" max="2026" required>
                 </div>
             </div>
 
             <!-- الكابتشا -->
             <div class="mb-4 mt-4">
-                <label class="form-label">رمز التحقق الأمني</label>
-                <div class="captcha-box mb-2" id="captchaDisplay" style="cursor: pointer;" title="اضغط لتغيير الرمز">Waiting...</div>
-                <input type="text" class="form-control text-center" id="captchaInput" placeholder="أدخل الرمز الظاهر أعلاه" style="letter-spacing: 3px; font-weight: bold;" required>
-                <div id="captchaError" class="text-danger small mt-1" style="display: none;">❌ الرمز غير صحيح، حاول مرة أخرى</div>
+                <label class="form-label" data-i18n="ins.captcha_label">رمز التحقق الأمني</label>
+                <div class="captcha-box mb-2" id="captchaDisplay" style="cursor: pointer;">Waiting...</div>
+                <input type="text" class="form-control text-center" id="captchaInput" data-i18n="ins.captcha_ph" placeholder="أدخل الرمز الظاهر أعلاه" style="letter-spacing: 3px; font-weight: bold;" required>
+                <div id="captchaError" class="text-danger small mt-1" style="display: none;" data-i18n="ins.captcha_error">❌ الرمز غير صحيح، حاول مرة أخرى</div>
             </div>
 
             <div class="d-grid">
-                <button type="submit" class="btn btn-success btn-lg py-3 fw-bold">عرض الأسعار 🚀</button>
+                <button type="submit" class="btn btn-success btn-lg py-3 fw-bold" data-i18n="ins.btn_prices">عرض الأسعار 🚀</button>
             </div>
         </form>
     </div>

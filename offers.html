@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>عروض التأمين</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>عروض التأمين | Insurance Offers</title>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <style>
         .navbar { margin-bottom: 30px; }
@@ -39,8 +40,9 @@
 <div class="wrapper">
     <!-- Navbar -->
     <nav class="navbar navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree"></a>
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'"></a>
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
     </nav>
 
@@ -51,34 +53,34 @@
         <div class="step-indicator">
             <div class="step active">
                 <div class="step-icon">✔</div>
-                <span>بيانات التأمين</span>
+                <span data-i18n="steps.data">البيانات</span>
             </div>
             <div class="step active">
                 <div class="step-icon">2</div>
-                <span>قائمة الأسعار</span>
+                <span data-i18n="steps.prices">قائمة الأسعار</span>
             </div>
             <div class="step">
                 <div class="step-icon">3</div>
-                <span>الملخص والدفع</span>
+                <span data-i18n="steps.summary">الملخص والدفع</span>
             </div>
         </div>
 
-        <h2 class="text-center mb-4 fw-bold">اختر العرض الأنسب لك</h2>
+        <h2 class="text-center mb-4 fw-bold" data-i18n="offers.title">اختر العرض الأنسب لك</h2>
 
         <!-- فلتر نوع التأمين -->
         <div class="d-flex justify-content-center mb-4">
             <div class="btn-group" role="group">
                 <input type="radio" class="btn-check" name="typeFilter" id="tplFilter" autocomplete="off" checked onchange="startFilter('tpl')">
-                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="tplFilter">ضد الغير</label>
+                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="tplFilter" data-i18n="ins.tpl">ضد الغير</label>
 
                 <input type="radio" class="btn-check" name="typeFilter" id="compFilter" autocomplete="off" onchange="startFilter('comp')">
-                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="compFilter">شامل</label>
+                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="compFilter" data-i18n="ins.comp">شامل</label>
             </div>
         </div>
 
         <div id="loader" style="display: none;">
             <div class="spinner"></div>
-            <p class="text-muted">جاري البحث عن أفضل العروض...</p>
+            <p class="text-muted" data-i18n="offers.searching">جاري البحث عن أفضل العروض...</p>
         </div>
 
         <div id="offersList">
@@ -90,7 +92,7 @@
 
 <!-- Footer -->
 <footer class="site-footer">
-    <div class="container"><p class="m-0">© 2024 تري لوساطة التأمين</p></div>
+    <div class="container"><p class="m-0" data-i18n="offers.footer">© 2024 تري لوساطة التأمين</p></div>
 </footer>
 </div>
 
@@ -142,7 +144,7 @@
 
         sortedOffers.forEach(offer => {
             const price = type === 'tpl' ? offer.tplPrice : offer.compPrice;
-            const typeText = type === 'tpl' ? "ضد الغير" : "شامل";
+            const typeText = type === 'tpl' ? t('ins.tpl') : t('ins.comp');
             const stars = "⭐".repeat(Math.floor(offer.rating));
 
             const card = document.createElement('div');
@@ -156,16 +158,16 @@
                         <span class="badge-type">${typeText}</span>
                         
                         <div class="feature-list">
-                            <div class="feature-item"><span class="text-success">✔</span> إصلاح ورش</div>
-                            <div class="feature-item"><span class="text-success">✔</span> مساعدة على الطريق</div>
-                            ${type === 'comp' ? '<div class="feature-item"><span class="text-success">✔</span> تغطية الزجاج</div>' : ''}
+                            <div class="feature-item"><span class="text-success">✔</span> ${t('offers.workshop')}</div>
+                            <div class="feature-item"><span class="text-success">✔</span> ${t('offers.roadside')}</div>
+                            ${type === 'comp' ? `<div class="feature-item"><span class="text-success">✔</span> ${t('offers.glass')}</div>` : ''}
                         </div>
                     </div>
                 </div>
                 <div class="text-end ps-3 border-start">
-                    <div class="price-tag">${price} <span class="price-currency">ريال</span></div>
-                    <div class="text-muted small mb-2">شامل الضريبة</div>
-                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="btn btn-select mt-2">اشتري الآن</a>
+                    <div class="price-tag">${price} <span class="price-currency">${t('offers.sar')}</span></div>
+                    <div class="text-muted small mb-2">${t('offers.incl_tax')}</div>
+                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="btn btn-select mt-2">${t('offers.buy_now')}</a>
                 </div>
             `;
             offersList.appendChild(card);

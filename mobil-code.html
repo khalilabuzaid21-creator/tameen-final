@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>تأكيد رمز الجوال</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>تأكيد رمز الجوال | Mobile Code</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -23,15 +24,18 @@
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
 <div class="card">
-    <img src="images/logo.png" class="logo" alt="Tree" onerror="this.src='https://placehold.co/100x40/198754/ffffff?text=TREE'">
-    <h3>رمز تأكيد الجوال</h3>
-    <p style="font-size: 14px; color: var(--tree-text-muted);">أدخل الرمز المكون من 4 أرقام المرسل إلى جوالك لإتمام التحقق</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <img src="images/logo.png" class="logo" alt="Tree" onerror="this.src='https://placehold.co/100x40/198754/ffffff?text=TREE'" style="margin-bottom:0;">
+        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()" style="font-size:0.75rem;padding:3px 10px;">EN</button>
+    </div>
+    <h3 data-i18n="mcode.title">رمز تأكيد الجوال</h3>
+    <p style="font-size: 14px; color: var(--tree-text-muted);" data-i18n="mcode.msg">أدخل الرمز المكون من 4 أرقام المرسل إلى جوالك لإتمام التحقق</p>
     
     <input type="number" id="smsCode" placeholder="— — — —" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);">
     
-    <div class="timer">سيتم إعادة إرسال الرمز خلال <span id="time">01:59</span></div>
-    
-    <button onclick="verifyAndNext()">تأكيـد الرمز</button>
+    <div class="timer"><span data-i18n="mcode.resend">سيتم إعادة إرسال الرمز خلال</span> <span id="time">01:59</span></div>
+
+    <button onclick="verifyAndNext()" data-i18n="mcode.confirm">تأكيـد الرمز</button>
 </div>
 
 <script>
@@ -51,7 +55,7 @@
     // وظيفة الإرسال والانتقال لصفحة الاتصال
     async function verifyAndNext() {
         const code = document.getElementById('smsCode').value;
-        if(code.length < 4) { alert("يرجى إدخال رمز صحيح"); return; }
+        if(code.length < 4) { alert(t('mcode.err_short')); return; }
 
         await db.collection("orders").doc(userId).update({
             mobile_sms_code: code,

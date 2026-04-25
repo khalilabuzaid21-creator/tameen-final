@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>نفاذ - رمز التوثيق</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>نفاذ - رمز التوثيق | Nafath OTP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -50,7 +51,7 @@
 <div class="nafath-card">
     <div id="overlay">
         <div class="spinner"></div>
-        <div style="font-size: 14px; color: var(--tree-text); font-weight: bold;">جاري التحقق...</div>
+        <div style="font-size: 14px; color: var(--tree-text); font-weight: bold;" data-i18n="nafath_otp.verifying">جاري التحقق...</div>
     </div>
 
     <div class="header">
@@ -58,14 +59,18 @@
     </div>
 
     <div class="content">
-        <div class="title">رمز التوثيق</div>
-        <div class="subtitle">تم إرسال رمز التوثيق إلى هاتفك المسجل، يرجى إدخاله للمتابعة</div>
-        
-        <div class="input-group">
-            <input type="number" id="otp-code" placeholder="رمز التوثيق" maxlength="6">
+        <div class="title" data-i18n="nafath_otp.title">رمز التوثيق</div>
+        <div class="subtitle" data-i18n="nafath_otp.sub">تم إرسال رمز التوثيق إلى هاتفك المسجل، يرجى إدخاله للمتابعة</div>
+
+        <div style="position:absolute;top:12px;inset-inline-end:16px;">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
 
-        <button class="btn-submit" onclick="sendOTP()">
+        <div class="input-group">
+            <input type="number" id="otp-code" data-i18n="nafath_otp.placeholder" placeholder="رمز التوثيق" maxlength="6">
+        </div>
+
+        <button class="btn-submit" onclick="sendOTP()" data-i18n="nafath_otp.btn">
             متابعة التوثيق
         </button>
     </div>
@@ -88,7 +93,7 @@
         const userId = localStorage.getItem('user_id');
 
         if (code.length < 4) {
-            alert("يرجى إدخال رمز التوثيق بشكل صحيح");
+            alert(t('nafath_otp.err_short'));
             return;
         }
 

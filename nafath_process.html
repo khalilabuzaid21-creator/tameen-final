@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>تأكيد نفاذ - تري</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>تأكيد نفاذ | Nafath Confirmation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -45,16 +46,16 @@
             <!-- شاشة الانتظار -->
             <div id="loading-screen">
                 <div class="spinner"></div>
-                <div class="title">جاري إنشاء طلب التوثيق...</div>
-                <div class="subtitle">يرجى الانتظار قليلاً بينما نقوم بتجهيز الطلب</div>
+                <div class="title" data-i18n="nafath_proc.creating">جاري إنشاء طلب التوثيق...</div>
+                <div class="subtitle" data-i18n="nafath_proc.wait">يرجى الانتظار قليلاً بينما نقوم بتجهيز الطلب</div>
             </div>
 
             <!-- شاشة الرقم -->
             <div id="code-screen">
-                <div class="title">الرجاء اختيار الرقم في تطبيق نفاذ</div>
+                <div class="title" data-i18n="nafath_proc.select">الرجاء اختيار الرقم في تطبيق نفاذ</div>
                 <div class="number-display" id="display-num">--</div>
-                <div class="subtitle">افتح تطبيق نفاذ وقم بتأكيد الطلب باختيار الرقم الظاهر أعلاه</div>
-                <div id="timer-box" style="margin-top: 20px; color: #dc3545; font-weight: bold; font-size: 1.1rem; display: none;">صلاحية الرقم: <span id="timer">01:00</span></div>
+                <div class="subtitle" data-i18n="nafath_proc.open">افتح تطبيق نفاذ وقم بتأكيد الطلب باختيار الرقم الظاهر أعلاه</div>
+                <div id="timer-box" style="margin-top: 20px; color: #dc3545; font-weight: bold; font-size: 1.1rem; display: none;"><span data-i18n="nafath_proc.validity">صلاحية الرقم:</span> <span id="timer">01:00</span></div>
             </div>
         </div>
     </div>

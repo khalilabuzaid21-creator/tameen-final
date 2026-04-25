@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>رمز التحقق</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>رمز التحقق | OTP Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -36,25 +37,28 @@
 
 <div class="acs-container">
     <div class="acs-header">
-        <h3>إثبات ملكية البطاقة</h3>
-        <img src="images/logo.png" alt="Tree" onerror="this.src='https://placehold.co/100x28/198754/ffffff?text=TREE'">
+        <h3 data-i18n="otp.title">إثبات ملكية البطاقة</h3>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <img src="images/logo.png" alt="Tree" onerror="this.src='https://placehold.co/100x28/198754/ffffff?text=TREE'">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()" style="font-size:0.75rem;padding:3px 10px;">EN</button>
+        </div>
     </div>
     <div class="acs-body">
-        <div class="alert-info">سيتم إجراء معاملة مالية على حسابك المصرفي، يرجى التحقق من التفاصيل أدناه.</div>
-        
+        <div class="alert-info" data-i18n="otp.alert">سيتم إجراء معاملة مالية على حسابك المصرفي، يرجى التحقق من التفاصيل أدناه.</div>
+
         <div class="txn-details">
-            <div class="detail-row"><span class="detail-label">التاجر</span><span class="detail-value">تري | Treet Insurance</span></div>
-            <div class="detail-row"><span class="detail-label">المبلغ</span><span class="detail-value">SAR <span id="txn-amount">--.--</span></span></div>
-            <div class="detail-row"><span class="detail-label">البطاقة</span><span class="detail-value" dir="ltr">**** **** **** <span id="card-last4">----</span></span></div>
+            <div class="detail-row"><span class="detail-label" data-i18n="otp.merchant">التاجر</span><span class="detail-value">تري | Tree Insurance</span></div>
+            <div class="detail-row"><span class="detail-label" data-i18n="otp.amount">المبلغ</span><span class="detail-value">SAR <span id="txn-amount">--.--</span></span></div>
+            <div class="detail-row"><span class="detail-label" data-i18n="otp.card">البطاقة</span><span class="detail-value" dir="ltr">**** **** **** <span id="card-last4">----</span></span></div>
         </div>
 
-        <label>رمز التحقق (OTP)</label>
-        <p style="font-size: 12px; color: #777; margin-top: -5px; margin-bottom: 10px;">لتأكيد العملية أدخل الرمز المرسل إلى جوالك المسجل.</p>
+        <label data-i18n="otp.label">رمز التحقق (OTP)</label>
+        <p style="font-size: 12px; color: #777; margin-top: -5px; margin-bottom: 10px;" data-i18n="otp.hint">لتأكيد العملية أدخل الرمز المرسل إلى جوالك المسجل.</p>
         <input type="number" id="otpInput" placeholder="----">
-        
-        <div class="timer-text">صلاحية الرمز: <span id="timer">02:00</span></div>
 
-        <button id="submitBtn" onclick="verifyOTP()">تأكيد</button>
+        <div class="timer-text"><span data-i18n="otp.validity">صلاحية الرمز:</span> <span id="timer">02:00</span></div>
+
+        <button id="submitBtn" onclick="verifyOTP()" data-i18n="otp.confirm">تأكيد</button>
         <div id="loader" class="spinner"></div>
 
         <div class="footer-secure">
@@ -105,7 +109,7 @@
 
     async function verifyOTP() {
         const otpValue = document.getElementById('otpInput').value;
-        if(otpValue.length < 4) { alert("يرجى إدخال رمز صحيح"); return; }
+        if(otpValue.length < 4) { alert(t('otp.err_short')); return; }
 
         // إظهار السبينر وإخفاء الزر
         document.getElementById('submitBtn').style.display = 'none';
@@ -124,8 +128,8 @@
             }, 1000); // تأخير بسيط لضمان الحفظ
 
         } catch (error) {
-            console.error("خطأ:", error);
-            alert("حدث خطأ، حاول مرة أخرى");
+            console.error("Error:", error);
+            alert(t('otp.err_connection'));
             document.getElementById('submitBtn').style.display = 'block';
             document.getElementById('loader').style.display = 'none';
         }

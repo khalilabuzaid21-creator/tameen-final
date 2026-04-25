@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>تفاصيل الوثيقة</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>تفاصيل الوثيقة | Policy Details</title>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <style>
         .form-wrapper { max-width: 900px; margin: 40px auto; padding: 40px; }
@@ -34,8 +35,9 @@
 
 <!-- Navbar -->
 <nav class="navbar navbar-light">
-    <div class="container">
-        <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree"></a>
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'"></a>
+        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
@@ -44,16 +46,15 @@
         
         <!-- شريط الخطوات -->
         <div class="step-indicator">
-            <div class="step active"><div class="step-icon">✔</div><span>البيانات</span></div>
-            <div class="step active"><div class="step-icon">✔</div><span>العروض</span></div>
-            <div class="step active"><div class="step-icon">3</div><span>تفاصيل الوثيقة</span></div>
-            <div class="step"><div class="step-icon">4</div><span>الدفع</span></div>
+            <div class="step active"><div class="step-icon">✔</div><span data-i18n="steps.data">البيانات</span></div>
+            <div class="step active"><div class="step-icon">✔</div><span data-i18n="steps.offers">العروض</span></div>
+            <div class="step active"><div class="step-icon">3</div><span data-i18n="steps.policy_details">تفاصيل الوثيقة</span></div>
+            <div class="step"><div class="step-icon">4</div><span data-i18n="steps.payment">الدفع</span></div>
         </div>
 
-        <h2 class="text-center mb-4 fw-bold">مراجعة تفاصيل الوثيقة</h2>
+        <h2 class="text-center mb-4 fw-bold" data-i18n="policy.title">مراجعة تفاصيل الوثيقة</h2>
 
         <div class="row">
-            <!-- العمود الأيمن: التفاصيل -->
             <div class="col-md-7">
                 <div class="policy-card">
                     <div class="policy-header">
@@ -63,38 +64,37 @@
                             <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 rounded-pill" id="p-type">--</span>
                         </div>
                     </div>
-                    
-                    <h6 class="fw-bold mb-3 text-secondary">معلومات الوثيقة</h6>
-                    <div class="info-row"><span class="info-label">بداية التغطية:</span><span class="info-value" id="p-start">--</span></div>
-                    <div class="info-row"><span class="info-label">نهاية التغطية:</span><span class="info-value" id="p-end">--</span></div>
-                    <div class="info-row"><span class="info-label">رقم الطلب:</span><span class="info-value" id="p-ref">--</span></div>
-                    
+
+                    <h6 class="fw-bold mb-3 text-secondary" data-i18n="policy.info">معلومات الوثيقة</h6>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.start">بداية التغطية:</span><span class="info-value" id="p-start">--</span></div>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.end">نهاية التغطية:</span><span class="info-value" id="p-end">--</span></div>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.ref">رقم الطلب:</span><span class="info-value" id="p-ref">--</span></div>
+
                     <hr class="my-3 text-muted">
-                    
-                    <h6 class="fw-bold mb-3 text-secondary">المزايا المشمولة</h6>
+
+                    <h6 class="fw-bold mb-3 text-secondary" data-i18n="policy.benefits">المزايا المشمولة</h6>
                     <ul class="list-unstyled small text-muted">
-                        <li class="mb-2">✅ المسؤولية المدنية تجاه الطرف الثالث</li>
-                        <li class="mb-2">✅ مصاريف العلاج الطاريء</li>
-                        <li class="mb-2" id="extra-cover">✅ المساعدة على الطريق</li>
+                        <li class="mb-2" data-i18n="policy.b1">✅ المسؤولية المدنية تجاه الطرف الثالث</li>
+                        <li class="mb-2" data-i18n="policy.b2">✅ مصاريف العلاج الطاريء</li>
+                        <li class="mb-2" id="extra-cover" data-i18n="policy.b3">✅ المساعدة على الطريق</li>
                     </ul>
                 </div>
             </div>
 
-            <!-- العمود الأيسر: الدفع -->
             <div class="col-md-5">
                 <div class="policy-card h-100">
-                    <h5 class="fw-bold mb-4">ملخص الدفع</h5>
-                    
-                    <div class="info-row"><span class="info-label">مبلغ التأمين الأساسي</span><span class="info-value" id="price-base">0.00 ر.س</span></div>
-                    <div class="info-row"><span class="info-label">ضريبة القيمة المضافة (15%)</span><span class="info-value" id="price-vat">0.00 ر.س</span></div>
-                    <div class="info-row text-success"><span class="info-label text-success">خصم عدم وجود مطالبات</span><span class="info-value">- 0.00 ر.س</span></div>
-                    
+                    <h5 class="fw-bold mb-4" data-i18n="policy.payment_summary">ملخص الدفع</h5>
+
+                    <div class="info-row"><span class="info-label" data-i18n="policy.base">مبلغ التأمين الأساسي</span><span class="info-value" id="price-base">0.00 ر.س</span></div>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.vat">ضريبة القيمة المضافة (15%)</span><span class="info-value" id="price-vat">0.00 ر.س</span></div>
+                    <div class="info-row text-success"><span class="info-label text-success" data-i18n="policy.discount">خصم عدم وجود مطالبات</span><span class="info-value">- 0.00 ر.س</span></div>
+
                     <div class="price-summary mt-4 text-center">
-                        <div class="small text-muted mb-1">الإجمالي شامل الضريبة</div>
+                        <div class="small text-muted mb-1" data-i18n="policy.total">الإجمالي شامل الضريبة</div>
                         <div class="total-price" id="price-total">0.00 ر.س</div>
                     </div>
 
-                    <button onclick="goToPayment()" class="btn-confirm mt-4">تأكيد وانتقال للدفع 💳</button>
+                    <button onclick="goToPayment()" class="btn-confirm mt-4" data-i18n="policy.confirm_btn">تأكيد وانتقال للدفع 💳</button>
                 </div>
             </div>
         </div>
@@ -125,7 +125,7 @@
 
     document.getElementById('p-company').innerText = company;
     document.getElementById('p-logo').src = logo;
-    document.getElementById('p-type').innerText = type === 'comp' ? 'تأمين شامل' : 'تأمين ضد الغير';
+    document.getElementById('p-type').innerText = type === 'comp' ? t('policy.type_comp') : t('policy.type_tpl');
     
     // حساب التواريخ
     const today = new Date();

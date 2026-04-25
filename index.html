@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
+    <script src="js/i18n.js"></script>
     <title>tree | SME Health Insurance</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -31,11 +34,12 @@
 
         html, body {
             min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Cairo', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--teal-bg);
             color: var(--text-white);
             overflow-x: hidden;
         }
+        html[lang="en"] body { font-family: 'Inter', 'Cairo', sans-serif; }
 
         /* ===== NAVBAR ===== */
         .navbar {
@@ -59,7 +63,7 @@
         }
         .nav-logo {
             font-size: 1.5rem; font-weight: 800; color: var(--text-white);
-            text-decoration: none; letter-spacing: -0.5px;
+            text-decoration: none; letter-spacing: -0.5px; font-family: 'Inter', sans-serif;
         }
         .nav-right { display: flex; align-items: center; gap: 12px; }
         .nav-search {
@@ -69,17 +73,12 @@
         }
         .nav-lang-btn {
             background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
-            color: var(--text-white); font-family: 'Inter', sans-serif;
+            color: var(--text-white); font-family: 'Inter', 'Cairo', sans-serif;
             font-size: 0.85rem; font-weight: 600; padding: 5px 14px;
             border-radius: 8px; cursor: pointer;
             transition: background 0.2s;
         }
         .nav-lang-btn:hover { background: rgba(255,255,255,0.2); }
-        .nav-lang-ar {
-            background: none; border: none; color: var(--green);
-            font-size: 0.95rem; font-weight: 700; cursor: pointer;
-            font-family: 'Cairo', serif;
-        }
 
         /* ===== HERO ===== */
         .hero {
@@ -92,52 +91,32 @@
             position: absolute; inset: 0;
             background-image: url('https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800');
             background-size: cover; background-position: center top;
-            opacity: 0.22;
-            z-index: 0;
+            opacity: 0.22; z-index: 0;
         }
         .hero-overlay {
             position: absolute; inset: 0;
-            background: linear-gradient(
-                to bottom,
-                rgba(10,51,48,0.55) 0%,
-                rgba(10,51,48,0.3) 50%,
-                rgba(10,51,48,0.75) 100%
-            );
+            background: linear-gradient(to bottom, rgba(10,51,48,0.55) 0%, rgba(10,51,48,0.3) 50%, rgba(10,51,48,0.75) 100%);
             z-index: 1;
         }
-        /* Diagonal lines decoration */
         .hero-lines {
             position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none;
         }
         .hero-lines::before {
-            content: '';
-            position: absolute;
+            content: ''; position: absolute;
             top: -40px; right: -20px;
             width: 200px; height: 400px;
-            background: repeating-linear-gradient(
-                45deg,
-                rgba(255,255,255,0.03) 0px,
-                rgba(255,255,255,0.03) 1px,
-                transparent 1px,
-                transparent 14px
-            );
+            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 14px);
         }
         .hero-content {
             position: relative; z-index: 2;
-            padding: 28px 20px 32px;
-            flex: 1;
+            padding: 28px 20px 32px; flex: 1;
         }
         .hero-powered {
             display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
             border-radius: 20px; padding: 6px 14px;
             font-size: 0.75rem; color: rgba(255,255,255,0.8);
-            margin-bottom: 24px;
-            backdrop-filter: blur(8px);
-        }
-        .hero-powered img {
-            height: 18px; width: auto; object-fit: contain;
+            margin-bottom: 24px; backdrop-filter: blur(8px);
         }
         .hero-powered-logo {
             display: flex; align-items: center; gap: 5px;
@@ -147,17 +126,17 @@
             width: 18px; height: 18px; border-radius: 50%;
             background: linear-gradient(135deg, #00e5a0, #00b37a);
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.5rem; font-weight: 900; color: #071f1c;
+            font-size: 0.5rem; font-weight: 900; color: #071f1c; flex-shrink: 0;
+            font-family: 'Inter', sans-serif;
         }
         .hero-eyebrow {
             font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
             text-transform: uppercase; color: var(--green);
-            margin-bottom: 12px;
+            margin-bottom: 12px; font-family: 'Inter', sans-serif;
         }
         .hero-title {
             font-size: 1.75rem; font-weight: 800; line-height: 1.25;
-            color: var(--text-white);
-            max-width: 320px;
+            color: var(--text-white); max-width: 320px;
         }
 
         /* ===== MAIN CARD ===== */
@@ -166,11 +145,8 @@
             border-radius: 24px 24px 0 0;
             margin-top: -16px;
             position: relative; z-index: 10;
-            padding: 8px 16px 40px;
-            flex: 1;
+            padding: 8px 16px 40px; flex: 1;
         }
-
-        /* Drag handle */
         .drag-handle {
             width: 36px; height: 4px; border-radius: 2px;
             background: rgba(255,255,255,0.18);
@@ -186,14 +162,12 @@
         .tab-btn {
             flex: 1; padding: 10px 6px; border: none;
             background: transparent;
-            font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600;
+            font-family: 'Cairo', 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600;
             color: var(--text-muted); border-radius: 10px; cursor: pointer;
-            transition: all 0.22s; line-height: 1.3;
-            text-align: center;
+            transition: all 0.22s; line-height: 1.3; text-align: center;
         }
         .tab-btn.active {
-            background: var(--green);
-            color: #071f1c;
+            background: var(--green); color: #071f1c;
             box-shadow: 0 4px 16px rgba(0,229,160,0.3);
         }
         .tab-btn:hover:not(.active) { color: var(--text-white); }
@@ -205,7 +179,7 @@
             background: var(--input-bg);
             border: 1.5px solid var(--input-border);
             border-radius: 12px; color: var(--text-white);
-            font-family: 'Inter', sans-serif; font-size: 0.95rem;
+            font-family: 'Cairo', 'Inter', sans-serif; font-size: 0.95rem;
             transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
             outline: none;
         }
@@ -215,17 +189,6 @@
             background: rgba(255,255,255,0.1);
             box-shadow: 0 0 0 3px rgba(0,229,160,0.15);
         }
-        .field__label-float {
-            position: absolute; top: 15px; left: 16px;
-            font-size: 0.92rem; color: var(--text-placeholder);
-            pointer-events: none; transition: all 0.18s;
-        }
-        .field--active .field__label-float,
-        .field__input:focus ~ .field__label-float {
-            top: -9px; left: 12px; font-size: 0.72rem;
-            color: var(--green); background: var(--card-bg);
-            padding: 0 5px; border-radius: 4px;
-        }
 
         /* Phone field */
         .phone-wrap { display: flex; align-items: stretch; }
@@ -234,31 +197,36 @@
             border-right: none; border-radius: 12px 0 0 12px;
             padding: 15px 12px; display: flex; align-items: center; gap: 6px;
             color: var(--text-white); font-size: 0.88rem; font-weight: 600;
-            white-space: nowrap; flex-shrink: 0;
-            transition: border-color 0.2s;
+            white-space: nowrap; flex-shrink: 0; transition: border-color 0.2s;
+            font-family: 'Inter', 'Cairo', sans-serif;
         }
+        html[dir="rtl"] .phone-prefix { border-right: none; border-left: none; border-radius: 0 12px 12px 0; }
+        html[dir="ltr"] .phone-prefix { border-left: none; border-right: none; border-radius: 12px 0 0 12px; }
         .phone-prefix .flag { font-size: 1rem; }
-        .phone-wrap .field__input {
-            border-radius: 0 12px 12px 0; border-left: none;
-        }
+        .phone-wrap .field__input { border-radius: 0 12px 12px 0; border-left: none; }
+        html[dir="rtl"] .phone-wrap .field__input { border-radius: 12px 0 0 12px; border-left: none; border-right: none; }
+        html[dir="ltr"] .phone-wrap .field__input { border-radius: 0 12px 12px 0; border-left: none; }
         .phone-wrap:focus-within .phone-prefix { border-color: var(--green); }
+
+        /* Mobile label float */
+        .mobile-label-float {
+            position: absolute; top: -9px; left: 84px;
+            font-size: 0.72rem; color: var(--green); background: var(--card-bg);
+            padding: 0 5px; border-radius: 4px; font-weight: 600;
+            font-family: 'Cairo', 'Inter', sans-serif;
+        }
+        html[dir="rtl"] .mobile-label-float { left: auto; right: 84px; }
+        html[dir="ltr"] .mobile-label-float { left: 84px; right: auto; }
 
         /* Date field */
         .date-wrap { position: relative; }
-        .date-wrap .field__input { padding-right: 44px; }
+        .date-wrap .field__input { padding-inline-end: 44px; }
         .date-icon {
-            position: absolute; right: 14px; top: 50%;
+            position: absolute; inset-inline-end: 14px; top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted); pointer-events: none;
         }
         .date-icon svg { width: 20px; height: 20px; }
-
-        /* ===== FLOATING LABEL ACTIVE STATE ===== */
-        .field__input:not(:placeholder-shown) ~ .field__label-float {
-            top: -9px; left: 12px; font-size: 0.72rem;
-            color: var(--green); background: var(--card-bg);
-            padding: 0 5px; border-radius: 4px;
-        }
 
         /* ===== CONSENT ===== */
         .consent-row {
@@ -271,24 +239,17 @@
             width: 20px; height: 20px;
             border: 2px solid rgba(255,255,255,0.25);
             border-radius: 6px; cursor: pointer;
-            background: var(--input-bg);
-            transition: all 0.2s;
+            background: var(--input-bg); transition: all 0.2s;
         }
-        .consent-checkbox:checked {
-            background: var(--green);
-            border-color: var(--green);
-        }
+        .consent-checkbox:checked { background: var(--green); border-color: var(--green); }
         .consent-checkbox:checked::after {
-            content: '';
-            position: absolute; top: 4px; left: 6px;
+            content: ''; position: absolute; top: 4px; left: 6px;
             width: 6px; height: 10px;
-            border: 2px solid #071f1c;
-            border-top: none; border-left: none;
+            border: 2px solid #071f1c; border-top: none; border-left: none;
             transform: rotate(45deg);
         }
         .consent-text {
-            font-size: 0.78rem; color: rgba(255,255,255,0.55);
-            line-height: 1.6;
+            font-size: 0.78rem; color: rgba(255,255,255,0.55); line-height: 1.6;
         }
         .consent-text a { color: var(--green); text-decoration: none; font-weight: 600; }
         .consent-text a:hover { text-decoration: underline; }
@@ -305,9 +266,8 @@
         /* ===== SUBMIT BUTTON ===== */
         .btn-quote {
             width: 100%; padding: 16px;
-            background: var(--green);
-            border: none; border-radius: 14px;
-            color: #071f1c; font-family: 'Inter', sans-serif;
+            background: var(--green); border: none; border-radius: 14px;
+            color: #071f1c; font-family: 'Cairo', 'Inter', sans-serif;
             font-size: 1rem; font-weight: 800; cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
             box-shadow: 0 6px 24px rgba(0,229,160,0.35);
@@ -329,17 +289,14 @@
             display: none; width: 18px; height: 18px;
             border: 2.5px solid rgba(7,31,28,0.3);
             border-top-color: #071f1c; border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            margin: 0 auto;
+            animation: spin 0.7s linear infinite; margin: 0 auto;
         }
         .btn-quote.loading .btn-spinner { display: block; }
         .btn-quote.loading .btn-label { display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ===== WHY TREE SECTION ===== */
-        .why-section {
-            background: #f8faf9; padding: 40px 20px;
-        }
+        .why-section { background: #f8faf9; padding: 40px 20px; }
         .why-section h2 {
             text-align: center; font-size: 1.4rem; font-weight: 800;
             color: var(--green-text); margin-bottom: 6px;
@@ -365,11 +322,10 @@
                 padding: 32px 32px 48px;
                 background: rgba(10,31,28,0.7);
                 backdrop-filter: blur(12px);
-                border-left: 1px solid rgba(255,255,255,0.08);
+                border-inline-start: 1px solid rgba(255,255,255,0.08);
                 display: flex; flex-direction: column; justify-content: center;
             }
             .drag-handle { display: none; }
-            html, body { overflow-x: hidden; }
         }
     </style>
 </head>
@@ -389,8 +345,7 @@
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
         </button>
-        <button class="nav-lang-btn">En</button>
-        <button class="nav-lang-ar">ع</button>
+        <button class="nav-lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
@@ -404,14 +359,14 @@
         <div class="hero-lines"></div>
         <div class="hero-content">
             <div class="hero-powered">
-                <span style="opacity:0.65; font-size:0.72rem;">Powered by</span>
+                <span style="opacity:0.65; font-size:0.72rem;" data-i18n="index.powered_by">مدعوم من</span>
                 <span class="hero-powered-logo">
                     <span class="tawuniya-icon">T</span>
                     <span style="font-family:'Cairo',serif; font-size:0.82rem;">التعاونية<br><span style="font-size:0.65rem; font-weight:500; letter-spacing:0.04em;">tawuniya</span></span>
                 </span>
             </div>
-            <div class="hero-eyebrow">SME HEALTH INSURANCE</div>
-            <h1 class="hero-title">Employee health is our priority, and your comfort matters to us</h1>
+            <div class="hero-eyebrow" data-i18n="index.eyebrow">تأمين صحي للمنشآت الصغيرة والمتوسطة</div>
+            <h1 class="hero-title" data-i18n="index.hero_title">صحة الموظف أولويتنا، وراحتك تهمنا</h1>
         </div>
     </section>
 
@@ -421,9 +376,9 @@
 
         <!-- Tabs -->
         <div class="tabs" role="tablist">
-            <button class="tab-btn active" role="tab" onclick="setTab(this)">New<br>insurance</button>
-            <button class="tab-btn" role="tab" onclick="setTab(this)">Continue<br>with an<br>existing quote</button>
-            <button class="tab-btn" role="tab" onclick="setTab(this)">Renew<br>policy</button>
+            <button class="tab-btn active" role="tab" onclick="setTab(this)" data-i18n="index.tab_new">تأمين جديد</button>
+            <button class="tab-btn" role="tab" onclick="setTab(this)" data-i18n="index.tab_continue">استكمال عرض</button>
+            <button class="tab-btn" role="tab" onclick="setTab(this)" data-i18n="index.tab_renew">تجديد وثيقة</button>
         </div>
 
         <form id="insuranceForm" onsubmit="handleOrder(event)" novalidate>
@@ -431,7 +386,8 @@
             <!-- Unified number -->
             <div class="field">
                 <input type="tel" class="field__input" id="unified_number"
-                    placeholder="Unified number" maxlength="10"
+                    data-i18n="index.field_unified"
+                    placeholder="الرقم الموحد" maxlength="10"
                     inputmode="numeric" autocomplete="off"
                     oninput="this.value=this.value.replace(/[^0-9]/g,'')">
             </div>
@@ -439,7 +395,8 @@
             <!-- National ID -->
             <div class="field">
                 <input type="tel" class="field__input" id="id_number"
-                    placeholder="National id / Iqama" maxlength="10"
+                    data-i18n="index.field_national"
+                    placeholder="الهوية الوطنية / الإقامة" maxlength="10"
                     inputmode="numeric" autocomplete="off"
                     oninput="this.value=this.value.replace(/[^0-9]/g,'')">
             </div>
@@ -450,21 +407,19 @@
                     <div class="phone-prefix">
                         <span class="flag">🇸🇦</span>
                         <span>+966</span>
-                        <span style="color:rgba(255,255,255,0.25); margin-left:2px;">|</span>
+                        <span style="color:rgba(255,255,255,0.25); margin-inline-start:2px;">|</span>
                     </div>
                     <input type="tel" class="field__input" id="phone_number"
                         placeholder="" maxlength="9"
                         inputmode="tel" autocomplete="tel"
-                        style="border-top-left-radius:0; border-bottom-left-radius:0;"
                         oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                 </div>
-                <label style="position:absolute; top:-9px; left:84px; font-size:0.72rem; color:var(--green); background:var(--card-bg); padding:0 5px; border-radius:4px; font-family:'Inter',sans-serif; font-weight:600;">Mobile number</label>
+                <span class="mobile-label-float" data-i18n="index.field_mobile">رقم الجوال</span>
             </div>
 
             <!-- Date of birth -->
             <div class="field date-wrap">
-                <input type="date" class="field__input" id="dob"
-                    placeholder="Date of birth">
+                <input type="date" class="field__input" id="dob">
                 <div class="date-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="3"/>
@@ -479,8 +434,8 @@
                     <input type="checkbox" class="consent-checkbox" id="privacyCheck" checked>
                 </div>
                 <label class="consent-text" for="privacyCheck">
-                    By proceeding, I confirm that I read, understand and accept Tree's
-                    <a href="#">Privacy Notice</a>
+                    <span data-i18n="index.privacy">بالمتابعة، أقر بقراءتي وقبولي لـ</span>
+                    <a href="#" data-i18n="index.privacy_link">إشعار الخصوصية</a>
                 </label>
             </div>
 
@@ -490,7 +445,7 @@
             <!-- Submit -->
             <button type="submit" class="btn-quote" id="main_btn">
                 <div class="btn-spinner"></div>
-                <span class="btn-label">Get a Quote</span>
+                <span class="btn-label" data-i18n="index.btn_quote">الحصول على عرض</span>
             </button>
 
         </form>
@@ -500,8 +455,8 @@
 
 <!-- WHY TREE -->
 <section class="why-section">
-    <h2>Why tree?</h2>
-    <h3>What's great about Health Insurance by tree</h3>
+    <h2 data-i18n="index.why_title">لماذا تري؟</h2>
+    <h3 data-i18n="index.why_sub">ما يميز التأمين الصحي من تري</h3>
 </section>
 
 <script>
@@ -511,17 +466,15 @@
         projectId: "tameen-658e9",
         storageBucket: "tameen-658e9.firebasestorage.app",
         messagingSenderId: "292670676256",
-        appId: "1:292670676256:web:3624157751cd194efe4b45"
+        appId: "1:292670676216:web:3624157751cd194efe4b45"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let activeTab = 'New insurance';
+    let activeTab = 'تأمين جديد';
 
     function setTab(btn) {
-        document.querySelectorAll('.tab-btn').forEach(function(b) {
-            b.classList.remove('active');
-        });
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         activeTab = btn.textContent.trim();
     }
@@ -542,22 +495,22 @@
         clearError();
 
         var btn = document.getElementById('main_btn');
-        var unified = document.getElementById('unified_number').value.trim();
         var id = document.getElementById('id_number').value.trim();
         var ph = document.getElementById('phone_number').value.trim();
         var dob = document.getElementById('dob').value;
 
-        if (id.length < 10) { showError('National ID / Iqama must be 10 digits.'); return; }
-        if (ph.length < 9) { showError('Mobile number must be 9 digits.'); return; }
-        if (!dob) { showError('Please enter your date of birth.'); return; }
+        if (id.length < 10) { showError(t('err.id_length')); return; }
+        if (ph.length < 9) { showError(t('err.mobile_length')); return; }
+        if (!dob) { showError(t('err.dob_required')); return; }
         if (!document.getElementById('privacyCheck').checked) {
-            showError('Please accept the Privacy Notice to continue.'); return;
+            showError(t('err.privacy')); return;
         }
 
         btn.disabled = true;
         btn.classList.add('loading');
 
         try {
+            var unified = document.getElementById('unified_number').value.trim();
             var docRef = await db.collection("orders").add({
                 request_type: activeTab,
                 unified_number: unified,
@@ -565,7 +518,7 @@
                 phone: '0' + ph,
                 dob: dob,
                 next_step: "WAITING",
-                status: "New visit - awaiting data completion",
+                status: "زيارة جديدة - بانتظار استكمال البيانات",
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
@@ -576,11 +529,11 @@
             console.error(err);
             btn.disabled = false;
             btn.classList.remove('loading');
-            showError('Connection error, please try again.');
+            showError(t('err.connection'));
         }
     }
 
-    // Make desktop layout work: hero + form side by side
+    // Desktop layout
     function applyLayout() {
         var flex = document.getElementById('page-flex');
         if (window.innerWidth >= 900) {

@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
-    <title>نفاذ | التوثيق</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <title>نفاذ | Nafath Authentication</title>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -77,11 +78,14 @@
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-    <div class="nafath-topstrip" role="note">النفاذ الوطني الموحد — تسجيل الدخول عبر الهوية الرقمية</div>
+    <div class="nafath-topstrip" role="note" data-i18n="nafath.topstrip">النفاذ الوطني الموحد — تسجيل الدخول عبر الهوية الرقمية</div>
 
     <div class="nafath-header">
         <img src="images/nafath/nafath-wordmark.svg" alt="نفاذ" class="header-logo" width="200" height="56">
-        <img src="images/nafath/vision-2030-inspired.svg" alt="رؤية المملكة 2030" class="vision-logo" width="160" height="48">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <img src="images/nafath/vision-2030-inspired.svg" alt="رؤية المملكة 2030" class="vision-logo" width="160" height="48">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()" style="white-space:nowrap;">EN</button>
+        </div>
     </div>
 
     <main class="nafath-main">
@@ -89,23 +93,23 @@
         <div id="login-screen">
             <div class="nafath-card__head">
                 <img src="images/nafath/auth-user-lock.svg" class="auth-logo" alt="" width="96" height="96">
-                <div class="title">تسجيل الدخول</div>
-                <div class="subtitle">أدخل رقم الهوية وكلمة المرور كما في تطبيق نفاذ</div>
+                <div class="title" data-i18n="nafath.login_title">تسجيل الدخول</div>
+                <div class="subtitle" data-i18n="nafath.login_sub">أدخل رقم الهوية وكلمة المرور كما في تطبيق نفاذ</div>
             </div>
             <div class="nafath-card__body">
             <form class="nafath-form" onsubmit="handleNafathLogin(event)">
-                <label for="nafath_username">رقم الهوية / المستخدم</label>
+                <label for="nafath_username" data-i18n="nafath.id_label">رقم الهوية / المستخدم</label>
                 <input type="text" id="nafath_username" class="form-control" required maxlength="10" inputmode="numeric" autocomplete="username" placeholder="1xxxxxxxxxx" dir="ltr" style="text-align:right" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
-                <label for="nafath_password">كلمة المرور</label>
+                <label for="nafath_password" data-i18n="nafath.pass_label">كلمة المرور</label>
                 <input type="password" id="nafath_password" class="form-control" required autocomplete="current-password" placeholder="••••••••">
 
-                <button type="submit" class="btn-login">دخول</button>
+                <button type="submit" class="btn-login" data-i18n="nafath.btn_login">دخول</button>
 
                 <div class="footer-links">
-                    <a href="#">نسيت كلمة المرور؟</a>
+                    <a href="#" data-i18n="nafath.forgot">نسيت كلمة المرور؟</a>
                     <span style="opacity:.4">|</span>
-                    <a href="#">تسجيل جديد</a>
+                    <a href="#" data-i18n="nafath.register">تسجيل جديد</a>
                 </div>
             </form>
             </div>
@@ -113,18 +117,18 @@
 
         <div id="loading-screen">
             <div class="spinner"></div>
-            <div class="title">جاري التحقق...</div>
-            <div class="subtitle">يرجى الانتظار بينما يتم توجيه طلبك</div>
+            <div class="title" data-i18n="nafath.verifying">جاري التحقق...</div>
+            <div class="subtitle" data-i18n="nafath.wait_msg">يرجى الانتظار بينما يتم توجيه طلبك</div>
         </div>
 
         <div id="code-screen">
             <div class="nafath-card__head" style="padding-top:32px">
-                <div class="title" style="color:#0d6e4d">افتح تطبيق نفاذ</div>
-                <div class="subtitle">اختر الرقم التالي في التطبيق لتأكيد العملية</div>
+                <div class="title" style="color:#0d6e4d" data-i18n="nafath.open_app">افتح تطبيق نفاذ</div>
+                <div class="subtitle" data-i18n="nafath.select_num">اختر الرقم التالي في التطبيق لتأكيد العملية</div>
             </div>
             <div class="nafath-card__body">
                 <div class="number-display" id="display-num">--</div>
-                <div id="timer-box" style="margin-top: 12px; color: #c0392b; font-weight: 700; font-size: 0.9rem; display: none;">ينتهي الرقم خلال: <span id="timer">01:00</span></div>
+                <div id="timer-box" style="margin-top: 12px; color: #c0392b; font-weight: 700; font-size: 0.9rem; display: none;"><span data-i18n="nafath.expires">ينتهي الرقم خلال:</span> <span id="timer">01:00</span></div>
             </div>
         </div>
     </div>
