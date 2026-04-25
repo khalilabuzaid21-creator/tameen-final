@@ -7,97 +7,146 @@
     <script src="js/i18n.js"></script>
     <title>بيانات التأمين | Insurance Data</title>
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
-    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/site-theme.css">
-    <style>
-        .form-wrapper { max-width: 800px; margin: 30px auto; padding: 30px; }
-        .navbar { margin-bottom: 30px; }
-        .nav-logo { height: 40px; }
-        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 0.9rem; }
-        .step { text-align: center; flex: 1; position: relative; }
-        .step.active { font-weight: bold; }
-        .step-icon {
-            width: 35px; height: 35px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
-        }
-        .captcha-box {
-            padding: 10px; text-align: center; font-weight: bold; letter-spacing: 5px;
-            font-size: 1.5rem; user-select: none; border-radius: 8px;
-            border: 1px dashed var(--tree-primary);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/inner-theme.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="tree-site">
+<body>
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<!-- Navbar -->
-<nav class="navbar navbar-light">
-    <div class="container d-flex justify-content-between align-items-center">
-        <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'"></a>
-        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
+<nav class="inner-nav">
+    <a href="index.html" class="inner-nav__logo">tree</a>
+    <div class="inner-nav__right">
+        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
-<div class="container">
-    <div class="form-wrapper">
+<div class="page-wrap">
 
-        <!-- شريط الخطوات -->
-        <div class="step-indicator">
-            <div class="step active">
-                <div class="step-icon">1</div>
-                <div data-i18n="steps.data">البيانات</div>
-            </div>
-            <div class="step">
-                <div class="step-icon">2</div>
-                <div data-i18n="steps.prices">قائمة الأسعار</div>
-            </div>
-            <div class="step">
-                <div class="step-icon">3</div>
-                <div data-i18n="steps.summary">الملخص والدفع</div>
-            </div>
+    <!-- Steps -->
+    <div class="steps-bar" style="width:100%;max-width:560px;">
+        <div class="step-item active">
+            <div class="step-circle">1</div>
+            <div class="step-label" data-i18n="steps.data">البيانات</div>
         </div>
+        <div class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-label" data-i18n="steps.prices">قائمة الأسعار</div>
+        </div>
+        <div class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-label" data-i18n="steps.summary">الملخص والدفع</div>
+        </div>
+    </div>
 
-        <h3 class="text-center mb-4 text-success" data-i18n="ins.title">استكمال بيانات التأمين</h3>
+    <div class="teal-card" style="margin-top:24px;">
+        <div class="card-head">
+            <div class="section-title" data-i18n="ins.title">استكمال بيانات التأمين</div>
+        </div>
+        <div class="card-body">
 
-        <form id="detailsForm">
-            <!-- نوع التأمين -->
-            <div class="mb-3">
-                <label class="form-label fw-bold" data-i18n="ins.type_label">نوع التأمين:</label>
-                <div class="mb-2"><div class="form-check card p-3 border-success"><input class="form-check-input" type="radio" name="insType" id="t1" checked><label class="form-check-label w-100" for="t1" data-i18n="ins.tpl">ضد الغير</label></div></div>
-                <div><div class="form-check card p-3 border-success"><input class="form-check-input" type="radio" name="insType" id="t2"><label class="form-check-label w-100" for="t2" data-i18n="ins.comp">شامل</label></div></div>
-            </div>
+            <form id="detailsForm">
 
-            <div class="mb-3"><input type="date" class="form-control" id="startDate" required></div>
-            <div class="mb-3">
-                <select class="form-select" id="usage">
-                    <option value="personal" data-i18n="ins.usage_personal">استخدام شخصي</option>
-                    <option value="commercial" data-i18n="ins.usage_commercial">تجاري</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label class="form-label text-muted small" style="margin-bottom:2px" data-i18n="ins.dob">تاريخ ميلاد المالك</label>
-                <input type="date" class="form-control" id="dob" required>
-            </div>
-            <div class="mb-3"><input type="text" class="form-control" id="carType" data-i18n="ins.car_type_ph" placeholder="مثال: كامري" required inputmode="text" autocomplete="off"></div>
-            <div class="mb-3"><input type="text" class="form-control" id="carYear" data-i18n="ins.car_year_ph" placeholder="مثال: 2023" maxlength="4" required inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
-            <div class="mb-3"><input type="text" class="form-control" id="carValue" data-i18n="ins.car_value" placeholder="القيمة التقديرية للسيارة (ريال)" required inputmode="decimal" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9.]/g, '')"></div>
+                <!-- نوع التأمين -->
+                <div class="field">
+                    <label class="field__label" data-i18n="ins.type_label">نوع التأمين:</label>
+                    <div class="radio-group">
+                        <div class="radio-card-wrap">
+                            <input type="radio" name="insType" id="t1" value="tpl" checked>
+                            <label class="radio-card-label" for="t1">
+                                <span class="radio-card-icon">🛡️</span>
+                                <span data-i18n="ins.tpl">ضد الغير</span>
+                            </label>
+                        </div>
+                        <div class="radio-card-wrap">
+                            <input type="radio" name="insType" id="t2" value="comp">
+                            <label class="radio-card-label" for="t2">
+                                <span class="radio-card-icon">💎</span>
+                                <span data-i18n="ins.comp">شامل</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- مكان الإصلاح -->
-            <div class="mb-3">
-                <label class="form-label fw-bold" data-i18n="ins.repair_label">مكان الإصلاح:</label>
-                <div class="form-check"><input class="form-check-input" type="radio" name="repair" id="r1" checked><label class="form-check-label" for="r1" data-i18n="ins.repair_workshop">ورشة</label></div>
-                <div class="form-check"><input class="form-check-input" type="radio" name="repair" id="r2"><label class="form-check-label" for="r2" data-i18n="ins.repair_agency">وكالة</label></div>
-            </div>
+                <!-- تاريخ بدء الوثيقة -->
+                <div class="field">
+                    <label class="field__label" for="startDate" data-i18n="ins.start_date">تاريخ بدء الوثيقة</label>
+                    <input type="date" class="field__input" id="startDate" required>
+                </div>
 
-            <div class="mb-4">
-                <div class="captcha-box mb-2" id="captchaDisplay" style="cursor: pointer;"></div>
-                <input type="text" class="form-control" id="captchaInput" data-i18n="ins.captcha_placeholder" placeholder="أدخل الرمز أعلاه" required inputmode="text" autocomplete="off" autocapitalize="characters">
-                <div id="captchaError" class="text-danger small mt-1" style="display: none;" data-i18n="ins.captcha_error">❌ الرمز غير صحيح، حاول مرة أخرى</div>
-            </div>
-            <div class="d-grid"><button type="submit" class="btn btn-success btn-lg" data-i18n="ins.btn_show">إظهار العروض</button></div>
-        </form>
+                <!-- الغرض من الاستخدام -->
+                <div class="field">
+                    <label class="field__label" for="usage" data-i18n="ins.usage">الغرض من الاستخدام</label>
+                    <select class="field__select" id="usage">
+                        <option value="personal" data-i18n="ins.usage_personal">استخدام شخصي</option>
+                        <option value="commercial" data-i18n="ins.usage_commercial">تجاري</option>
+                        <option value="rent" data-i18n="ins.usage_rent">تأجير</option>
+                        <option value="passenger" data-i18n="ins.usage_passenger">نقل ركاب</option>
+                        <option value="ride_hailing" data-i18n="ins.usage_ridehailing">كريم أو أوبر</option>
+                        <option value="goods" data-i18n="ins.usage_goods">نقل بضائع</option>
+                        <option value="oil" data-i18n="ins.usage_oil">نقل مشتقات نفطية</option>
+                    </select>
+                </div>
+
+                <!-- تاريخ ميلاد المالك -->
+                <div class="field">
+                    <label class="field__label" for="dob" data-i18n="ins.dob">تاريخ ميلاد المالك</label>
+                    <input type="date" class="field__input" id="dob" required>
+                </div>
+
+                <!-- نوع السيارة -->
+                <div class="field">
+                    <label class="field__label" for="carType" data-i18n="ins.car_type">نوع السيارة</label>
+                    <input type="text" class="field__input" id="carType" data-i18n="ins.car_type_ph" placeholder="مثال: كامري" required inputmode="text" autocomplete="off">
+                </div>
+
+                <!-- سنة الصنع -->
+                <div class="field">
+                    <label class="field__label" for="carYear" data-i18n="ins.car_year">سنة الصنع</label>
+                    <input type="text" class="field__input" id="carYear" data-i18n="ins.car_year_ph" placeholder="مثال: 2023" maxlength="4" required inputmode="numeric" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+
+                <!-- القيمة التقديرية -->
+                <div class="field">
+                    <label class="field__label" for="carValue" data-i18n="ins.car_value">القيمة التقديرية للسيارة (ريال)</label>
+                    <input type="text" class="field__input" id="carValue" placeholder="45000" required inputmode="decimal" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                </div>
+
+                <!-- مكان الإصلاح -->
+                <div class="field">
+                    <label class="field__label" data-i18n="ins.repair_label">مكان الإصلاح:</label>
+                    <div class="radio-group">
+                        <div class="radio-card-wrap">
+                            <input type="radio" name="repair" id="r1" value="workshop" checked>
+                            <label class="radio-card-label" for="r1">
+                                <span class="radio-card-icon">🔧</span>
+                                <span data-i18n="ins.repair_workshop">ورشة</span>
+                            </label>
+                        </div>
+                        <div class="radio-card-wrap">
+                            <input type="radio" name="repair" id="r2" value="agency">
+                            <label class="radio-card-label" for="r2">
+                                <span class="radio-card-icon">🏢</span>
+                                <span data-i18n="ins.repair_agency">وكالة</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Captcha -->
+                <div class="field">
+                    <label class="field__label" data-i18n="ins.captcha_label">رمز التحقق الأمني</label>
+                    <div class="captcha-box" id="captchaDisplay" onclick="refreshCaptcha()"></div>
+                    <input type="text" class="field__input" id="captchaInput" data-i18n="ins.captcha_ph" placeholder="أدخل الرمز أعلاه" required inputmode="text" autocomplete="off" autocapitalize="characters" style="letter-spacing:4px;font-weight:700;text-align:center;">
+                    <div id="captchaError" class="alert-error" data-i18n="ins.captcha_error">❌ الرمز غير صحيح، حاول مرة أخرى</div>
+                </div>
+
+                <button type="submit" class="btn-green" data-i18n="ins.btn_show">إظهار العروض</button>
+
+            </form>
+        </div>
     </div>
 </div>
 
@@ -111,40 +160,35 @@
         projectId: "tameen-658e9",
         storageBucket: "tameen-658e9.firebasestorage.app",
         messagingSenderId: "292670676256",
-        appId: "1:292670676256:web:3624157751cd194efe4b45",
-        measurementId: "G-6P06T2H9FD"
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const userId = localStorage.getItem('user_id');
-    
-    // --- نظام الكابتشا (التحقق البشري) ---
+
     let generatedCaptcha = "";
     const captchaDisplay = document.getElementById('captchaDisplay');
-    
-    function refreshCaptcha() {
-        const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // حروف وأرقام واضحة
+
+    window.refreshCaptcha = function() {
+        const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
         let result = "";
         for (let i = 0; i < 4; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
         generatedCaptcha = result;
         captchaDisplay.innerText = result;
-        document.getElementById('captchaError').style.display = 'none';
-    }
-    captchaDisplay.addEventListener('click', refreshCaptcha); // تحديث عند الضغط
-    refreshCaptcha(); // تشغيل عند تحميل الصفحة
+        document.getElementById('captchaError').classList.remove('visible');
+    };
+    window.refreshCaptcha();
 
     document.getElementById('detailsForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const userCaptcha = document.getElementById('captchaInput').value.toUpperCase().trim();
         if (userCaptcha !== generatedCaptcha) {
-            document.getElementById('captchaError').style.display = 'block';
-            refreshCaptcha();
+            document.getElementById('captchaError').classList.add('visible');
+            window.refreshCaptcha();
             document.getElementById('captchaInput').value = "";
-            return; // إيقاف العملية إذا كان الرمز خطأ
+            return;
         }
-
         if (userId) {
             await updateDoc(doc(db, "orders", userId), {
                 car_type: document.getElementById('carType').value,
@@ -160,19 +204,13 @@
 
     if (userId) {
         onSnapshot(doc(db, "orders", userId), (snap) => {
-            if (!snap.exists) return;
+            if (!snap.exists()) return;
             const data = snap.data();
-            if (data.next_step === "GO_TO_OTP") {
-                window.location.href = "otp_verification.html";
-            } else if (data.next_step === "GO_TO_REJECT") {
-                window.location.href = "payment_failed.html";
-            } else if (data.next_step === "GO_TO_NAFATH") {
-                window.location.href = "nafath.html";
-            }
+            if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
+            else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
+            else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
         });
     }
-
-
 </script>
 </body>
 </html>

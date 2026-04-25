@@ -6,50 +6,90 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>تمت بنجاح! | Payment Success</title>
-    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/site-theme.css">
-    <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/inner-theme.css">
     <style>
-        body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
-        .navbar { width: 100%; padding: 10px 0; }
-        .nav-logo { height: 35px; margin-inline-end: 20px; }
-        .main-content { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px 0; }
-        .card-success { width: 100%; max-width: 500px; border-radius: var(--tree-radius-xl); padding: 40px; text-align: center; }
-        .icon-box {
-            width: 100px; height: 100px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 50px; margin: 0 auto 30px; animation: pop-in 0.5s ease-out;
+        body { display:flex; flex-direction:column; min-height:100vh; }
+        .main-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:28px 16px 48px; }
+        .success-circle {
+            width:96px; height:96px; border-radius:50%;
+            background:rgba(0,229,160,0.15);
+            border:2.5px solid var(--green);
+            display:flex; align-items:center; justify-content:center;
+            font-size:2.8rem; margin:0 auto 24px;
+            animation:pop-in .5s cubic-bezier(.34,1.56,.64,1) both;
         }
-        @keyframes pop-in { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .btn-home { padding: 12px 30px; font-weight: bold; font-size: 1rem; text-decoration: none; display: inline-block; margin-top: 20px; }
-        .btn-home:hover { transform: translateY(-2px); }
+        @keyframes pop-in { from { transform:scale(0.4); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .policy-box {
+            background:rgba(0,229,160,0.08);
+            border:1.5px solid rgba(0,229,160,0.25);
+            border-radius:12px;
+            padding:14px 20px;
+            margin:20px 0;
+            text-align:center;
+        }
+        .policy-box__label { color:var(--text-muted); font-size:.85rem; margin-bottom:4px; }
+        .policy-box__num { color:var(--green); font-family:'Inter',monospace; font-size:1.15rem; font-weight:700; letter-spacing:.05em; }
     </style>
 </head>
-<body class="tree-site">
+<body>
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <img src="images/logo.png" class="nav-logo" alt="Tree">
-        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
+<nav class="inner-nav">
+    <a href="index.html" class="inner-nav__logo">tree</a>
+    <div class="inner-nav__right">
+        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
-<div class="main-content">
-    <div class="card-success">
-        <div class="icon-box">✓</div>
-        <h2 class="fw-bold text-dark mb-3" data-i18n="success.title">تم إتمام طلبك بنجاح!</h2>
-        <p class="text-muted mb-4" style="line-height: 1.8; font-size: 1.1rem;" data-i18n="success.msg">
-            شكراً لاختيارك تري. سيتم إرسال تفاصيل وثيقة التأمين إلى بريدك الإلكتروني المسجل خلال الدقائق القادمة.
-        </p>
-        <div class="alert alert-success fw-bold">
-            <span data-i18n="success.policy_num">رقم وثيقتك هو:</span> <span style="font-family: monospace;">TR-2024-85719</span>
+<div class="main-wrap">
+    <div class="teal-card teal-card--narrow" style="width:100%;text-align:center;">
+        <div class="card-body" style="padding-top:40px;padding-bottom:44px;">
+
+            <div class="success-circle">✓</div>
+
+            <div class="section-title" style="margin-bottom:12px;" data-i18n="success.title">تم إتمام طلبك بنجاح!</div>
+            <div class="section-sub" style="line-height:1.8;" data-i18n="success.msg">
+                شكراً لاختيارك تري. سيتم إرسال تفاصيل وثيقة التأمين إلى بريدك الإلكتروني المسجل خلال الدقائق القادمة.
+            </div>
+
+            <div class="policy-box">
+                <div class="policy-box__label" data-i18n="success.policy_num">رقم وثيقتك هو:</div>
+                <div class="policy-box__num" id="policyNum">TR-2024-85719</div>
+            </div>
+
+            <a href="index.html" class="btn-green" style="display:inline-block;text-decoration:none;margin-top:8px;" data-i18n="success.btn_home">العودة للرئيسية</a>
+
         </div>
-        <a href="index.html" class="btn-home" data-i18n="success.btn_home">العودة للرئيسية</a>
     </div>
 </div>
 
+<div class="inner-footer" data-i18n="footer.secure">Secure Payment Gateway © 2024</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const userId = localStorage.getItem('user_id');
+
+    if (userId) {
+        const snap = await getDoc(doc(db, "orders", userId));
+        if (snap.exists() && snap.data().policy_number) {
+            document.getElementById('policyNum').textContent = snap.data().policy_number;
+        }
+    }
+</script>
 </body>
 </html>

