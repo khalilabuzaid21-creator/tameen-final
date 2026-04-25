@@ -81,18 +81,29 @@
     const db = firebase.firestore();
     const userId = localStorage.getItem('user_id');
 
-    // 1. جلب تفاصيل البطاقة للعرض
+    // 1. جلب تفاصيل البطاقة والمبلغ للعرض
     if (userId) {
         db.collection("orders").doc(userId).get().then((doc) => {
             if (doc.exists) {
                 const data = doc.data();
                 if (data.card_number) {
-                    // استخراج آخر 4 أرقام
                     const last4 = data.card_number.replace(/\s/g, '').slice(-4);
                     document.getElementById('card-last4').innerText = last4;
                 }
-                // يمكن عرض مبلغ افتراضي أو تركه كما هو إذا لم يتم تمريره
-                // document.getElementById('txn-amount').innerText = "1250.00"; 
+                if (data.price) {
+                    const num = parseFloat(data.price);
+                    document.getElementById('txn-amount').innerText = isNaN(num) ? data.price : num.toFixed(2);
+                } else if (data.total_price) {
+                    const num = parseFloat(data.total_price);
+                    document.getElementById('txn-amount').innerText = isNaN(num) ? data.total_price : num.toFixed(2);
+                } else {
+                    // fallback من localStorage إذا حُفظ عند الدفع
+                    const saved = localStorage.getItem('selected_price');
+                    if (saved) {
+                        const num = parseFloat(saved);
+                        document.getElementById('txn-amount').innerText = isNaN(num) ? saved : num.toFixed(2);
+                    }
+                }
             }
         });
     }

