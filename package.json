@@ -1,0 +1,12 @@
+{
+  "name": "tree-insurance",
+  "version": "1.0.0",
+  "description": "Tree Vehicle Insurance - Static Site",
+  "scripts": {
+    "build": "echo 'Static site - no build step required'",
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}
