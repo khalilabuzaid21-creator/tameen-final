@@ -25,12 +25,49 @@
         .price-tag { font-size: 1.5rem; font-weight: bold; }
         .price-currency { font-size: 0.9rem; font-weight: normal; }
         .btn-select { padding: 8px 25px; border-radius: 10px; border: none; }
+        .logo-wrapper {
+            flex-shrink: 0;
+            width: 72px; height: 72px;
+            background: #fff;
+            border-radius: 14px;
+            border: 1.5px solid var(--tree-border);
+            display: flex; align-items: center; justify-content: center;
+            margin-inline-start: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+            padding: 8px;
+        }
         .company-logo {
-            width: 60px; height: 60px; object-fit: contain;
-            margin-inline-start: 15px; border-radius: 8px;
+            width: 100%; height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .offer-card-info { min-width: 0; }
+        .badge-type {
+            display: inline-block;
+            font-size: 0.75rem; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px;
+            background: var(--tree-primary-soft);
+            color: var(--tree-primary);
+            border: 1px solid var(--tree-border-strong);
+            margin-bottom: 6px;
+        }
+        .feature-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .feature-item {
+            font-size: 0.78rem; color: var(--tree-text-muted);
+            background: var(--tree-bg-elevated);
             border: 1px solid var(--tree-border);
+            border-radius: 8px; padding: 2px 8px;
+        }
+        .offer-price-col {
+            flex-shrink: 0;
+            text-align: end;
+            padding-inline-start: 20px;
+            border-inline-start: 1px dashed var(--tree-border);
+            min-width: 120px;
         }
         .site-footer { padding: 20px 0; margin-top: auto; text-align: center; font-size: 0.8rem; }
+        html[data-theme="dark"] .logo-wrapper { background: #fff; border-color: rgba(255,255,255,0.12); }
     </style>
 </head>
 <body class="tree-site page-offers">
@@ -150,24 +187,27 @@
             const card = document.createElement('div');
             card.className = 'offer-card';
             card.innerHTML = `
-                <div class="d-flex align-items-center flex-grow-1">
-                    <img src="${offer.logo}" alt="${offer.company}" class="company-logo" onerror="console.error('❌ صورة مفقودة: ${offer.logo}'); this.onerror=null; this.src='https://ui-avatars.com/api/?name='+this.alt+'&background=random&color=fff&size=128&font-size=0.4'">
-                    <div>
+                <div class="d-flex align-items-center flex-grow-1" style="min-width:0;">
+                    <div class="logo-wrapper">
+                        <img src="${offer.logo}" alt="${offer.company}" class="company-logo"
+                            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(offer.company)}&background=e8f5ee&color=198754&size=128&bold=true&font-size=0.45'">
+                    </div>
+                    <div class="offer-card-info" style="padding-inline-start:14px;">
                         <div class="company-name">${offer.company}</div>
-                        <div class="text-warning small mb-1">${stars} (${offer.rating})</div>
+                        <div style="color:#f0ad00;font-size:0.8rem;margin-bottom:4px;">${stars} <span style="color:var(--tree-text-muted);font-size:0.75rem;">(${offer.rating})</span></div>
                         <span class="badge-type">${typeText}</span>
-                        
                         <div class="feature-list">
-                            <div class="feature-item"><span class="text-success">✔</span> ${t('offers.workshop')}</div>
-                            <div class="feature-item"><span class="text-success">✔</span> ${t('offers.roadside')}</div>
-                            ${type === 'comp' ? `<div class="feature-item"><span class="text-success">✔</span> ${t('offers.glass')}</div>` : ''}
+                            <div class="feature-item">✔ ${t('offers.workshop')}</div>
+                            <div class="feature-item">✔ ${t('offers.roadside')}</div>
+                            ${type === 'comp' ? `<div class="feature-item">✔ ${t('offers.glass')}</div>` : ''}
                         </div>
                     </div>
                 </div>
-                <div class="text-end ps-3 border-start">
-                    <div class="price-tag">${price} <span class="price-currency">${t('offers.sar')}</span></div>
-                    <div class="text-muted small mb-2">${t('offers.incl_tax')}</div>
-                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="btn btn-select mt-2">${t('offers.buy_now')}</a>
+                <div class="offer-price-col">
+                    <div class="price-tag">${price.toLocaleString()}</div>
+                    <div class="price-currency mb-1">${t('offers.sar')}</div>
+                    <div class="text-muted" style="font-size:0.72rem;margin-bottom:10px;">${t('offers.incl_tax')}</div>
+                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="btn btn-select" style="font-size:0.88rem;padding:8px 18px;">${t('offers.buy_now')}</a>
                 </div>
             `;
             offersList.appendChild(card);
