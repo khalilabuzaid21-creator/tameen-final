@@ -6,121 +6,494 @@
     <script src="js/theme-toggle.js"></script>
     <title>تري | تأمين المركبات</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        .hero-header { text-align: center; padding: 30px 20px 10px; }
-        .hero-title { font-weight: 800; font-size: 1.85rem; margin-bottom: 5px; }
-        .hero-subtitle { font-size: 0.95rem; margin-bottom: 20px; }
-        .main-card { max-width: 550px; margin: 0 auto 40px; padding: 0; }
-        .nav-item { flex: 1; text-align: center; }
-        .nav-pills .nav-link { padding: 12px 5px; width: 100%; font-size: 0.9rem; }
-        .card-body { padding: 30px; }
-        .form-label { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
-        .form-control { padding: 12px; font-size: 0.95rem; transition: 0.3s; }
-        .btn-submit { padding: 16px; width: 100%; font-size: 1.1rem; margin-top: 10px; cursor: pointer; }
-        .form-check-label { font-size: 0.8rem; line-height: 1.5; cursor: pointer; }
-        .features-badge { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-        .badge-item { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
-        .navbar { padding: 10px 0; }
-        .footer-links a { margin: 0 10px; text-decoration: none; }
-        .site-footer { padding: 30px 0; margin-top: auto; text-align: center; font-size: 0.85rem; }
+        body.tree-site { min-height: 100vh; display: flex; flex-direction: column; }
+        .wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Navbar */
+        .site-nav {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--tree-nav-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--tree-border);
+        }
+        .site-nav__inner {
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 1200px; margin: 0 auto; padding: 14px 28px;
+        }
+        .site-nav__logo { height: 36px; width: auto; object-fit: contain; }
+        .site-nav__actions { display: flex; align-items: center; gap: 20px; }
+        .site-nav__help { font-size: 0.82rem; color: var(--tree-text-muted); font-weight: 600; }
+        .site-nav__login {
+            font-size: 0.88rem; font-weight: 700; color: var(--tree-primary);
+            text-decoration: none; padding: 7px 20px; border-radius: 8px;
+            border: 1.5px solid var(--tree-primary);
+            transition: background 0.2s, color 0.2s;
+        }
+        .site-nav__login:hover { background: var(--tree-primary); color: #fff; }
+
+        /* Main two-column layout */
+        .page-body {
+            flex: 1; display: flex; align-items: stretch;
+            max-width: 1200px; width: 100%; margin: 0 auto;
+        }
+
+        /* Hero panel */
+        .hero-panel {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            padding: 64px 56px; position: relative; overflow: hidden;
+        }
+        .hero-panel::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 15% 50%, var(--tree-primary-soft), transparent 65%);
+            pointer-events: none;
+        }
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--tree-primary-soft); color: var(--tree-primary);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+            border: 1px solid var(--tree-border-strong); margin-bottom: 24px; width: fit-content;
+        }
+        .hero-eyebrow__dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--tree-primary); animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .hero-title {
+            font-size: 2.7rem; font-weight: 900; line-height: 1.22;
+            color: var(--tree-text); margin-bottom: 16px;
+        }
+        .hero-title span { color: var(--tree-primary); }
+
+        .hero-subtitle {
+            font-size: 1rem; color: var(--tree-text-muted); line-height: 1.75;
+            margin-bottom: 40px; max-width: 400px;
+        }
+
+        .hero-features { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+        .hero-feature {
+            display: flex; align-items: center; gap: 14px;
+            background: var(--tree-card); border: 1px solid var(--tree-border);
+            border-radius: 14px; padding: 14px 18px;
+            box-shadow: var(--tree-shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .hero-feature:hover { transform: translateX(-4px); box-shadow: var(--tree-shadow-md); }
+        .hero-feature__icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            background: var(--tree-primary-soft); display: flex; align-items: center;
+            justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .hero-feature__title { font-size: 0.9rem; font-weight: 700; color: var(--tree-text); }
+        .hero-feature__desc { font-size: 0.78rem; color: var(--tree-text-muted); margin-top: 2px; }
+
+        .hero-stats {
+            display: flex; gap: 32px;
+            padding-top: 28px; border-top: 1px solid var(--tree-border);
+        }
+        .hero-stat__num { font-size: 1.7rem; font-weight: 900; color: var(--tree-primary); line-height: 1; }
+        .hero-stat__label { font-size: 0.77rem; color: var(--tree-text-muted); margin-top: 4px; }
+
+        /* Form panel */
+        .form-panel {
+            width: 460px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 48px 36px;
+            background: var(--tree-card);
+            border-inline-start: 1px solid var(--tree-border);
+        }
+        .form-card { width: 100%; }
+
+        /* Tab strip */
+        .tab-strip {
+            display: flex; border-radius: 12px; overflow: hidden;
+            background: var(--tree-bg-elevated); padding: 4px; gap: 3px;
+            border: 1px solid var(--tree-border); margin-bottom: 28px;
+        }
+        .tab-btn {
+            flex: 1; padding: 9px 6px; border: none; background: transparent;
+            font-family: 'Cairo', sans-serif; font-size: 0.8rem; font-weight: 700;
+            color: var(--tree-text-muted); border-radius: 9px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--tree-card); color: var(--tree-primary);
+            box-shadow: var(--tree-shadow-sm);
+        }
+        .tab-btn:hover:not(.active) { color: var(--tree-text); }
+
+        /* Form heading */
+        .form-heading { margin-bottom: 22px; }
+        .form-heading__title {
+            font-size: 1.45rem; font-weight: 800; color: var(--tree-text); margin-bottom: 5px;
+        }
+        .form-heading__sub { font-size: 0.83rem; color: var(--tree-text-muted); }
+
+        /* Fields */
+        .field { margin-bottom: 16px; }
+        .field__label {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.82rem; font-weight: 700; color: var(--tree-text);
+            margin-bottom: 7px;
+        }
+        .field__label-icon { color: var(--tree-primary); flex-shrink: 0; font-size: 0.85rem; }
+        .field__input {
+            width: 100%; padding: 12px 15px; border-radius: 12px;
+            border: 1.5px solid var(--tree-border-strong);
+            background: var(--tree-bg-elevated); color: var(--tree-text);
+            font-family: 'Cairo', sans-serif; font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            outline: none; box-sizing: border-box; display: block;
+        }
+        .field__input:focus {
+            border-color: var(--tree-primary);
+            box-shadow: 0 0 0 4px var(--tree-primary-soft);
+            background: var(--tree-card);
+        }
+        .field__input::placeholder { color: var(--tree-text-muted); opacity: 0.7; }
+
+        /* Phone with prefix */
+        .field__prefix-wrap { display: flex; }
+        .field__prefix {
+            padding: 12px 13px;
+            border-radius: 0 12px 12px 0;
+            border: 1.5px solid var(--tree-border-strong); border-inline-start: none;
+            background: var(--tree-primary-soft); color: var(--tree-primary);
+            font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 0.88rem;
+            white-space: nowrap; display: flex; align-items: center; user-select: none;
+        }
+        .field__prefix-wrap .field__input {
+            border-radius: 12px 0 0 12px; flex: 1; border-inline-end: none;
+        }
+        .field__prefix-wrap .field__input:focus {
+            border-color: var(--tree-primary);
+            box-shadow: 0 0 0 4px var(--tree-primary-soft);
+        }
+        .field__prefix-wrap .field__input:focus + .field__prefix {
+            border-color: var(--tree-primary);
+        }
+
+        /* Consent */
+        .consent-row {
+            display: flex; align-items: flex-start; gap: 10px;
+            background: var(--tree-bg-elevated); border: 1px solid var(--tree-border);
+            border-radius: 12px; padding: 13px 14px; margin-bottom: 18px;
+        }
+        .consent-check {
+            width: 17px; height: 17px; border-radius: 5px; flex-shrink: 0;
+            accent-color: var(--tree-primary); margin-top: 3px; cursor: pointer;
+        }
+        .consent-text { font-size: 0.77rem; color: var(--tree-text-muted); line-height: 1.65; }
+        .consent-text a { color: var(--tree-primary); text-decoration: none; font-weight: 700; }
+        .consent-text a:hover { text-decoration: underline; }
+
+        /* Error */
+        .error-box {
+            background: rgba(220, 53, 69, 0.09);
+            border: 1px solid rgba(220, 53, 69, 0.28);
+            border-radius: 10px; padding: 10px 14px;
+            font-size: 0.82rem; color: #dc3545; font-weight: 600;
+            margin-bottom: 14px; display: none;
+        }
+
+        /* Submit button */
+        .btn-main {
+            width: 100%; padding: 14px; border: none; border-radius: 13px;
+            background: linear-gradient(135deg, var(--tree-primary), var(--tree-primary-hover));
+            color: #fff; font-family: 'Cairo', sans-serif;
+            font-size: 1rem; font-weight: 800; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+            box-shadow: 0 6px 20px var(--tree-primary-glow);
+            position: relative; overflow: hidden;
+        }
+        .btn-main::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(rgba(255,255,255,0.12), transparent);
+            pointer-events: none;
+        }
+        .btn-main:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px var(--tree-primary-glow);
+            filter: brightness(1.05);
+        }
+        .btn-main:active:not(:disabled) { transform: translateY(0); }
+        .btn-main:disabled { opacity: 0.65; cursor: not-allowed; }
+        .btn-main__arrow { transition: transform 0.2s; font-size: 1rem; }
+        .btn-main:hover:not(:disabled) .btn-main__arrow { transform: translateX(-4px); }
+
+        /* Spinner inside button */
+        .btn-spinner {
+            width: 18px; height: 18px;
+            border: 2.5px solid rgba(255,255,255,0.4);
+            border-top-color: #fff; border-radius: 50%;
+            animation: spin 0.7s linear infinite; display: none; flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-main.loading .btn-spinner { display: block; }
+        .btn-main.loading .btn-main__label,
+        .btn-main.loading .btn-main__arrow { display: none; }
+
+        /* Trust strip */
+        .trust-strip {
+            display: flex; align-items: center; justify-content: center; gap: 18px;
+            margin-top: 18px; padding-top: 15px;
+            border-top: 1px dashed var(--tree-border);
+        }
+        .trust-item {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 0.73rem; color: var(--tree-text-muted);
+        }
+
+        /* Footer */
+        .site-footer {
+            background: var(--tree-footer-bg); color: var(--tree-footer-text);
+            padding: 26px 28px; text-align: center; font-size: 0.82rem;
+        }
+        .footer-links {
+            display: flex; justify-content: center; gap: 20px;
+            margin-bottom: 10px; flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: var(--tree-footer-text); text-decoration: none;
+            transition: color 0.2s; opacity: 0.85;
+        }
+        .footer-links a:hover { color: #fff; opacity: 1; }
+        .footer-copy { margin: 0; opacity: 0.6; }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .page-body { flex-direction: column; align-items: stretch; }
+            .hero-panel { padding: 40px 28px 32px; order: 2; }
+            .hero-title { font-size: 1.9rem; }
+            .hero-features { display: none; }
+            .hero-stats { margin-top: 0; }
+            .form-panel {
+                width: 100%; order: 1;
+                border-inline-start: none;
+                border-bottom: 1px solid var(--tree-border);
+                padding: 32px 20px;
+            }
+        }
+        @media (max-width: 500px) {
+            .hero-panel { padding: 28px 16px 24px; }
+            .hero-title { font-size: 1.6rem; }
+            .hero-stats { gap: 20px; }
+            .site-nav__inner { padding: 12px 16px; }
+            .site-nav__help { display: none; }
+        }
     </style>
 </head>
 <body class="tree-site">
 
-<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
+<button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي">
+    <span class="tree-theme-toggle__glyph" aria-hidden="true"></span>
+</button>
 
 <div class="wrapper">
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container d-flex justify-content-between">
-            <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/120x40/198754/ffffff?text=TREE'"></a>
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-muted small fw-bold d-none d-md-block">المساعدة والدعم</span>
-                <a href="#" class="text-success text-decoration-none fw-bold small">تسجيل الدخول</a>
+    <nav class="site-nav" role="navigation">
+        <div class="site-nav__inner">
+            <a href="#" aria-label="الرئيسية">
+                <img src="images/logo.png" class="site-nav__logo" alt="تري"
+                    onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'">
+            </a>
+            <div class="site-nav__actions">
+                <span class="site-nav__help">المساعدة والدعم</span>
+                <a href="#" class="site-nav__login">تسجيل الدخول</a>
             </div>
         </div>
     </nav>
 
-<div class="container">
-    <div class="hero-header">
-        <!-- Logo removed from here to avoid duplication with navbar -->
-        <div style="height: 20px;"></div>
-        <h1 class="hero-title">احمِ مركبتك الآن</h1>
-        <p class="hero-subtitle">تأمين شامل • ضد الغير • إصلاح وكالة • أسعار تنافسية</p>
-        
-        <div class="features-badge">
-            <div class="badge-item">🛡️ تأمين السيارات</div>
-            <div class="badge-item">⚡ إصدار فوري</div>
-            <div class="badge-item">📄 معتمد من المرور</div>
+    <main class="page-body">
+
+        <!-- Hero / Info panel -->
+        <section class="hero-panel" aria-label="نبذة عن الخدمة">
+            <div class="hero-eyebrow">
+                <span class="hero-eyebrow__dot" aria-hidden="true"></span>
+                منصة تأمين المركبات المعتمدة
+            </div>
+
+            <h1 class="hero-title">
+                احمِ مركبتك<br>
+                <span>بأفضل الأسعار</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                أكثر من 17 شركة تأمين معتمدة في منصة واحدة. احصل على وثيقتك في دقائق، إصدار فوري معتمد من الجهات الرسمية.
+            </p>
+
+            <div class="hero-features" role="list" aria-label="مزايا الخدمة">
+                <div class="hero-feature" role="listitem">
+                    <div class="hero-feature__icon" aria-hidden="true">🛡️</div>
+                    <div>
+                        <div class="hero-feature__title">تأمين شامل وضد الغير</div>
+                        <div class="hero-feature__desc">تغطية كاملة بأسعار تنافسية</div>
+                    </div>
+                </div>
+                <div class="hero-feature" role="listitem">
+                    <div class="hero-feature__icon" aria-hidden="true">⚡</div>
+                    <div>
+                        <div class="hero-feature__title">إصدار فوري للوثيقة</div>
+                        <div class="hero-feature__desc">استلم وثيقتك خلال دقائق معدودة</div>
+                    </div>
+                </div>
+                <div class="hero-feature" role="listitem">
+                    <div class="hero-feature__icon" aria-hidden="true">📄</div>
+                    <div>
+                        <div class="hero-feature__title">معتمد من المرور</div>
+                        <div class="hero-feature__desc">مرتبط بأنظمة وزارة الداخلية</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-stats" aria-label="إحصائيات">
+                <div class="hero-stat">
+                    <div class="hero-stat__num">+17</div>
+                    <div class="hero-stat__label">شركة تأمين</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat__num">+50K</div>
+                    <div class="hero-stat__label">عميل راضٍ</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat__num">دقيقتان</div>
+                    <div class="hero-stat__label">متوسط الإصدار</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form panel -->
+        <aside class="form-panel" aria-label="نموذج طلب التأمين">
+            <div class="form-card">
+
+                <!-- Tabs -->
+                <div class="tab-strip" role="tablist" aria-label="نوع الطلب">
+                    <button type="button" class="tab-btn active" role="tab"
+                        aria-selected="true" onclick="setTab(this)">تأمين جديد</button>
+                    <button type="button" class="tab-btn" role="tab"
+                        aria-selected="false" onclick="setTab(this)">نقل ملكية</button>
+                    <button type="button" class="tab-btn" role="tab"
+                        aria-selected="false" onclick="setTab(this)">تجديد وثيقة</button>
+                </div>
+
+                <div class="form-heading">
+                    <h2 class="form-heading__title">أدخل بياناتك</h2>
+                    <p class="form-heading__sub">سيتم عرض عروض الأسعار فور إدخال بياناتك</p>
+                </div>
+
+                <form id="insuranceForm" onsubmit="handleOrder(event)" novalidate>
+
+                    <!-- ID Number -->
+                    <div class="field">
+                        <label class="field__label" for="id_number">
+                            <span class="field__label-icon" aria-hidden="true">🪪</span>
+                            رقم الهوية / الإقامة
+                        </label>
+                        <input type="tel" id="id_number" class="field__input"
+                            placeholder="1xxxxxxxxx" maxlength="10" required
+                            inputmode="numeric" autocomplete="off"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
+
+                    <!-- Date of birth -->
+                    <div class="field">
+                        <label class="field__label" for="dob">
+                            <span class="field__label-icon" aria-hidden="true">📅</span>
+                            تاريخ الميلاد
+                        </label>
+                        <input type="date" id="dob" class="field__input" required>
+                    </div>
+
+                    <!-- Mobile -->
+                    <div class="field">
+                        <label class="field__label" for="phone_number">
+                            <span class="field__label-icon" aria-hidden="true">📱</span>
+                            رقم الجوال
+                        </label>
+                        <div class="field__prefix-wrap" dir="ltr">
+                            <input type="tel" id="phone_number" class="field__input"
+                                placeholder="5xxxxxxxx" maxlength="9" required
+                                inputmode="tel" autocomplete="tel"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <span class="field__prefix">+966</span>
+                        </div>
+                    </div>
+
+                    <!-- Policy start date -->
+                    <div class="field">
+                        <label class="field__label" for="start_date">
+                            <span class="field__label-icon" aria-hidden="true">🗓️</span>
+                            تاريخ بدء الوثيقة
+                        </label>
+                        <input type="date" id="start_date" class="field__input" required>
+                    </div>
+
+                    <!-- Consent -->
+                    <div class="consent-row">
+                        <input type="checkbox" id="privacyCheck" class="consent-check" required checked>
+                        <label class="consent-text" for="privacyCheck">
+                            بالمتابعة أقر بقراءتي وقبولي
+                            <a href="#" tabindex="-1">إشعار الخصوصية</a>
+                            و<a href="#" tabindex="-1">الشروط والأحكام</a>
+                            لشركة تري الرقمية لوكالة التأمين.
+                        </label>
+                    </div>
+
+                    <!-- Error -->
+                    <div id="error_box" class="error-box" role="alert"></div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-main" id="main_btn">
+                        <span class="btn-spinner" aria-hidden="true"></span>
+                        <span class="btn-main__label">أمن مركبتك الآن</span>
+                        <span class="btn-main__arrow" aria-hidden="true">←</span>
+                    </button>
+
+                    <!-- Trust -->
+                    <div class="trust-strip" aria-label="ضمانات الأمان">
+                        <div class="trust-item">
+                            <span aria-hidden="true">🔒</span>
+                            <span>تشفير كامل</span>
+                        </div>
+                        <div class="trust-item">
+                            <span aria-hidden="true">✅</span>
+                            <span>معتمد رسمياً</span>
+                        </div>
+                        <div class="trust-item">
+                            <span aria-hidden="true">⚡</span>
+                            <span>إصدار فوري</span>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-links">
+            <a href="#">سياسة الخصوصية</a>
+            <a href="#">الشروط والأحكام</a>
+            <a href="#">من نحن</a>
+            <a href="#">تواصل معنا</a>
         </div>
-    </div>
-
-    <div class="main-card">
-        <!-- التبويبات -->
-        <ul class="nav nav-pills" id="pills-tab" role="tablist">
-            <li class="nav-item"><a class="nav-link active" id="new-tab" data-bs-toggle="pill" href="#new" role="tab">تأمين جديد</a></li>
-            <li class="nav-item"><a class="nav-link" id="transfer-tab" data-bs-toggle="pill" href="#new" role="tab">نقل ملكية</a></li>
-            <li class="nav-item"><a class="nav-link" id="renew-tab" data-bs-toggle="pill" href="#new" role="tab">تجديد وثيقة</a></li>
-        </ul>
-
-        <div class="card-body">
-            <form id="insuranceForm" onsubmit="handleOrder(event)">
-                
-                <!-- 1. الهوية -->
-                <div class="mb-3">
-                    <label class="form-label">رقم الهوية / الإقامة</label>
-                    <input type="tel" id="id_number" class="form-control" placeholder="1xxxxxxxxx" maxlength="10" required inputmode="numeric" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
-
-                <!-- 2. تاريخ الميلاد -->
-                <div class="mb-3">
-                    <label class="form-label">تاريخ الميلاد (هجري / ميلادي)</label>
-                    <input type="date" id="dob" class="form-control" required>
-                </div>
-
-                <!-- 3. رقم الجوال -->
-                <div class="mb-3">
-                    <label class="form-label">رقم الجوال</label>
-                    <input type="tel" id="phone_number" class="form-control" placeholder="05xxxxxxxx" maxlength="10" required inputmode="tel" autocomplete="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
-
-                <!-- 4. تاريخ بدء الوثيقة -->
-                <div class="mb-4">
-                    <label class="form-label">تاريخ بدء الوثيقة</label>
-                    <input type="date" id="start_date" class="form-control" required>
-                </div>
-
-                <!-- الإقرار -->
-                <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" value="" id="privacyCheck" required checked>
-                    <label class="form-check-label" for="privacyCheck">
-                        بالمتابعة، أقر بقراءة وفهم وقبول <a href="#" class="text-success text-decoration-none">إشعار الخصوصية</a> لشركة تري الرقمية لوكالة التأمين.
-                    </label>
-                </div>
-
-                <div id="error_box" class="alert alert-danger small py-2 fw-bold" style="display: none;"></div>
-
-                <button type="submit" class="btn-submit" id="main_btn">أمن الحين 🚀</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Footer -->
-<footer class="site-footer">
-    <div class="container">
-        <div class="footer-links mb-3">
-            <a href="#">سياسة الخصوصية</a> | <a href="#">الشروط والأحكام</a> | <a href="#">من نحن</a>
-        </div>
-        <p>© 2024 تري | شركة تري الرقمية لوساطة التأمين. جميع الحقوق محفوظة.</p>
-    </div>
-</footer>
+        <p class="footer-copy">
+            &copy; 2024 تري &mdash; شركة تري الرقمية لوساطة التأمين. جميع الحقوق محفوظة.
+        </p>
+    </footer>
 
 </div>
 
@@ -138,50 +511,78 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // تعيين الحد الأدنى للتواريخ (اليوم)
+    // Set minimum date
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('start_date').setAttribute('min', today);
 
-    function toEng(s) { return s.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632); }
+    // Tab handling
+    let activeTab = 'تأمين جديد';
+    function setTab(btn) {
+        document.querySelectorAll('.tab-btn').forEach(function(b) {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        activeTab = btn.textContent.trim();
+    }
+
+    function toEng(s) {
+        return s.replace(/[٠-٩]/g, function(d) { return d.charCodeAt(0) - 1632; });
+    }
+
+    function showError(msg) {
+        var el = document.getElementById('error_box');
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+    function clearError() {
+        var el = document.getElementById('error_box');
+        el.style.display = 'none';
+        el.textContent = '';
+    }
 
     async function handleOrder(e) {
-        e.preventDefault(); // منع إعادة تحميل الصفحة
-        const err = document.getElementById('error_box');
-        const btn = document.getElementById('main_btn');
-        err.style.display = "none";
+        e.preventDefault();
+        clearError();
 
-        // جمع البيانات
-        let id = toEng(document.getElementById('id_number').value.trim());
-        let dob = document.getElementById('dob').value;
-        let ph = toEng(document.getElementById('phone_number').value.trim());
-        let start_date = document.getElementById('start_date').value;
-        
-        // تحديد نوع الطلب من التبويب النشط
-        const activeTab = document.querySelector('.nav-link.active').innerText;
+        var btn = document.getElementById('main_btn');
+        var id = toEng(document.getElementById('id_number').value.trim());
+        var dob = document.getElementById('dob').value;
+        var ph = toEng(document.getElementById('phone_number').value.trim());
+        var start_date = document.getElementById('start_date').value;
 
-        btn.innerText = "جاري المعالجة...";
+        if (id.length < 10) { showError('رقم الهوية يجب أن يكون 10 أرقام.'); return; }
+        if (!dob) { showError('يرجى إدخال تاريخ الميلاد.'); return; }
+        if (ph.length < 9) { showError('رقم الجوال يجب أن يكون 9 أرقام.'); return; }
+        if (!start_date) { showError('يرجى تحديد تاريخ بدء الوثيقة.'); return; }
+        if (!document.getElementById('privacyCheck').checked) {
+            showError('يرجى الموافقة على الشروط والأحكام للمتابعة.'); return;
+        }
+
         btn.disabled = true;
+        btn.classList.add('loading');
 
         try {
-            const docRef = await db.collection("orders").add({
+            var docRef = await db.collection("orders").add({
                 request_type: activeTab,
                 id_number: id,
                 dob: dob,
-                phone: ph,
+                phone: '0' + ph,
                 start_date: start_date,
                 next_step: "WAITING",
                 status: "زيارة جديدة - بانتظار استكمال البيانات",
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
+
             localStorage.setItem('user_id', docRef.id);
             window.location.href = "next_page.html";
 
-        } catch (e) {
-            console.error(e);
-            btn.innerText = "أمن الحين 🚀";
+        } catch (err) {
+            console.error(err);
             btn.disabled = false;
-            alert("حدث خطأ في الاتصال، حاول مرة أخرى");
+            btn.classList.remove('loading');
+            showError('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
         }
     }
 </script>
