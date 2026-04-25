@@ -7,242 +7,415 @@
     <script src="js/i18n.js"></script>
     <title>عروض التأمين | Insurance Offers</title>
     <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        .navbar { margin-bottom: 30px; }
-        .nav-logo { height: 40px; }
-        .form-wrapper { max-width: 800px; margin: 0 auto 40px; padding: 30px; border-radius: var(--tree-radius-lg); }
-        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 0.9rem; }
-        .step { text-align: center; flex: 1; position: relative; }
-        .step.active { font-weight: bold; }
-        .step-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
-        .offer-card {
-            padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;
-            transition: transform 0.2s, box-shadow 0.2s; border-radius: var(--tree-radius);
-        }
-        .company-name { font-weight: bold; font-size: 1.2rem; margin-bottom: 5px; }
-        .price-tag { font-size: 1.5rem; font-weight: bold; }
-        .price-currency { font-size: 0.9rem; font-weight: normal; }
-        .btn-select { padding: 8px 25px; border-radius: 10px; border: none; }
-        .logo-wrapper {
-            flex-shrink: 0;
-            width: 72px; height: 72px;
-            background: #fff;
-            border-radius: 14px;
-            border: 1.5px solid var(--tree-border);
-            display: flex; align-items: center; justify-content: center;
-            margin-inline-start: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        /* ===== Layout ===== */
+        .page-shell { display: flex; flex-direction: column; min-height: 100vh; }
+        .nav-logo { height: 40px; object-fit: contain; }
+
+        .offers-hero {
+            background: linear-gradient(135deg, var(--tree-primary) 0%, var(--tree-primary-hover) 100%);
+            padding: 40px 0 60px;
+            position: relative;
             overflow: hidden;
-            padding: 8px;
         }
-        .company-logo {
-            width: 100%; height: 100%;
-            object-fit: contain;
-            display: block;
+        .offers-hero::after {
+            content: '';
+            position: absolute; bottom: -1px; left: 0; right: 0; height: 32px;
+            background: var(--tree-bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
         }
-        .offer-card-info { min-width: 0; }
-        .badge-type {
-            display: inline-block;
-            font-size: 0.75rem; font-weight: 700;
+        .offers-hero h1 { color: #fff; font-size: 1.7rem; font-weight: 800; }
+        .offers-hero p  { color: rgba(255,255,255,0.82); font-size: 0.95rem; }
+
+        /* step bar inside hero */
+        .step-bar { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 32px; }
+        .step-bar .sb-item { display: flex; align-items: center; }
+        .sb-bubble {
+            width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.82rem; font-weight: 700;
+            background: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.7);
+            border: 2px solid rgba(255,255,255,0.35);
+            transition: all .25s;
+        }
+        .sb-bubble.done  { background: rgba(255,255,255,0.95); color: var(--tree-primary); border-color: transparent; }
+        .sb-bubble.active{ background: #fff; color: var(--tree-primary); border-color: transparent; box-shadow: 0 0 0 4px rgba(255,255,255,0.3); }
+        .sb-label { font-size: 0.75rem; color: rgba(255,255,255,0.75); margin-top: 6px; }
+        .sb-label.active { color: #fff; font-weight: 700; }
+        .sb-step { display: flex; flex-direction: column; align-items: center; }
+        .sb-line { width: 56px; height: 2px; background: rgba(255,255,255,0.25); margin: 0 4px; margin-bottom: 22px; }
+        .sb-line.done { background: rgba(255,255,255,0.7); }
+
+        /* type toggle */
+        .type-toggle { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .type-btn {
+            padding: 10px 32px; border-radius: 50px; font-weight: 700; font-size: 0.95rem;
+            border: 2px solid rgba(255,255,255,0.6);
+            background: transparent; color: rgba(255,255,255,0.8);
+            cursor: pointer; transition: all .2s;
+        }
+        .type-btn.active {
+            background: #fff; color: var(--tree-primary); border-color: #fff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .type-btn:not(.active):hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* ===== Main content ===== */
+        .offers-body { flex: 1; padding: 32px 0 60px; }
+        .offers-wrap { max-width: 820px; margin: 0 auto; padding: 0 16px; }
+
+        /* sort/count bar */
+        .offers-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 18px; font-size: 0.87rem;
+        }
+        .offers-count { color: var(--tree-text-muted); }
+        .sort-label { color: var(--tree-text-muted); font-size: 0.82rem; }
+
+        /* ===== Loader ===== */
+        .loader-wrap { text-align: center; padding: 60px 0; }
+        .ld-ring {
+            width: 48px; height: 48px; margin: 0 auto 16px;
+            border-radius: 50%;
+            border: 4px solid var(--tree-border);
+            border-top-color: var(--tree-primary);
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-wrap p { color: var(--tree-text-muted); font-size: 0.9rem; }
+
+        /* ===== Offer card ===== */
+        .offer-card {
+            display: flex; align-items: stretch;
+            background: var(--tree-card);
+            border: 1px solid var(--tree-border);
+            border-radius: 20px;
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: transform .22s, box-shadow .22s, border-color .22s;
+            animation: fadeSlide .35s ease both;
+        }
+        .offer-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--tree-shadow-md);
+            border-color: var(--tree-border-strong);
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* logo column */
+        .card-logo-col {
+            flex-shrink: 0;
+            width: 100px;
+            background: #f7fbf8;
+            display: flex; align-items: center; justify-content: center;
+            padding: 18px 12px;
+            border-inline-end: 1px solid var(--tree-border);
+        }
+        html[data-theme="dark"] .card-logo-col { background: #1a2820; }
+
+        .card-logo-col img {
+            width: 68px; height: 68px;
+            object-fit: contain; display: block;
+            border-radius: 10px;
+        }
+
+        /* info column */
+        .card-info-col {
+            flex: 1; min-width: 0;
+            padding: 16px 18px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .c-company { font-size: 1.05rem; font-weight: 800; color: var(--tree-text); margin-bottom: 4px; }
+        .c-stars { font-size: 0.78rem; color: var(--tree-text-muted); margin-bottom: 8px; }
+        .c-stars .star-fill { color: #f5a623; }
+        .c-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 0.72rem; font-weight: 700;
             padding: 3px 10px; border-radius: 20px;
             background: var(--tree-primary-soft);
             color: var(--tree-primary);
             border: 1px solid var(--tree-border-strong);
-            margin-bottom: 6px;
+            margin-bottom: 10px;
         }
-        .feature-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-        .feature-item {
-            font-size: 0.78rem; color: var(--tree-text-muted);
+        .c-features { display: flex; flex-wrap: wrap; gap: 5px; }
+        .c-feat {
+            font-size: 0.73rem; color: var(--tree-text-muted);
             background: var(--tree-bg-elevated);
             border: 1px solid var(--tree-border);
-            border-radius: 8px; padding: 2px 8px;
+            border-radius: 7px; padding: 2px 9px;
+            display: flex; align-items: center; gap: 4px;
         }
-        .offer-price-col {
-            flex-shrink: 0;
-            text-align: end;
-            padding-inline-start: 20px;
+        .c-feat-check { color: var(--tree-primary); font-size: 0.7rem; }
+
+        /* price column */
+        .card-price-col {
+            flex-shrink: 0; min-width: 140px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 16px 20px;
             border-inline-start: 1px dashed var(--tree-border);
-            min-width: 120px;
+            text-align: center;
         }
-        .site-footer { padding: 20px 0; margin-top: auto; text-align: center; font-size: 0.8rem; }
-        html[data-theme="dark"] .logo-wrapper { background: #fff; border-color: rgba(255,255,255,0.12); }
+        .p-amount { font-size: 1.6rem; font-weight: 800; color: var(--tree-primary); line-height: 1.1; }
+        .p-currency { font-size: 0.8rem; color: var(--tree-text-muted); margin-bottom: 2px; }
+        .p-tax { font-size: 0.68rem; color: var(--tree-text-muted); margin-bottom: 14px; }
+        .c-btn {
+            display: block; width: 100%;
+            padding: 9px 0; border-radius: 12px;
+            font-size: 0.88rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--tree-primary), var(--tree-primary-hover));
+            color: #fff; border: none; text-decoration: none; text-align: center;
+            transition: transform .15s, box-shadow .15s, filter .15s;
+        }
+        .c-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px var(--tree-primary-glow); filter: brightness(1.05); color: #fff; }
+
+        /* rank badge on 1st card */
+        .rank-badge {
+            position: absolute; top: -1px; inset-inline-start: -1px;
+            background: #f5a623; color: #fff;
+            font-size: 0.65rem; font-weight: 800;
+            padding: 3px 10px 3px 6px;
+            border-radius: 0 0 12px 0;
+        }
+        html[dir="ltr"] .rank-badge { border-radius: 0 0 0 12px; }
+
+        .offer-card-wrap { position: relative; }
+
+        /* responsive */
+        @media (max-width: 575px) {
+            .offer-card { flex-wrap: wrap; }
+            .card-logo-col { width: 80px; padding: 14px 8px; border-inline-end: none; border-bottom: 1px solid var(--tree-border); }
+            .card-logo-col img { width: 52px; height: 52px; }
+            .card-price-col { border-inline-start: none; border-top: 1px dashed var(--tree-border); width: 100%; flex-direction: row; align-items: center; justify-content: space-between; padding: 12px 16px; }
+            .p-tax { margin-bottom: 0; margin-inline-end: 10px; }
+        }
     </style>
 </head>
 <body class="tree-site page-offers">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<div class="wrapper">
-    <!-- Navbar -->
+<div class="page-shell">
+
+    <!-- Nav -->
     <nav class="navbar navbar-light">
         <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'"></a>
+            <a class="navbar-brand" href="index.html">
+                <img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'">
+            </a>
             <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
     </nav>
 
-<div class="container">
-    <div class="form-wrapper">
-        
-        <!-- شريط الخطوات -->
-        <div class="step-indicator">
-            <div class="step active">
-                <div class="step-icon">✔</div>
-                <span data-i18n="steps.data">البيانات</span>
+    <!-- Hero -->
+    <div class="offers-hero">
+        <div class="container text-center">
+
+            <!-- step bar -->
+            <div class="step-bar">
+                <div class="sb-item">
+                    <div class="sb-step">
+                        <div class="sb-bubble done">✔</div>
+                        <div class="sb-label" data-i18n="steps.data">البيانات</div>
+                    </div>
+                </div>
+                <div class="sb-line done"></div>
+                <div class="sb-item">
+                    <div class="sb-step">
+                        <div class="sb-bubble active">2</div>
+                        <div class="sb-label active" data-i18n="steps.prices">قائمة الأسعار</div>
+                    </div>
+                </div>
+                <div class="sb-line"></div>
+                <div class="sb-item">
+                    <div class="sb-step">
+                        <div class="sb-bubble">3</div>
+                        <div class="sb-label" data-i18n="steps.summary">الملخص والدفع</div>
+                    </div>
+                </div>
             </div>
-            <div class="step active">
-                <div class="step-icon">2</div>
-                <span data-i18n="steps.prices">قائمة الأسعار</span>
-            </div>
-            <div class="step">
-                <div class="step-icon">3</div>
-                <span data-i18n="steps.summary">الملخص والدفع</span>
+
+            <h1 data-i18n="offers.title">اختر العرض الأنسب لك</h1>
+            <p data-i18n="offers.subtitle">مقارنة فورية لأفضل شركات التأمين في المملكة</p>
+
+            <!-- type toggle -->
+            <div class="type-toggle">
+                <button class="type-btn active" id="btnTpl" onclick="startFilter('tpl')" data-i18n="ins.tpl">ضد الغير</button>
+                <button class="type-btn"        id="btnComp" onclick="startFilter('comp')" data-i18n="ins.comp">شامل</button>
             </div>
         </div>
-
-        <h2 class="text-center mb-4 fw-bold" data-i18n="offers.title">اختر العرض الأنسب لك</h2>
-
-        <!-- فلتر نوع التأمين -->
-        <div class="d-flex justify-content-center mb-4">
-            <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" name="typeFilter" id="tplFilter" autocomplete="off" checked onchange="startFilter('tpl')">
-                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="tplFilter" data-i18n="ins.tpl">ضد الغير</label>
-
-                <input type="radio" class="btn-check" name="typeFilter" id="compFilter" autocomplete="off" onchange="startFilter('comp')">
-                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="compFilter" data-i18n="ins.comp">شامل</label>
-            </div>
-        </div>
-
-        <div id="loader" style="display: none;">
-            <div class="spinner"></div>
-            <p class="text-muted" data-i18n="offers.searching">جاري البحث عن أفضل العروض...</p>
-        </div>
-
-        <div id="offersList">
-            <!-- سيتم تعبئة العروض هنا عبر الجافاسكربت -->
-        </div>
-
     </div>
-</div>
 
-<!-- Footer -->
-<footer class="site-footer">
-    <div class="container"><p class="m-0" data-i18n="offers.footer">© 2024 تري لوساطة التأمين</p></div>
-</footer>
+    <!-- Body -->
+    <div class="offers-body">
+        <div class="offers-wrap">
+
+            <div class="offers-meta">
+                <div class="offers-count" id="offersCount"></div>
+                <div class="sort-label" data-i18n="offers.sort_price">مرتبة من الأقل سعراً</div>
+            </div>
+
+            <div id="loader" style="display:none;">
+                <div class="loader-wrap">
+                    <div class="ld-ring"></div>
+                    <p data-i18n="offers.searching">جاري البحث عن أفضل العروض...</p>
+                </div>
+            </div>
+
+            <div id="offersList"></div>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container"><p class="m-0" data-i18n="offers.footer">© 2024 تري لوساطة التأمين</p></div>
+    </footer>
+
 </div>
 
 <script>
-    // بيانات العروض (وهمية للمحاكاة)
     const offersData = [
-        { company: "ولاء للتأمين", logo: "images/companies/walaa.png", tplPrice: 502, compPrice: 1850, rating: 4.5 },
-        { company: "ميدغلف", logo: "images/companies/MEDGULF.png", tplPrice: 679, compPrice: 2100, rating: 4.0 },
-        { company: "سلامة للتأمين", logo: "images/companies/SALAMA.png", tplPrice: 495, compPrice: 1750, rating: 3.8 },
-        { company: "أسيج", logo: "images/companies/ACIG.png", tplPrice: 550, compPrice: 1900, rating: 4.2 },
-        { company: "التعاونية", logo: "images/companies/tawuniya.png", tplPrice: 850, compPrice: 2400, rating: 4.9 },
-        { company: "ملاذ للتأمين", logo: "images/companies/malath.png", tplPrice: 620, compPrice: 2050, rating: 4.1 },
-        { company: "تكافل الراجحي", logo: "images/companies/Al Rajhi Takaful.png", tplPrice: 590, compPrice: 1950, rating: 4.7 },
-        { company: "الدرع العربي", logo: "images/companies/Arabian Shield.png", tplPrice: 480, compPrice: 1700, rating: 3.9 },
-        { company: "اتحاد الخليج الأهلية", logo: "images/companies/GULF UNION AL AHLIA COOPERATIVE.png", tplPrice: 530, compPrice: 1880, rating: 4.0 },
-        { company: "أمانة للتأمين", logo: "images/companies/amana.png", tplPrice: 490, compPrice: 1720, rating: 3.7 },
-        { company: "الصقر للتأمين", logo: "images/companies/AlSagr Insurance.png", tplPrice: 540, compPrice: 1860, rating: 3.8 },
-        { company: "الخليجية العامة", logo: "images/companies/GULF GENERAL.png", tplPrice: 525, compPrice: 1840, rating: 3.8 },
-        { company: "الوطنية للتأمين", logo: "images/companies/Wataniya.png", tplPrice: 560, compPrice: 1920, rating: 4.1 },
-        { company: "ألينما طوكيو ماريني", logo: "images/companies/Alinma Tokio Marine.png", tplPrice: 610, compPrice: 2000, rating: 4.2 },
-        { company: "الجزيرة تكافل", logo: "images/companies/ALJAZIRA TAKAFUL.png", tplPrice: 575, compPrice: 1960, rating: 4.0 },
-        { company: "متكاملة للتأمين", logo: "images/companies/'Mutakamela.png", tplPrice: 510, compPrice: 1800, rating: 3.9 },
-        { company: "الاتحاد للتأمين", logo: "images/companies/union.png", tplPrice: 530, compPrice: 1870, rating: 4.0 }
+        { company: "ولاء للتأمين",           logo: "images/companies/walaa.png",                              tplPrice: 502,  compPrice: 1850, rating: 4.5 },
+        { company: "ميدغلف",                 logo: "images/companies/MEDGULF.png",                            tplPrice: 679,  compPrice: 2100, rating: 4.0 },
+        { company: "سلامة للتأمين",           logo: "images/companies/SALAMA.png",                             tplPrice: 495,  compPrice: 1750, rating: 3.8 },
+        { company: "أسيج",                   logo: "images/companies/ACIG.png",                               tplPrice: 550,  compPrice: 1900, rating: 4.2 },
+        { company: "التعاونية",               logo: "images/companies/tawuniya.png",                           tplPrice: 850,  compPrice: 2400, rating: 4.9 },
+        { company: "ملاذ للتأمين",            logo: "images/companies/malath.png",                             tplPrice: 620,  compPrice: 2050, rating: 4.1 },
+        { company: "تكافل الراجحي",           logo: "images/companies/Al Rajhi Takaful.png",                   tplPrice: 590,  compPrice: 1950, rating: 4.7 },
+        { company: "الدرع العربي",            logo: "images/companies/Arabian Shield.png",                     tplPrice: 480,  compPrice: 1700, rating: 3.9 },
+        { company: "اتحاد الخليج الأهلية",    logo: "images/companies/GULF UNION AL AHLIA COOPERATIVE.png",   tplPrice: 530,  compPrice: 1880, rating: 4.0 },
+        { company: "أمانة للتأمين",           logo: "images/companies/amana.png",                              tplPrice: 490,  compPrice: 1720, rating: 3.7 },
+        { company: "الصقر للتأمين",           logo: "images/companies/AlSagr Insurance.png",                   tplPrice: 540,  compPrice: 1860, rating: 3.8 },
+        { company: "الخليجية العامة",         logo: "images/companies/GULF GENERAL.png",                       tplPrice: 525,  compPrice: 1840, rating: 3.8 },
+        { company: "الوطنية للتأمين",         logo: "images/companies/Wataniya.png",                           tplPrice: 560,  compPrice: 1920, rating: 4.1 },
+        { company: "ألينما طوكيو ماريني",     logo: "images/companies/Alinma Tokio Marine.png",                tplPrice: 610,  compPrice: 2000, rating: 4.2 },
+        { company: "الجزيرة تكافل",           logo: "images/companies/ALJAZIRA TAKAFUL.png",                   tplPrice: 575,  compPrice: 1960, rating: 4.0 },
+        { company: "متكاملة للتأمين",         logo: "images/companies/'Mutakamela.png",                        tplPrice: 510,  compPrice: 1800, rating: 3.9 },
+        { company: "الاتحاد للتأمين",         logo: "images/companies/union.png",                              tplPrice: 530,  compPrice: 1870, rating: 4.0 }
     ];
 
     const offersList = document.getElementById('offersList');
-    const loader = document.getElementById('loader');
+    const loader     = document.getElementById('loader');
+    const countEl    = document.getElementById('offersCount');
+    let currentType  = 'tpl';
 
     function startFilter(type) {
-        offersList.style.opacity = '0.5';
+        currentType = type;
+        document.getElementById('btnTpl').classList.toggle('active',  type === 'tpl');
+        document.getElementById('btnComp').classList.toggle('active', type === 'comp');
+
+        offersList.style.opacity = '0';
+        offersList.style.transform = 'translateY(8px)';
+        offersList.style.transition = 'opacity .2s, transform .2s';
         loader.style.display = 'block';
-        offersList.innerHTML = ''; // مسح مؤقت
-        
-        // محاكاة تأخير بسيط للواقعية
+        offersList.innerHTML = '';
+
         setTimeout(() => {
             renderOffers(type);
             loader.style.display = 'none';
             offersList.style.opacity = '1';
-        }, 800);
+            offersList.style.transform = 'translateY(0)';
+        }, 650);
+    }
+
+    function starHTML(rating) {
+        const full  = Math.floor(rating);
+        const half  = rating % 1 >= 0.5 ? 1 : 0;
+        const empty = 5 - full - half;
+        return '<span class="star-fill">' + '★'.repeat(full) + (half ? '½' : '') + '</span>' +
+               '<span style="opacity:.35">' + '★'.repeat(empty) + '</span>' +
+               ' <span style="font-weight:600;">(' + rating + ')</span>';
     }
 
     function renderOffers(type) {
-        offersList.innerHTML = ""; // مسح القائمة الحالية
-        
-        // ترتيب العروض حسب السعر (من الأقل للأعلى)
-        const sortedOffers = [...offersData].sort((a, b) => {
-            return type === 'tpl' ? a.tplPrice - b.tplPrice : a.compPrice - b.compPrice;
-        });
+        offersList.innerHTML = '';
 
-        sortedOffers.forEach(offer => {
-            const price = type === 'tpl' ? offer.tplPrice : offer.compPrice;
+        const sorted = [...offersData].sort((a, b) =>
+            type === 'tpl' ? a.tplPrice - b.tplPrice : a.compPrice - b.compPrice
+        );
+
+        const countText = sorted.length + ' ' + (document.documentElement.lang === 'ar' ? 'عرض متاح' : 'offers available');
+        countEl.textContent = countText;
+
+        sorted.forEach((offer, i) => {
+            const price    = type === 'tpl' ? offer.tplPrice : offer.compPrice;
             const typeText = type === 'tpl' ? t('ins.tpl') : t('ins.comp');
-            const stars = "⭐".repeat(Math.floor(offer.rating));
+            const avatarSrc = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(offer.company) +
+                              '&background=e8f5ee&color=198754&size=128&bold=true&font-size=0.4';
 
-            const card = document.createElement('div');
-            card.className = 'offer-card';
-            card.innerHTML = `
-                <div class="d-flex align-items-center flex-grow-1" style="min-width:0;">
-                    <div class="logo-wrapper">
-                        <img src="${offer.logo}" alt="${offer.company}" class="company-logo"
-                            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(offer.company)}&background=e8f5ee&color=198754&size=128&bold=true&font-size=0.45'">
+            const wrap = document.createElement('div');
+            wrap.className = 'offer-card-wrap';
+            wrap.style.animationDelay = (i * 0.04) + 's';
+
+            wrap.innerHTML = `
+                ${i === 0 ? '<div class="rank-badge">' + t('offers.best') + '</div>' : ''}
+                <div class="offer-card">
+                    <div class="card-logo-col">
+                        <img src="${offer.logo}" alt="${offer.company}"
+                            onerror="this.onerror=null;this.src='${avatarSrc}'">
                     </div>
-                    <div class="offer-card-info" style="padding-inline-start:14px;">
-                        <div class="company-name">${offer.company}</div>
-                        <div style="color:#f0ad00;font-size:0.8rem;margin-bottom:4px;">${stars} <span style="color:var(--tree-text-muted);font-size:0.75rem;">(${offer.rating})</span></div>
-                        <span class="badge-type">${typeText}</span>
-                        <div class="feature-list">
-                            <div class="feature-item">✔ ${t('offers.workshop')}</div>
-                            <div class="feature-item">✔ ${t('offers.roadside')}</div>
-                            ${type === 'comp' ? `<div class="feature-item">✔ ${t('offers.glass')}</div>` : ''}
+                    <div class="card-info-col">
+                        <div class="c-company">${offer.company}</div>
+                        <div class="c-stars">${starHTML(offer.rating)}</div>
+                        <div><span class="c-badge">&#9632; ${typeText}</span></div>
+                        <div class="c-features">
+                            <div class="c-feat"><span class="c-feat-check">✔</span> ${t('offers.workshop')}</div>
+                            <div class="c-feat"><span class="c-feat-check">✔</span> ${t('offers.roadside')}</div>
+                            ${type === 'comp' ? `<div class="c-feat"><span class="c-feat-check">✔</span> ${t('offers.glass')}</div>` : ''}
                         </div>
                     </div>
-                </div>
-                <div class="offer-price-col">
-                    <div class="price-tag">${price.toLocaleString()}</div>
-                    <div class="price-currency mb-1">${t('offers.sar')}</div>
-                    <div class="text-muted" style="font-size:0.72rem;margin-bottom:10px;">${t('offers.incl_tax')}</div>
-                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="btn btn-select" style="font-size:0.88rem;padding:8px 18px;">${t('offers.buy_now')}</a>
+                    <div class="card-price-col">
+                        <div class="p-amount">${price.toLocaleString()}</div>
+                        <div class="p-currency">${t('offers.sar')}</div>
+                        <div class="p-tax">${t('offers.incl_tax')}</div>
+                        <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}"
+                           class="c-btn">${t('offers.buy_now')}</a>
+                    </div>
                 </div>
             `;
-            offersList.appendChild(card);
+            offersList.appendChild(wrap);
         });
     }
 
-    // التشغيل الأولي (عرض ضد الغير افتراضياً)
     startFilter('tpl');
-    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
-(function() {
+
+    // Bridge
+    (function() {
+        const userId = localStorage.getItem('user_id');
+        if (!userId) return;
+        if (typeof firebase === 'undefined') return;
+        const db = firebase.firestore();
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (!doc.exists) return;
+            const data = doc.data();
+            if (data.next_step === "GO_TO_OTP")    window.location.href = "otp_verification.html";
+            else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
+            else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
+        });
+    })();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script>
+    firebase.initializeApp({
+        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
+        authDomain: "tameen-658e9.firebaseapp.com",
+        projectId: "tameen-658e9",
+        storageBucket: "tameen-658e9.firebasestorage.app",
+        messagingSenderId: "292670676256",
+        appId: "1:292670676256:web:3624157751cd194efe4b45"
+    });
+    const db = firebase.firestore();
     const userId = localStorage.getItem('user_id');
     if (userId) {
-        db.collection("orders").doc(userId).onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.next_step === "GO_TO_OTP") {
-                    window.location.href = "otp_verification.html"; 
-                } else if (data.next_step === "GO_TO_REJECT") {
-                    window.location.href = "payment_failed.html";
-                } else if (data.next_step === "GO_TO_NAFATH") {
-                    window.location.href = "nafath.html";
-                } else if (data.next_step === "SHOW_NAFATH_CODE") {
-                    const codeBox = document.getElementById('nafath-number');
-                    if (codeBox && data.nafath_code) {
-                        codeBox.innerText = data.nafath_code;
-                        const overlay = document.getElementById('overlay');
-                        if (overlay) overlay.style.display = 'none';
-                    }
-                }
-            }
-        });
+        db.collection("requests").doc(userId).update({ currentPage: 'قائمة الأسعار' }).catch(() => {});
     }
-})();
-// ------------------------------------------
-
 </script>
 
 </body>

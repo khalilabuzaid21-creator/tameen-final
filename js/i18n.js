@@ -77,6 +77,7 @@ const TRANSLATIONS = {
 
     // offers
     "offers.title": "اختر العرض الأنسب لك",
+    "offers.subtitle": "مقارنة فورية لأفضل شركات التأمين في المملكة",
     "offers.searching": "جاري البحث عن أفضل العروض...",
     "offers.sar": "ريال",
     "offers.incl_tax": "شامل الضريبة",
@@ -85,6 +86,8 @@ const TRANSLATIONS = {
     "offers.glass": "تغطية الزجاج",
     "offers.buy_now": "اشتري الآن",
     "offers.footer": "© 2024 تري لوساطة التأمين",
+    "offers.best": "الأفضل سعراً",
+    "offers.sort_price": "مرتبة من الأقل سعراً",
 
     // policy_details
     "policy.title": "مراجعة تفاصيل الوثيقة",
@@ -306,6 +309,7 @@ const TRANSLATIONS = {
 
     // offers
     "offers.title": "Choose the Best Offer for You",
+    "offers.subtitle": "Instant comparison across top insurance companies in Saudi Arabia",
     "offers.searching": "Searching for best offers...",
     "offers.sar": "SAR",
     "offers.incl_tax": "Inclusive of tax",
@@ -314,6 +318,8 @@ const TRANSLATIONS = {
     "offers.glass": "Glass coverage",
     "offers.buy_now": "Buy Now",
     "offers.footer": "© 2024 Tree Insurance Brokerage",
+    "offers.best": "Best Price",
+    "offers.sort_price": "Sorted by lowest price",
 
     // policy_details
     "policy.title": "Review Policy Details",
