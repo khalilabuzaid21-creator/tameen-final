@@ -6,113 +6,103 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>تفاصيل التأمين | Insurance Details</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
+    <style>
+        .form-wrapper { max-width: 800px; margin: 30px auto; padding: 30px; border-radius: var(--tree-radius-lg); }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 0.9rem; }
+        .step { text-align: center; flex: 1; position: relative; }
+        .step.active { font-weight: bold; }
+        .step-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 1.1rem; }
+        .form-label { font-weight: 600; margin-bottom: 8px; }
+        .form-control, .form-select { padding: 12px; border-radius: 10px; }
+        .captcha-box {
+            padding: 15px; text-align: center; font-weight: bold; letter-spacing: 8px;
+            font-size: 1.8rem; border-radius: 10px; user-select: none;
+            font-family: "Courier New", Courier, monospace;
+        }
+        .radio-card { border-radius: 12px; padding: 15px; transition: 0.2s; cursor: pointer; }
+        .form-check-input { display: none; }
+    </style>
 </head>
-<body>
+<body class="tree-site page-insurance">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="inner-nav">
-    <a href="index.html" class="inner-nav__logo">tree</a>
-    <div class="inner-nav__right">
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
-    </div>
-</nav>
-
-<div class="page-wrap">
-
-    <!-- Steps -->
-    <div class="steps-bar" style="width:100%;max-width:560px;">
-        <div class="step-item active">
-            <div class="step-circle">1</div>
-            <div class="step-label" data-i18n="steps.data">البيانات</div>
+<div class="container">
+    <div class="form-wrapper">
+        <div class="d-flex justify-content-end mb-2">
+            <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
         </div>
-        <div class="step-item">
-            <div class="step-circle">2</div>
-            <div class="step-label" data-i18n="steps.offers">العروض</div>
-        </div>
-        <div class="step-item">
-            <div class="step-circle">3</div>
-            <div class="step-label" data-i18n="steps.payment">الدفع</div>
-        </div>
-    </div>
 
-    <div class="teal-card" style="margin-top:24px;">
-        <div class="card-head">
-            <div class="section-title" data-i18n="ins.policy_data">بيانات الوثيقة والمركبة</div>
+        <!-- شريط الخطوات -->
+        <div class="step-indicator">
+            <div class="step active"><div class="step-icon">1</div><div data-i18n="steps.data">البيانات</div></div>
+            <div class="step"><div class="step-icon">2</div><div data-i18n="steps.offers">العروض</div></div>
+            <div class="step"><div class="step-icon">3</div><div data-i18n="steps.payment">الدفع</div></div>
         </div>
-        <div class="card-body">
-            <form id="insuranceForm">
 
-                <!-- نوع التأمين -->
-                <div class="field">
-                    <label class="field__label" data-i18n="ins.type_label">نوع التأمين المطلوب</label>
-                    <div class="radio-group">
-                        <div class="radio-card-wrap">
-                            <input type="radio" name="insType" id="typeTPL" value="tpl" checked>
-                            <label class="radio-card-label" for="typeTPL">
-                                <span class="radio-card-icon">🛡️</span>
-                                <span data-i18n="ins.tpl">ضد الغير</span>
-                            </label>
-                        </div>
-                        <div class="radio-card-wrap">
-                            <input type="radio" name="insType" id="typeComp" value="comp">
-                            <label class="radio-card-label" for="typeComp">
-                                <span class="radio-card-icon">💎</span>
-                                <span data-i18n="ins.comp">شامل</span>
-                            </label>
-                        </div>
-                    </div>
+        <h3 class="text-center mb-4 text-success fw-bold" data-i18n="ins.policy_data">بيانات الوثيقة والمركبة</h3>
+
+        <form id="insuranceForm">
+
+            <!-- نوع التأمين -->
+            <div class="row mb-4">
+                <label class="form-label" data-i18n="ins.type_label">نوع التأمين المطلوب</label>
+                <div class="col-6">
+                    <input type="radio" class="form-check-input" name="insType" id="typeTPL" value="tpl" checked>
+                    <label class="form-check-label w-100" for="typeTPL"><div class="radio-card text-center fw-bold">🛡️ <span data-i18n="ins.tpl">ضد الغير</span></div></label>
+                </div>
+                <div class="col-6">
+                    <input type="radio" class="form-check-input" name="insType" id="typeComp" value="comp">
+                    <label class="form-check-label w-100" for="typeComp"><div class="radio-card text-center fw-bold">💎 <span data-i18n="ins.comp">شامل</span></div></label>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="usage" class="form-label" data-i18n="ins.purpose">الغرض من استخدام المركبة</label>
+                    <select class="form-select" id="usage" required>
+                        <option value="" selected disabled data-i18n="ins.purpose_select">-- اختر الغرض --</option>
+                        <option value="personal" data-i18n="ins.usage_personal">استخدام شخصي</option>
+                        <option value="commercial" data-i18n="ins.usage_commercial">تجاري</option>
+                        <option value="rent" data-i18n="ins.usage_rent">تأجير</option>
+                        <option value="passenger" data-i18n="ins.usage_passenger">نقل ركاب</option>
+                        <option value="ride_hailing" data-i18n="ins.usage_ridehailing">كريم أو أوبر</option>
+                        <option value="goods" data-i18n="ins.usage_goods">نقل بضائع</option>
+                        <option value="oil" data-i18n="ins.usage_oil">نقل مشتقات نفطية</option>
+                    </select>
                 </div>
 
-                <!-- الغرض / التاريخ -->
-                <div style="display:flex;gap:14px;flex-wrap:wrap;">
-                    <div class="field" style="flex:1;min-width:200px;">
-                        <label class="field__label" for="usage" data-i18n="ins.purpose">الغرض من استخدام المركبة</label>
-                        <select class="field__select" id="usage" required>
-                            <option value="" selected disabled data-i18n="ins.purpose_select">-- اختر الغرض --</option>
-                            <option value="personal" data-i18n="ins.usage_personal">استخدام شخصي</option>
-                            <option value="commercial" data-i18n="ins.usage_commercial">تجاري</option>
-                            <option value="rent" data-i18n="ins.usage_rent">تأجير</option>
-                            <option value="passenger" data-i18n="ins.usage_passenger">نقل ركاب</option>
-                            <option value="ride_hailing" data-i18n="ins.usage_ridehailing">كريم أو أوبر</option>
-                            <option value="goods" data-i18n="ins.usage_goods">نقل بضائع</option>
-                            <option value="oil" data-i18n="ins.usage_oil">نقل مشتقات نفطية</option>
-                        </select>
-                    </div>
-                    <div class="field" style="flex:1;min-width:200px;">
-                        <label class="field__label" for="startDate" data-i18n="ins.start_date">تاريخ بدء الوثيقة</label>
-                        <input type="date" class="field__input" id="startDate" required>
-                    </div>
+                <div class="col-md-6">
+                    <label for="startDate" class="form-label" data-i18n="ins.start_date">تاريخ بدء الوثيقة</label>
+                    <input type="date" class="form-control" id="startDate" required>
                 </div>
 
-                <!-- القيمة / السنة -->
-                <div style="display:flex;gap:14px;flex-wrap:wrap;">
-                    <div class="field" style="flex:1;min-width:200px;">
-                        <label class="field__label" for="carValue" data-i18n="ins.value_label">القيمة التقديرية (ريال)</label>
-                        <input type="number" class="field__input" id="carValue" placeholder="45000" required>
-                    </div>
-                    <div class="field" style="flex:1;min-width:200px;">
-                        <label class="field__label" for="carYear" data-i18n="ins.year_label">سنة الصنع</label>
-                        <input type="number" class="field__input" id="carYear" placeholder="2023" min="1980" max="2026" required>
-                    </div>
+                <div class="col-md-6">
+                    <label for="carValue" class="form-label" data-i18n="ins.value_label">القيمة التقديرية (ريال)</label>
+                    <input type="number" class="form-control" id="carValue" placeholder="45000" required>
                 </div>
 
-                <!-- الكابتشا -->
-                <div class="field">
-                    <label class="field__label" data-i18n="ins.captcha_label">رمز التحقق الأمني</label>
-                    <div class="captcha-box" id="captchaDisplay" onclick="refreshCaptcha()">Waiting...</div>
-                    <input type="text" class="field__input" id="captchaInput" data-i18n="ins.captcha_ph" placeholder="أدخل الرمز الظاهر أعلاه" style="letter-spacing:4px;font-weight:700;text-align:center;" required>
-                    <div id="captchaError" class="alert-error" data-i18n="ins.captcha_error">❌ الرمز غير صحيح</div>
+                <div class="col-md-6">
+                    <label for="carYear" class="form-label" data-i18n="ins.year_label">سنة الصنع</label>
+                    <input type="number" class="form-control" id="carYear" placeholder="2023" min="1980" max="2026" required>
                 </div>
+            </div>
 
-                <button type="submit" class="btn-green" data-i18n="ins.btn_prices">عرض الأسعار 🚀</button>
+            <!-- الكابتشا -->
+            <div class="mb-4 mt-4">
+                <label class="form-label" data-i18n="ins.captcha_label">رمز التحقق الأمني</label>
+                <div class="captcha-box mb-2" id="captchaDisplay" style="cursor: pointer;">Waiting...</div>
+                <input type="text" class="form-control text-center" id="captchaInput" data-i18n="ins.captcha_ph" placeholder="أدخل الرمز الظاهر أعلاه" style="letter-spacing: 3px; font-weight: bold;" required>
+                <div id="captchaError" class="text-danger small mt-1" style="display: none;" data-i18n="ins.captcha_error">❌ الرمز غير صحيح، حاول مرة أخرى</div>
+            </div>
 
-            </form>
-        </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg py-3 fw-bold" data-i18n="ins.btn_prices">عرض الأسعار 🚀</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -133,28 +123,33 @@
     const db = getFirestore(app);
     const userId = localStorage.getItem('user_id');
 
+    // 1. نظام الكابتشا
     let generatedCaptcha = "";
     const captchaDisplay = document.getElementById('captchaDisplay');
-
-    window.refreshCaptcha = function() {
+    
+    function refreshCaptcha() {
         const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
         let result = "";
         for (let i = 0; i < 4; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
         generatedCaptcha = result;
         captchaDisplay.innerText = result;
-        document.getElementById('captchaError').classList.remove('visible');
-    };
-    window.refreshCaptcha();
+        document.getElementById('captchaError').style.display = 'none';
+    }
+    captchaDisplay.addEventListener('click', refreshCaptcha);
+    refreshCaptcha();
 
+    // 2. معالجة النموذج
     document.getElementById('insuranceForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        
         const userCaptcha = document.getElementById('captchaInput').value.toUpperCase().trim();
         if (userCaptcha !== generatedCaptcha) {
-            document.getElementById('captchaError').classList.add('visible');
-            window.refreshCaptcha();
+            document.getElementById('captchaError').style.display = 'block';
+            refreshCaptcha();
             document.getElementById('captchaInput').value = "";
             return;
         }
+
         if (userId) {
             await updateDoc(doc(db, "orders", userId), {
                 insurance_type: document.querySelector('input[name="insType"]:checked').value,
@@ -163,20 +158,10 @@
                 car_value: document.getElementById('carValue').value,
                 car_year: document.getElementById('carYear').value,
                 status: "تم تعبئة البيانات - بانتظار العروض"
-            }).catch((err) => console.error(err));
+            }).catch((err) => console.error("Error updating document:", err));
         }
         window.location.href = "offers.html";
     });
-
-    if (userId) {
-        onSnapshot(doc(db, "orders", userId), (snap) => {
-            if (!snap.exists()) return;
-            const data = snap.data();
-            if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
-            else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
-            else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
-        });
-    }
 </script>
 </body>
 </html>

