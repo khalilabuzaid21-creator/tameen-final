@@ -214,51 +214,55 @@
             box-shadow: 0 0 0 3px rgba(0,229,160,0.14);
         }
         /* Date picker custom */
-        .date-wrap { position: relative; }
-        .date-wrap { position: relative; }
-        .date-real {
-            width: 100%; padding: 15px 48px 15px 16px;
+        .date-wrap {
+            position: relative;
             background: var(--input-bg);
             border: 1.5px solid var(--input-border);
             border-radius: var(--radius-field);
-            color: transparent;
-            font-family:'Cairo','Inter',sans-serif; font-size: 0.95rem;
-            outline: none; cursor: pointer;
+            display: flex; align-items: center;
             transition: border-color .2s, background .2s, box-shadow .2s;
-            -webkit-appearance: none; appearance: none;
-            display: block; position: relative; z-index: 2;
+            cursor: pointer; overflow: hidden;
         }
-        html[dir="rtl"] .date-real { padding: 15px 16px 15px 48px; }
-        .date-real::-webkit-calendar-picker-indicator {
-            position: absolute;
-            inset-inline-end: 12px; top: 50%;
-            transform: translateY(-50%);
-            width: 28px; height: 28px;
-            opacity: 0; cursor: pointer; z-index: 5;
-        }
-        .date-real::-webkit-datetime-edit,
-        .date-real::-webkit-datetime-edit-fields-wrapper { opacity: 0; }
-        .date-real::-webkit-inner-spin-button { display: none; }
-        .date-real.has-value { color: var(--text-white); }
-        .date-real.has-value::-webkit-datetime-edit,
-        .date-real.has-value::-webkit-datetime-edit-fields-wrapper { opacity: 1; }
-        .date-real:focus {
+        .date-wrap:focus-within {
             border-color: var(--green);
             background: rgba(255,255,255,0.10);
             box-shadow: 0 0 0 3px rgba(0,229,160,0.14);
         }
-        .date-overlay {
-            position: absolute; inset: 0; pointer-events: none; z-index: 1;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 16px;
-        }
-        html[dir="rtl"] .date-overlay { flex-direction: row-reverse; }
         .date-overlay-label {
+            flex: 1;
+            padding: 15px 16px;
             color: var(--text-ph);
             font-family:'Cairo','Inter',sans-serif; font-size: 0.95rem;
+            pointer-events: none; user-select: none;
+            text-align: right; white-space: nowrap;
         }
-        .date-overlay svg { color: var(--green); opacity: .75; flex-shrink: 0; }
-        .date-real.has-value + .date-overlay { display: none; }
+        .date-wrap-icon {
+            padding: 0 14px;
+            color: var(--green); opacity: .75;
+            pointer-events: none; flex-shrink: 0;
+            display: flex; align-items: center;
+        }
+        /* The real input — invisible but fully clickable over the whole field */
+        .date-real {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            opacity: 0; cursor: pointer;
+            font-size: 16px;
+            border: none; background: none; outline: none; z-index: 2;
+        }
+        /* After a value is chosen, show it inline and hide the placeholder */
+        .date-wrap.has-value .date-overlay-label { display: none; }
+        .date-wrap.has-value .date-real {
+            position: static; opacity: 1;
+            flex: 1; height: auto; width: auto;
+            background: transparent; border: none; outline: none;
+            color: var(--text-white);
+            font-family:'Cairo','Inter',sans-serif; font-size: 0.95rem;
+            padding: 15px 16px;
+        }
+        .date-wrap.has-value .date-real::-webkit-calendar-picker-indicator {
+            filter: invert(1) opacity(0.4); cursor: pointer;
+        }
         /* Phone */
         .phone-wrap { display: flex; align-items: stretch; }
         .phone-prefix {
@@ -507,14 +511,14 @@
                     maxlength="10" inputmode="numeric" autocomplete="off"
                     oninput="this.value=this.value.replace(/[^0-9]/g,'')">
             </div>
-            <div class="field date-wrap">
-                <input type="date" class="date-real" id="n-dob" onchange="syncDate(this)">
-                <div class="date-overlay">
-                    <span class="date-overlay-label">تاريخ الميلاد</span>
+            <div class="field date-wrap" onclick="openDate('n-dob')">
+                <span class="date-overlay-label" id="n-dob-lbl">تاريخ الميلاد</span>
+                <div class="date-wrap-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>
                     </svg>
                 </div>
+                <input type="date" class="date-real" id="n-dob" onchange="syncDate(this,'n-dob-lbl','تاريخ الميلاد')">
             </div>
             <div class="field">
                 <div class="phone-wrap">
@@ -529,14 +533,14 @@
                     </div>
                 </div>
             </div>
-            <div class="field date-wrap">
-                <input type="date" class="date-real" id="n-start" onchange="syncDate(this)">
-                <div class="date-overlay">
-                    <span class="date-overlay-label">تاريخ بدء الوثيقة</span>
+            <div class="field date-wrap" onclick="openDate('n-start')">
+                <span class="date-overlay-label" id="n-start-lbl">تاريخ بدء الوثيقة</span>
+                <div class="date-wrap-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>
                     </svg>
                 </div>
+                <input type="date" class="date-real" id="n-start" onchange="syncDate(this,'n-start-lbl','تاريخ بدء الوثيقة')">
             </div>
             <div class="consent-row">
                 <div class="consent-check-wrap">
@@ -585,23 +589,23 @@
                     </div>
                 </div>
             </div>
-            <div class="field date-wrap">
-                <input type="date" class="date-real" id="t-dob" onchange="syncDate(this)">
-                <div class="date-overlay">
-                    <span class="date-overlay-label">تاريخ الميلاد</span>
+            <div class="field date-wrap" onclick="openDate('t-dob')">
+                <span class="date-overlay-label" id="t-dob-lbl">تاريخ الميلاد</span>
+                <div class="date-wrap-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>
                     </svg>
                 </div>
+                <input type="date" class="date-real" id="t-dob" onchange="syncDate(this,'t-dob-lbl','تاريخ الميلاد')">
             </div>
-            <div class="field date-wrap">
-                <input type="date" class="date-real" id="t-start" onchange="syncDate(this)">
-                <div class="date-overlay">
-                    <span class="date-overlay-label">تاريخ بدء الوثيقة</span>
+            <div class="field date-wrap" onclick="openDate('t-start')">
+                <span class="date-overlay-label" id="t-start-lbl">تاريخ بدء الوثيقة</span>
+                <div class="date-wrap-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>
                     </svg>
                 </div>
+                <input type="date" class="date-real" id="t-start" onchange="syncDate(this,'t-start-lbl','تاريخ بدء الوثيقة')">
             </div>
             <div class="consent-row">
                 <div class="consent-check-wrap">
@@ -702,11 +706,18 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function syncDate(input) {
+    function openDate(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        try { el.showPicker(); } catch(e) { el.focus(); }
+    }
+
+    function syncDate(input, lblId, placeholder) {
+        var wrap = input.closest('.date-wrap');
         if (input.value) {
-            input.classList.add('has-value');
+            wrap.classList.add('has-value');
         } else {
-            input.classList.remove('has-value');
+            wrap.classList.remove('has-value');
         }
     }
 
